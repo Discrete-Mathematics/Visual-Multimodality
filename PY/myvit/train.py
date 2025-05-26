@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader
 from torchvision import transforms, datasets
 from tqdm import tqdm
 
-# from my_dataset import MyDataSet
 from vit import create_vit
 
 
