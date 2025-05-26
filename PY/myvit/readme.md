@@ -1,6 +1,6 @@
 # 简易的Vision Transformer 图像分类
 
-本项目基于PyTorch实现了Vision Transformer (ViT) 网络结构，并用于花卉图片分类任务。
+基于PyTorch实现最基础的Vision Transformer (ViT) 网络结构，并用于花卉图片分类任务。
 
 
 ## 数据集
