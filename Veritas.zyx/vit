@@ -50,7 +50,6 @@ class SimpleViT(nn.Module):
         x = self.patch_embed(x)  # (B, N+1, D)
         # 依次通过每个 Transformer 层
         for blk in self.blocks:
-            # PyTorch 的 TransformerEncoderLayer 默认接受 (seq_len, batch, dim) 格式
             x = blk(x.transpose(0,1)).transpose(0,1)
         # 取出 class token (第一个位置) 进行分类
         cls_token_final = x[:, 0]
