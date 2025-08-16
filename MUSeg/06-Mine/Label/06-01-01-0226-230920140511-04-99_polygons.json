@@ -1,0 +1,84 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "nimage532.jpg",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "electrical equipment",
+      "points": [
+        [
+          1007.51,
+          590.04
+        ],
+        [
+          1002.76,
+          604.86
+        ],
+        [
+          1003.95,
+          718.72
+        ],
+        [
+          1065.03,
+          719.31
+        ],
+        [
+          1058.51,
+          593.0
+        ],
+        [
+          1058.51,
+          593.0
+        ]
+      ],
+      "group_id": 2,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "metal fixture",
+      "points": [
+        [
+          1007.06,
+          713.07
+        ],
+        [
+          1081.0,
+          714.12
+        ],
+        [
+          1081.0,
+          851.73
+        ],
+        [
+          1018.53,
+          843.39
+        ],
+        [
+          1020.61,
+          917.4
+        ],
+        [
+          1009.15,
+          917.4
+        ],
+        [
+          1006.02,
+          852.77
+        ],
+        [
+          1006.02,
+          852.77
+        ]
+      ],
+      "group_id": 3,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

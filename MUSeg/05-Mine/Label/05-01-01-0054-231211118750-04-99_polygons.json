@@ -1,0 +1,39 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "06-01-01-99-231211118750-04-99.png",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "anchoring equipment",
+      "points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          931.0
+        ],
+        [
+          1081.0,
+          931.0
+        ],
+        [
+          1081.0,
+          2.95
+        ],
+        [
+          1081.0,
+          0.0
+        ]
+      ],
+      "group_id": 1,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

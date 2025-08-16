@@ -1,0 +1,249 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "image094218.png",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "anchoring equipment",
+      "points": [
+        [
+          13.25,
+          0.0
+        ],
+        [
+          0.0,
+          11.35
+        ],
+        [
+          0.0,
+          472.47
+        ],
+        [
+          191.76,
+          277.55
+        ],
+        [
+          264.3,
+          85.16
+        ],
+        [
+          287.64,
+          0.0
+        ]
+      ],
+      "group_id": 6,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "anchoring equipment",
+      "points": [
+        [
+          0.0,
+          394.22
+        ],
+        [
+          0.0,
+          931.0
+        ],
+        [
+          1081.0,
+          931.0
+        ],
+        [
+          1081.0,
+          287.95
+        ],
+        [
+          1081.0,
+          0.0
+        ],
+        [
+          239.8,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "group_id": 5,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "cable",
+      "points": [
+        [
+          0.0,
+          7.57
+        ],
+        [
+          124.9,
+          0.0
+        ],
+        [
+          111.65,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "group_id": 1,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "cable",
+      "points": [
+        [
+          480.04,
+          1.89
+        ],
+        [
+          597.99,
+          17.03
+        ],
+        [
+          772.09,
+          44.16
+        ],
+        [
+          912.76,
+          58.66
+        ],
+        [
+          1025.04,
+          66.86
+        ],
+        [
+          1081.0,
+          70.02
+        ],
+        [
+          1081.0,
+          0.0
+        ],
+        [
+          448.87,
+          0.0
+        ]
+      ],
+      "group_id": 2,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "metal fixture",
+      "points": [
+        [
+          393.72,
+          0.0
+        ],
+        [
+          398.45,
+          13.14
+        ],
+        [
+          398.45,
+          49.41
+        ],
+        [
+          412.12,
+          64.13
+        ],
+        [
+          432.09,
+          64.13
+        ],
+        [
+          443.13,
+          26.81
+        ],
+        [
+          444.08,
+          0.0
+        ]
+      ],
+      "group_id": 3,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "indicator",
+      "points": [
+        [
+          749.6,
+          414.75
+        ],
+        [
+          752.75,
+          579.81
+        ],
+        [
+          918.33,
+          584.54
+        ],
+        [
+          1011.9,
+          587.69
+        ],
+        [
+          1007.7,
+          414.22
+        ]
+      ],
+      "group_id": 4,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "cable",
+      "points": [
+        [
+          9.46,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          6.31
+        ],
+        [
+          68.76,
+          3.15
+        ],
+        [
+          110.39,
+          0.0
+        ]
+      ],
+      "group_id": 9,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

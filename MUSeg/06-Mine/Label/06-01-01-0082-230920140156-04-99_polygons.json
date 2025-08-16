@@ -1,0 +1,47 @@
+{
+    "version": "5.2.0.post4 | ISAT to LabelMe",
+    "imagePath": "nimage138.jpg",
+    "imageData": null,
+    "imageHeight": 932,
+    "imageWidth": 1082,
+    "flags": {},
+    "shapes": [
+        {
+            "label": "container",
+            "points": [
+                [
+                    260.43,
+                    774.85
+                ],
+                [
+                    251.2,
+                    931.0
+                ],
+                [
+                    489.58,
+                    931.0
+                ],
+                [
+                    482.47,
+                    762.84
+                ],
+                [
+                    414.15,
+                    750.74
+                ],
+                [
+                    308.83,
+                    757.14
+                ],
+                [
+                    308.83,
+                    757.14
+                ]
+            ],
+            "group_id": 1,
+            "description": "",
+            "shape_type": "polygon",
+            "flags": {}
+        }
+    ]
+}

@@ -1,0 +1,100 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "image121.png",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "metal fixture",
+      "points": [
+        [
+          332.35,
+          1.77
+        ],
+        [
+          429.58,
+          678.85
+        ],
+        [
+          431.35,
+          776.08
+        ],
+        [
+          353.57,
+          822.04
+        ],
+        [
+          406.6,
+          931.0
+        ],
+        [
+          535.65,
+          931.0
+        ],
+        [
+          692.99,
+          841.49
+        ],
+        [
+          604.6,
+          728.35
+        ],
+        [
+          618.74,
+          53.03
+        ],
+        [
+          733.16,
+          36.66
+        ],
+        [
+          733.16,
+          0.0
+        ],
+        [
+          733.16,
+          0.0
+        ]
+      ],
+      "group_id": 2,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "electronic equipment",
+      "points": [
+        [
+          384.91,
+          0.0
+        ],
+        [
+          387.96,
+          39.71
+        ],
+        [
+          482.66,
+          67.21
+        ],
+        [
+          745.38,
+          30.55
+        ],
+        [
+          763.7,
+          0.0
+        ],
+        [
+          763.7,
+          0.0
+        ]
+      ],
+      "group_id": 3,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

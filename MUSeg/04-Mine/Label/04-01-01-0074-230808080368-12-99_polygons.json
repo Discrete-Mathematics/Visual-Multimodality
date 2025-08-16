@@ -1,0 +1,39 @@
+{
+    "version": "5.2.0.post4 | ISAT to LabelMe",
+    "imagePath": "02-01-01-0074-230808080368-12-99.jpg",
+    "imageData": null,
+    "imageHeight": 932,
+    "imageWidth": 1082,
+    "flags": {},
+    "shapes": [
+        {
+            "label": "__background__",
+            "points": [
+                [
+                    2.27,
+                    709.23
+                ],
+                [
+                    60.24,
+                    717.19
+                ],
+                [
+                    64.79,
+                    789.93
+                ],
+                [
+                    0.0,
+                    789.93
+                ],
+                [
+                    0.0,
+                    789.93
+                ]
+            ],
+            "group_id": 1,
+            "description": "",
+            "shape_type": "polygon",
+            "flags": {}
+        }
+    ]
+}

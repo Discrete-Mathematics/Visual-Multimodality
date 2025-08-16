@@ -1,0 +1,51 @@
+{
+    "version": "5.2.0.post4 | ISAT to LabelMe",
+    "imagePath": "image46.jpg",
+    "imageData": null,
+    "imageHeight": 932,
+    "imageWidth": 1082,
+    "flags": {},
+    "shapes": [
+        {
+            "label": "cable",
+            "points": [
+                [
+                    0.0,
+                    159.5
+                ],
+                [
+                    205.37,
+                    82.36
+                ],
+                [
+                    312.75,
+                    43.79
+                ],
+                [
+                    408.66,
+                    3.13
+                ],
+                [
+                    285.65,
+                    0.0
+                ],
+                [
+                    170.97,
+                    45.87
+                ],
+                [
+                    0.0,
+                    115.72
+                ],
+                [
+                    0.0,
+                    115.72
+                ]
+            ],
+            "group_id": 1,
+            "description": "",
+            "shape_type": "polygon",
+            "flags": {}
+        }
+    ]
+}

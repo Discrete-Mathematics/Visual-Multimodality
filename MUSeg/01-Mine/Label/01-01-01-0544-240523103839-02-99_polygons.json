@@ -1,0 +1,113 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "image103839.png",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "indicator",
+      "points": [
+        [
+          520.84,
+          310.58
+        ],
+        [
+          566.84,
+          471.34
+        ],
+        [
+          827.48,
+          456.01
+        ],
+        [
+          794.63,
+          268.53
+        ]
+      ],
+      "group_id": 3,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "tools and materials",
+      "points": [
+        [
+          0.0,
+          802.16
+        ],
+        [
+          114.59,
+          791.65
+        ],
+        [
+          278.08,
+          639.73
+        ],
+        [
+          801.74,
+          642.78
+        ],
+        [
+          801.74,
+          627.64
+        ],
+        [
+          1081.0,
+          632.06
+        ],
+        [
+          1081.0,
+          931.0
+        ],
+        [
+          344.26,
+          931.0
+        ],
+        [
+          0.0,
+          931.0
+        ]
+      ],
+      "group_id": 1,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "container",
+      "points": [
+        [
+          412.54,
+          426.42
+        ],
+        [
+          367.12,
+          469.94
+        ],
+        [
+          423.89,
+          674.95
+        ],
+        [
+          736.77,
+          697.03
+        ],
+        [
+          755.69,
+          632.06
+        ],
+        [
+          728.57,
+          426.42
+        ]
+      ],
+      "group_id": 2,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

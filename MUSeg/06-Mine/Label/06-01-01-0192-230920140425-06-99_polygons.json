@@ -1,0 +1,51 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "nimage444.jpg",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "metal fixture",
+      "points": [
+        [
+          0.0,
+          795.12
+        ],
+        [
+          226.23,
+          731.86
+        ],
+        [
+          759.45,
+          735.24
+        ],
+        [
+          759.62,
+          770.24
+        ],
+        [
+          751.13,
+          789.68
+        ],
+        [
+          761.41,
+          931.0
+        ],
+        [
+          0.0,
+          931.0
+        ],
+        [
+          0.0,
+          931.0
+        ]
+      ],
+      "group_id": 1,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

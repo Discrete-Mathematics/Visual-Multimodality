@@ -1,0 +1,51 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "depth102034.png",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "rail area",
+      "points": [
+        [
+          0.0,
+          334.32
+        ],
+        [
+          402.13,
+          208.69
+        ],
+        [
+          750.12,
+          86.21
+        ],
+        [
+          953.13,
+          0.0
+        ],
+        [
+          1081.0,
+          0.0
+        ],
+        [
+          1081.0,
+          630.8
+        ],
+        [
+          778.4,
+          931.0
+        ],
+        [
+          0.0,
+          931.0
+        ]
+      ],
+      "group_id": 1,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

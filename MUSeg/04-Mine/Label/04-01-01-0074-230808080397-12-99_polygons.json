@@ -1,0 +1,92 @@
+{
+  "version": "5.2.0.post4 | ISAT to LabelMe",
+  "imagePath": "image76.jpg",
+  "imageData": null,
+  "imageHeight": 932,
+  "imageWidth": 1082,
+  "flags": {},
+  "shapes": [
+    {
+      "label": "anchoring equipment",
+      "points": [
+        [
+          312.37,
+          117.78
+        ],
+        [
+          339.0,
+          116.76
+        ],
+        [
+          346.17,
+          130.07
+        ],
+        [
+          332.86,
+          141.34
+        ],
+        [
+          319.54,
+          135.19
+        ],
+        [
+          305.2,
+          127.0
+        ],
+        [
+          313.4,
+          117.78
+        ],
+        [
+          313.4,
+          117.78
+        ]
+      ],
+      "group_id": 2,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    },
+    {
+      "label": "anchoring equipment",
+      "points": [
+        [
+          818.75,
+          298.74
+        ],
+        [
+          830.61,
+          300.08
+        ],
+        [
+          832.65,
+          310.33
+        ],
+        [
+          805.0,
+          360.51
+        ],
+        [
+          790.66,
+          358.46
+        ],
+        [
+          818.32,
+          308.28
+        ],
+        [
+          820.29,
+          302.27
+        ],
+        [
+          820.29,
+          302.27
+        ]
+      ],
+      "group_id": 3,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {}
+    }
+  ]
+}

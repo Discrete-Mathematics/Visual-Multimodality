@@ -1,0 +1,47 @@
+{
+    "version": "5.2.0.post4 | ISAT to LabelMe",
+    "imagePath": "image095632.png",
+    "imageData": null,
+    "imageHeight": 932,
+    "imageWidth": 1082,
+    "flags": {},
+    "shapes": [
+        {
+            "label": "mining equipment",
+            "points": [
+                [
+                    0.0,
+                    414.75
+                ],
+                [
+                    262.31,
+                    326.96
+                ],
+                [
+                    739.61,
+                    154.02
+                ],
+                [
+                    1081.0,
+                    30.49
+                ],
+                [
+                    1081.0,
+                    802.07
+                ],
+                [
+                    868.38,
+                    931.0
+                ],
+                [
+                    0.0,
+                    931.0
+                ]
+            ],
+            "group_id": 1,
+            "description": "",
+            "shape_type": "polygon",
+            "flags": {}
+        }
+    ]
+}
