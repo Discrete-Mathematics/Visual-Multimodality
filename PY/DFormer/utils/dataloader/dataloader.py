@@ -51,8 +51,46 @@ class TrainPre(object):
         else:
             modal_x = normalize(modal_x, self.norm_mean, self.norm_std)
 
-        # return rgb.transpose(2, 0, 1), gt, modal_x.transpose(2, 0, 1)
+        # 新增：使用resize而不是crop，保持长宽比
+        if hasattr(self.config, 'use_resize_instead_of_crop') and self.config.use_resize_instead_of_crop:
+            # 计算resize后的尺寸，保持长宽比
+            h, w = rgb.shape[:2]
+            target_h, target_w = self.config.resize_size
+            
+            # 计算缩放比例，保持长宽比
+            scale_h = target_h / h
+            scale_w = target_w / w
+            scale = min(scale_h, scale_w)  # 取较小的缩放比例，确保图片完全适应目标尺寸
+            
+            new_h = int(h * scale)
+            new_w = int(w * scale)
+            
+            # resize图片
+            rgb = cv2.resize(rgb, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+            gt = cv2.resize(gt, (new_w, new_h), interpolation=cv2.INTER_NEAREST)
+            modal_x = cv2.resize(modal_x, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+            
+            # 如果resize后的尺寸小于目标尺寸，进行填充
+            if new_h < target_h or new_w < target_w:
+                # 计算需要填充的像素数
+                pad_h = max(0, target_h - new_h)
+                pad_w = max(0, target_w - new_w)
+                
+                # 计算填充位置（居中）
+                top = pad_h // 2
+                bottom = pad_h - top
+                left = pad_w // 2
+                right = pad_w - left
+                
+                # 填充
+                rgb = cv2.copyMakeBorder(rgb, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0.0, 0.0, 0.0))
+                gt = cv2.copyMakeBorder(gt, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(255,))
+                modal_x = cv2.copyMakeBorder(modal_x, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0.0,))
+            
+            # 直接返回resize后的结果，不需要crop
+            return rgb.transpose(2, 0, 1), gt, modal_x.transpose(2, 0, 1)
 
+        # 原有的crop逻辑（作为备选）
         crop_size = (self.config.image_height, self.config.image_width)
         crop_pos = generate_random_crop_pos(rgb.shape[:2], crop_size)
 
@@ -62,8 +100,6 @@ class TrainPre(object):
 
         p_rgb = p_rgb.transpose(2, 0, 1)
         p_modal_x = p_modal_x.transpose(2, 0, 1)
-        # p_rgb = p_rgb
-        # p_modal_x = p_modal_x
 
         return p_rgb, p_gt, p_modal_x
 
@@ -86,8 +122,44 @@ class ValPre(object):
         self.sign = sign
 
     def __call__(self, rgb, gt, modal_x):
-        # pad to 730*531
-        if self.config.pad:
+        # 新增：使用resize而不是crop，保持长宽比
+        if hasattr(self.config, 'use_resize_instead_of_crop') and self.config.use_resize_instead_of_crop:
+            # 计算resize后的尺寸，保持长宽比
+            h, w = rgb.shape[:2]
+            target_h, target_w = self.config.resize_size
+            
+            # 计算缩放比例，保持长宽比
+            scale_h = target_h / h
+            scale_w = target_w / w
+            scale = min(scale_h, scale_w)  # 取较小的缩放比例，确保图片完全适应目标尺寸
+            
+            new_h = int(h * scale)
+            new_w = int(w * scale)
+            
+            # resize图片
+            rgb = cv2.resize(rgb, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+            gt = cv2.resize(gt, (new_w, new_h), interpolation=cv2.INTER_NEAREST)
+            modal_x = cv2.resize(modal_x, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+            
+            # 如果resize后的尺寸小于目标尺寸，进行填充
+            if new_h < target_h or new_w < target_w:
+                # 计算需要填充的像素数
+                pad_h = max(0, target_h - new_h)
+                pad_w = max(0, target_w - new_w)
+                
+                # 计算填充位置（居中）
+                top = pad_h // 2
+                bottom = pad_h - top
+                left = pad_w // 2
+                right = pad_w - left
+                
+                # 填充
+                rgb = cv2.copyMakeBorder(rgb, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0.0, 0.0, 0.0))
+                gt = cv2.copyMakeBorder(gt, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(255,))
+                modal_x = cv2.copyMakeBorder(modal_x, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0.0,))
+        
+        # pad to 730*531 (保留原有逻辑作为备选)
+        elif hasattr(self.config, 'pad') and self.config.pad:
             rgb = cv2.copyMakeBorder(
                 rgb,
                 0,
@@ -113,9 +185,10 @@ class ValPre(object):
                 0,
                 730 - modal_x.shape[1],
                 cv2.BORDER_CONSTANT,
-                value=(0.0, 0.0, 0.0),
+                value=(0.0,),
             )
 
+        # 原有的resize逻辑（注释掉，因为上面已经处理了）
         # rgb = cv2.resize(
         #     rgb,
         #     (self.config.image_width, self.config.image_height),

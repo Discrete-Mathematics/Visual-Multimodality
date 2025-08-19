@@ -133,8 +133,8 @@ with Engine(custom_parser=parser) as engine:
                 val_loader,
                 config,
                 device,
-                [0.5, 0.75, 1.0, 1.25, 1.5],
-                True,
+                config.eval_scale_array,  # 使用配置文件中的scale
+                config.eval_flip,         # 使用配置文件中的flip设置
                 engine,
                 save_dir=args.save_path,
             )
@@ -166,8 +166,8 @@ with Engine(custom_parser=parser) as engine:
                 val_loader,
                 config,
                 device,
-                [0.5, 0.75, 1.0, 1.25, 1.5],
-                True,
+                config.eval_scale_array,  # 使用配置文件中的scale
+                config.eval_flip,         # 使用配置文件中的flip设置
                 engine,
                 save_dir=args.save_path,
             )

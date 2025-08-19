@@ -73,7 +73,7 @@ We invite all to contribute in making it more acessible and useful. If you have 
     A simple visualization demo is provided at 
     https://huggingface.co/spaces/bbynku/DFormerv2.
     </em>
-
+    
 </p>
 
 
@@ -94,12 +94,10 @@ We invite all to contribute in making it more acessible and useful. If you have 
 conda create -n dformer python=3.10 -y
 conda activate dformer
 
-# CUDA 12.1
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+# CUDA 11.8
+conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=11.8 -c pytorch -c nvidia
 
-
-pip install mmcv==2.2.0 -f https://download.openmmlab.com/mmcv/dist/cu121/torch2.3/index.html
-
+pip install mmcv==2.1.0 -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
 
 pip install tqdm opencv-python scipy tensorboardX tabulate easydict ftfy regex
 ```
@@ -289,6 +287,7 @@ Our implementation is mainly based on [mmsegmentaion](https://github.com/open-mm
 ### License
 
 Code in this repo is for non-commercial use only.
+
 
 
 

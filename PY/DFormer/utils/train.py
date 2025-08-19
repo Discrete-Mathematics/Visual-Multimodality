@@ -56,7 +56,7 @@ torch._dynamo.config.suppress_errors = True
 
 
 def is_eval(epoch, config):
-    return epoch > int(config.checkpoint_start_epoch) or epoch == 1 or epoch % 10 == 0
+    return (epoch > int(config.checkpoint_start_epoch) and epoch % 25 == 0) or epoch == 1 or epoch % 50 == 0
 
 
 class gpu_timer:
@@ -157,11 +157,12 @@ with Engine(custom_parser=parser) as engine:
         val_dl_factor = 1.5
 
     val_dl_factor = 1  # TODO: remove this line
+    # 验证批次设置
     val_loader, val_sampler = get_val_loader(
         engine,
         RGBXDataset,
         config,
-        val_batch_size=int(config.batch_size * val_dl_factor) if config.dataset_name != "SUNRGBD" else int(args.gpus),
+        val_batch_size=int(config.batch_size * val_dl_factor) if config.dataset_name not in ["SUNRGBD"] else 2*int(args.gpus),
     )
     logger.info(f"val dataset len:{len(val_loader) * int(args.gpus)}")
 
@@ -401,8 +402,8 @@ with Engine(custom_parser=parser) as engine:
                                     val_loader,
                                     config,
                                     device,
-                                    [0.5, 0.75, 1.0, 1.25, 1.5],
-                                    True,
+                                    config.eval_scale_array,  # 使用配置文件中的scale
+                                    config.eval_flip,         # 使用配置文件中的flip设置
                                     engine,
                                     sliding=args.sliding,
                                 )
@@ -422,8 +423,8 @@ with Engine(custom_parser=parser) as engine:
                                 val_loader,
                                 config,
                                 device,
-                                [0.5, 0.75, 1.0, 1.25, 1.5],
-                                True,
+                                config.eval_scale_array,  # 使用配置文件中的scale
+                                config.eval_flip,         # 使用配置文件中的flip设置
                                 engine,
                                 sliding=args.sliding,
                             )
@@ -465,8 +466,8 @@ with Engine(custom_parser=parser) as engine:
                                     val_loader,
                                     config,
                                     device,
-                                    [0.5, 0.75, 1.0, 1.25, 1.5],
-                                    True,
+                                    config.eval_scale_array,  # 使用配置文件中的scale
+                                    config.eval_flip,         # 使用配置文件中的flip设置
                                     engine,
                                     sliding=args.sliding,
                                 )
@@ -486,8 +487,8 @@ with Engine(custom_parser=parser) as engine:
                                 val_loader,
                                 config,
                                 device,
-                                [0.5, 0.75, 1.0, 1.25, 1.5],
-                                True,
+                                config.eval_scale_array,  # 使用配置文件中的scale
+                                config.eval_flip,         # 使用配置文件中的flip设置
                                 engine,
                                 sliding=args.sliding,
                             )

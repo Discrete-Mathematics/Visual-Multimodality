@@ -17,7 +17,16 @@ def get_path(
     x_modal,
     item_name,
 ):
-    if dataset_name == "StanFord2D3D":
+    if dataset_name == "MUSeg":
+        # MUSeg dataset has format: "RGB/filename.jpg Label/filename_label.png"
+        # Extract the filename from the RGB path
+        rgb_filename = item_name.split(" ")[0].split("/")[1]  # Get "filename.jpg"
+        filename_base = rgb_filename.replace(".jpg", "").replace(".png", "")
+
+        rgb_path = os.path.join(_rgb_path, rgb_filename)
+        d_path = os.path.join(_x_path, filename_base + _x_format)
+        gt_path = os.path.join(_gt_path, filename_base + "_label" + _gt_format)
+    elif dataset_name == "StanFord2D3D":
         rgb_path = os.path.join(
             _rgb_path,
             item_name.replace(".jpg", "").replace(".png", "") + _rgb_format,
