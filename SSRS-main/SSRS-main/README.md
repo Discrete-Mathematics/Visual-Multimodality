@@ -1,5 +1,19 @@
-F
+# FTransUNet在Vaihingen数据集上的复现结果
+| 项目        | 分析                                       |
+| --------- | ---------------------------------------- |
+| PA      | 92.22% |
+| mF1 | 0.9072|
+| mIoU  | 0.8343|
+| Kappa     | 0.895|
+# FTransUNet在MUSeg数据集上的实验数据
+| 项目        | 分析                                       |
+| --------- | ---------------------------------------- |
+|训练集上的最佳PA|0.57|
+|最终测试PA      |0.45 |
+|最终测试mPA |0.07|
+|最终测试mIoU|0.03|
 ---
+源码的README.md:
 # Semantic Segmentation for Remote Sensing
 
 This repo is the PyTorch implementation of some works related to remote sensing tasks.
