@@ -1,20 +1,3 @@
-# 忽略datasets文件夹内的图片文件
-datasets/**/*.jpg
-datasets/**/*.jpeg
-datasets/**/*.png
-datasets/**/*.bmp
-datasets/**/*.gif
-datasets/**/*.tiff
-datasets/**/*.tif
-datasets/**/*.webp
-
-# 忽略checkpoints文件夹内除pretrained文件夹以外的所有文件夹
-checkpoints/*
-!checkpoints/pretrained/
-
-# 忽略venv文件夹内的所有文件
-venv/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
