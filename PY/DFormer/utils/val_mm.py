@@ -101,13 +101,23 @@ def evaluate(model, dataloader, config, device, engine, save_dir=None, sliding=F
         # print(images.shape,labels.shape)
         images = [images.to(device), modal_xs.to(device)]
         labels = labels.to(device)
-        if sliding:
-            preds = slide_inference(model, images, modal_xs, config).softmax(dim=1)
+        
+        # 新增：检查是否使用resize，如果是则跳过sliding_inference
+        if hasattr(config, 'use_resize_instead_of_crop') and config.use_resize_instead_of_crop:
+            # 使用resize时，图片已经在数据加载时处理过了，直接推理
+            preds = model(images[0], images[1]).softmax(dim=1)
+        elif sliding:
+            preds = slide_inference(model, images[0], modal_xs, config).softmax(dim=1)
         else:
             preds = model(images[0], images[1]).softmax(dim=1)
         # print(preds.shape,labels.shape)
         B, H, W = labels.shape
         metrics.update(preds, labels)
+        
+        # 清理中间变量以节省显存
+        del preds
+        if idx % 10 == 0:  # 每10个batch清理一次显存
+            torch.cuda.empty_cache()
         # for i in range(B):
         #     metrics.update(preds[i].unsqueeze(0), labels[i].unsqueeze(0))
         # metrics.update(preds, labels)
@@ -236,6 +246,9 @@ def slide_inference(model, imgs, modal_xs, config):
             )
 
             count_mat[:, :, y1:y2, x1:x2] += 1
+            
+            # 清理中间变量以节省显存
+            del crop_img, crop_modal_xs, crop_seg_logit
     assert (count_mat == 0).sum() == 0
     seg_logits = preds / count_mat
 
@@ -273,32 +286,49 @@ def evaluate_msf(
         B, H, W = labels.shape
         scaled_logits = torch.zeros(B, n_classes, H, W).to(device)
 
-        for scale in scales:
-            new_H, new_W = int(scale * H), int(scale * W)
-            new_H, new_W = (
-                int(math.ceil(new_H / 32)) * 32,
-                int(math.ceil(new_W / 32)) * 32,
-            )
-            scaled_images = [
-                F.interpolate(img, size=(new_H, new_W), mode="bilinear", align_corners=True) for img in images
-            ]
-            scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
-            if sliding:
-                logits = slide_inference(model, scaled_images[0], scaled_images[1], config)
-            else:
-                logits = model(scaled_images[0], scaled_images[1])
-            logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=True)
-            scaled_logits += logits.softmax(dim=1)
-
-            if flip:
-                scaled_images = [torch.flip(scaled_img, dims=(3,)) for scaled_img in scaled_images]
+        # 新增：检查是否使用resize，如果是则跳过多尺度推理
+        if hasattr(config, 'use_resize_instead_of_crop') and config.use_resize_instead_of_crop:
+            # 使用resize时，图片已经在数据加载时处理过了，直接推理
+            logits = model(images[0], images[1])
+            scaled_logits = logits.softmax(dim=1)
+        else:
+            # 原有的多尺度推理逻辑
+            for scale in scales:
+                new_H, new_W = int(scale * H), int(scale * W)
+                new_H, new_W = (
+                    int(math.ceil(new_H / 32)) * 32,
+                    int(math.ceil(new_W / 32)) * 32,
+                )
+                scaled_images = [
+                    F.interpolate(img, size=(new_H, new_W), mode="bilinear", align_corners=True) for img in images
+                ]
+                scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
                 if sliding:
                     logits = slide_inference(model, scaled_images[0], scaled_images[1], config)
                 else:
                     logits = model(scaled_images[0], scaled_images[1])
-                logits = torch.flip(logits, dims=(3,))
                 logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=True)
                 scaled_logits += logits.softmax(dim=1)
+                
+                # 清理中间变量以节省显存
+                del scaled_images, logits
+
+                if flip:
+                    scaled_images = [torch.flip(scaled_img, dims=(3,)) for scaled_img in images]
+                    scaled_images = [
+                        F.interpolate(scaled_img, size=(new_H, new_W), mode="bilinear", align_corners=True) for scaled_img in scaled_images
+                    ]
+                    scaled_images = [scaled_img.to(device) for scaled_img in scaled_images]
+                    if sliding:
+                        logits = slide_inference(model, scaled_images[0], scaled_images[1], config)
+                    else:
+                        logits = model(scaled_images[0], scaled_images[1])
+                    logits = torch.flip(logits, dims=(3,))
+                    logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=True)
+                    scaled_logits += logits.softmax(dim=1)
+                    
+                    # 清理中间变量以节省显存
+                    del scaled_images, logits
 
         if save_dir is not None:
             palette = [
@@ -356,6 +386,11 @@ def evaluate_msf(
                 assert 1 == 2
 
         metrics.update(scaled_logits, labels)
+        
+        # 清理中间变量以节省显存
+        del scaled_logits, images, labels, modal_xs
+        if idx % 5 == 0:  # 每5个batch清理一次显存
+            torch.cuda.empty_cache()
 
     # ious, miou = metrics.compute_iou()
     # acc, macc = metrics.compute_pixel_acc()

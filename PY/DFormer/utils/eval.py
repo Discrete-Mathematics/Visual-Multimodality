@@ -66,6 +66,8 @@ with Engine(custom_parser=parser) as engine:
         val_batch_size = int(config.batch_size)
     elif not args.pad_SUNRGBD:
         val_batch_size = int(args.gpus)
+    elif config.dataset_name != "MUSeg":
+        val_batch_size = 4 * int(args.gpus)
     else:
         val_batch_size = 8 * int(args.gpus)
 
@@ -147,13 +149,13 @@ with Engine(custom_parser=parser) as engine:
                     model.eval()
                     device = torch.device("cuda")
                     if args.mst:
-                        all_metrics = evaluate_msf(
+                        metric = evaluate_msf(
                             model,
                             val_loader,
                             config,
                             device,
-                            [0.5, 0.75, 1.0, 1.25, 1.5],
-                            True,
+                            config.eval_scale_array,  # 使用配置文件中的scale
+                            config.eval_flip,         # 使用配置文件中的flip设置
                             engine,
                             sliding=args.sliding,
                         )
@@ -185,8 +187,8 @@ with Engine(custom_parser=parser) as engine:
                             val_loader,
                             config,
                             device,
-                            [0.5, 0.75, 1.0, 1.25, 1.5],
-                            True,
+                            config.eval_scale_array,  # 使用配置文件中的scale
+                            config.eval_flip,         # 使用配置文件中的flip设置
                             engine,
                             sliding=args.sliding,
                         )
@@ -215,8 +217,8 @@ with Engine(custom_parser=parser) as engine:
                         val_loader,
                         config,
                         device,
-                        [0.5, 0.75, 1.0, 1.25, 1.5],
-                        True,
+                        config.eval_scale_array,  # 使用配置文件中的scale
+                        config.eval_flip,         # 使用配置文件中的flip设置
                         engine,
                         sliding=args.sliding,
                     )
@@ -248,8 +250,8 @@ with Engine(custom_parser=parser) as engine:
                         val_loader,
                         config,
                         device,
-                        [0.5, 0.75, 1.0, 1.25, 1.5],
-                        True,
+                        config.eval_scale_array,  # 使用配置文件中的scale
+                        config.eval_flip,         # 使用配置文件中的flip设置
                         engine,
                         sliding=args.sliding,
                     )

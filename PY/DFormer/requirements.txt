@@ -1,0 +1,17 @@
+# conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+# pip install mmcv==2.2.0 -f https://download.openmmlab.com/mmcv/dist/cu121/torch2.3/index.html
+
+numpy
+thop
+tqdm
+opencv-python
+scipy
+matplotlib
+tabulate
+tensorboardX
+PyYAML
+timm
+mmengine
+easydict
+ftfy 
+regex
