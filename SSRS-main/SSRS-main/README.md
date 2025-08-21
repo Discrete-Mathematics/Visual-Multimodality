@@ -6,16 +6,28 @@
 | mIoU  | 0.8343|
 | Kappa     | 0.895|
 # FTransUNet在MUSeg数据集上的实验数据
-一开始我在数据预处理时只保留了数据集中的图片的中间区域，这导致训练效果非常不理想，测试cpa也指示出在测试时大部分类别都没有被成功预测到：
+## 实验一
+一开始我在数据预处理时只保留了数据集中的图片的中间区域，这导致训练效果非常不理想，测试cpa也指示出在测试时大部分类别都没有被成功预测到。  
+训练配置：
+``` python
+base_lr = 0.01
+optimizer = optim.SGD(net.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0005)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [25, 35, 45], gamma=0.1)
+```
 |指标|数据|
 |---------|-----|
 |训练集上的最佳PA|0.57|
 |最终测试PA|0.45|
 |最终测试mPA |0.07|
 |最终测试mIoU|0.03|
-
-
-后来我选择从左上角开始，每次向右/下移动256个像素来裁剪，使图片左上部分的区域得到了充分利用，但训练效果仍不是很理想，测试cpa仍指示出在测试时有好几个类别没有被成功预测到，可能是因为右下部分没有很好利用：
+## 实验二
+后来我选择从左上角开始，每次向右/下移动256个像素来裁剪，使图片左上部分的区域得到了充分利用，但训练效果仍不是很理想，测试cpa仍指示出在测试时有好几个类别没有被成功预测到，可能是因为右下部分没有很好利用。  
+训练配置：
+```python
+base_lr = 0.001
+optimizer = optim.Adam(net.parameters(), lr=base_lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=0.0005, amsgrad=False)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [10, 20, 30, 40], gamma=0.1)
+```
 |指标|数据|
 |---------|-----|
 |训练集上的最佳PA|0.71|
