@@ -14,6 +14,7 @@ BATCH_SIZE = 12
 base_lr = 0.01
 optimizer = optim.SGD(net.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0005)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [25, 35, 45], gamma=0.1)
+train(net, optimizer, epochs=50, scheduler=scheduler)
 ```
 |指标|数据|
 |---------|-----|
@@ -29,6 +30,7 @@ BATCH_SIZE = 12
 base_lr = 0.001
 optimizer = optim.Adam(net.parameters(), lr=base_lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=0.0005, amsgrad=False)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [10, 20, 30, 40], gamma=0.1)
+train(net, optimizer, epochs=50, scheduler=scheduler)
 ```
 |指标|数据|
 |---------|-----|
