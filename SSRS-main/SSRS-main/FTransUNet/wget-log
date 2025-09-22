@@ -1,0 +1,6 @@
+--2025-08-03 00:13:43--  https://tianchi-jupyter-sh.oss-cn-shanghai.aliyuncs.com/file/opensearch/documents/181847/train.zip?Expires=1754179997
+Resolving tianchi-jupyter-sh.oss-cn-shanghai.aliyuncs.com (tianchi-jupyter-sh.oss-cn-shanghai.aliyuncs.com)... 180.163.123.185
+Connecting to tianchi-jupyter-sh.oss-cn-shanghai.aliyuncs.com (tianchi-jupyter-sh.oss-cn-shanghai.aliyuncs.com)|180.163.123.185|:443... connected.
+HTTP request sent, awaiting response... 403 Forbidden
+2025-08-03 00:13:43 ERROR 403: Forbidden.
+

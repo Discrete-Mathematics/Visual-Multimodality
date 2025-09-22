@@ -8,15 +8,109 @@ from torchvision.utils import make_grid
 from PIL import Image
 from skimage import io
 import os
+import os
+import sys
+from pathlib import Path
+from metric import SegmentationMetric
+
+# 修改数据集路径配置
+DATA_FOLDER = "/root/autodl-tmp/dataset/croped_Image/{}.jpg"
+LABEL_FOLDER = "/root/autodl-tmp/dataset/croped_Label/{}_label.png"
+DSM_FOLDER = "/root/autodl-tmp/dataset/croped_Depth/{}.png"
+N_CLASSES = 16
+BATCH_SIZE = 10  # 根据GPU内存调整
+Stride_Size = 128
+WINDOW_SIZE = (256, 256)
+
+def get_file_list(directory, recursive=False, include_ext=True, sort=True):
+    """
+    获取目录下的所有文件名列表
+    
+    参数:
+    directory: 目标目录路径
+    recursive: 是否递归获取子目录中的文件 (默认: False)
+    include_ext: 是否包含文件扩展名 (默认: True)
+    sort: 是否对结果进行排序 (默认: True)
+    
+    返回:
+    文件名列表
+    """
+    file_list = []
+    
+    # 检查目录是否存在
+    if not os.path.exists(directory):
+        print(f"错误: 目录 '{directory}' 不存在")
+        return []
+    
+    # 检查是否是目录
+    if not os.path.isdir(directory):
+        print(f"错误: '{directory}' 不是一个目录")
+        return []
+    
+    # 递归获取所有文件
+    if recursive:
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                # 获取相对路径
+                rel_path = os.path.relpath(os.path.join(root, file), directory)
+                
+                # 处理是否包含扩展名
+                if not include_ext:
+                    rel_path = os.path.splitext(rel_path)[0]
+                
+                file_list.append(rel_path)
+    
+    # 非递归获取文件
+    else:
+        for item in os.listdir(directory):
+            item_path = os.path.join(directory, item)
+            
+            # 只添加文件，跳过目录
+            if os.path.isfile(item_path):
+                # 处理是否包含扩展名
+                if not include_ext:
+                    item = os.path.splitext(item)[0]
+                
+                file_list.append(item)
+    
+    # 排序
+    if sort:
+        file_list.sort()
+    
+    return file_list
+
+def save_as_python_list(file_list, output_file=None):
+    """
+    将文件列表保存为Python列表格式
+    
+    参数:
+    file_list: 文件列表
+    output_file: 输出文件路径 (如果为None，则打印到控制台)
+    """
+    # 创建Python列表字符串
+    list_str = "file_list = [\n"
+    for file in file_list:
+        list_str += f"    '{file}',\n"
+    list_str += "]"
+    
+    # 输出结果
+    if output_file:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(list_str)
+        print(f"文件列表已保存到: {output_file}")
+    else:
+        print("\n文件列表 (Python格式):")
+        print(list_str)
 
 # Parameters
 ## SwinFusion
 # WINDOW_SIZE = (64, 64) # Patch size
+"""
 WINDOW_SIZE = (256, 256) # Patch size
 
 STRIDE = 32 # Stride for testing
 IN_CHANNELS = 3 # Number of input channels (e.g. RGB)
-FOLDER = "/media/lscsc/nas/xianping/ISPRS_dataset/" # Replace with your "/path/to/the/ISPRS/dataset/folder/"
+FOLDER = "/root/autodl-tmp/" # Replace with your "/path/to/the/ISPRS/dataset/folder/"
 BATCH_SIZE = 10 # Number of samples in a mini-batch
 
 LABELS = ["roads", "buildings", "low veg.", "trees", "cars", "clutter"] # Label names
@@ -28,11 +122,11 @@ train_ids = ['1', '3', '23', '26', '7', '11', '13', '28', '17', '32', '34', '37'
 test_ids = ['5', '21', '15', '30']
 DATASET = 'Vaihingen'
 Stride_Size = 32
-MAIN_FOLDER = FOLDER + 'Vaihingen/'
+MAIN_FOLDER = FOLDER + 'Vaihingen/ISPRS_semantic_labeling_Vaihingen/'
 DATA_FOLDER = MAIN_FOLDER + 'top/top_mosaic_09cm_area{}.tif'
 DSM_FOLDER = MAIN_FOLDER + 'dsm/dsm_09cm_matching_area{}.tif'
 LABEL_FOLDER = MAIN_FOLDER + 'gts_for_participants/top_mosaic_09cm_area{}.tif'
-ERODED_FOLDER = MAIN_FOLDER + 'gts_eroded_for_participants/top_mosaic_09cm_area{}_noBoundary.tif'
+ERODED_FOLDER = MAIN_FOLDER + 'ISPRS_semantic_labeing_Vaihingen_ground_truth_eroded_for_participants/top_mosaic_09cm_area{}_noBoundary.tif'
 
 # train_ids = ['6_10', '7_10', '2_12', '3_11', '2_10', '7_8', '5_10', '3_12', '5_12', '7_11', '7_9', '6_9', '7_7',
 #              '4_12', '6_8', '6_12', '6_7', '4_11']
@@ -44,7 +138,7 @@ ERODED_FOLDER = MAIN_FOLDER + 'gts_eroded_for_participants/top_mosaic_09cm_area{
 # DSM_FOLDER = MAIN_FOLDER + '1_DSM_normalisation/dsm_potsdam_{}_normalized_lastools.jpg'
 # LABEL_FOLDER = MAIN_FOLDER + '5_Labels_for_participants/top_potsdam_{}_label.tif'
 # ERODED_FOLDER = MAIN_FOLDER + '5_Labels_for_participants_no_Boundary/top_potsdam_{}_label_noBoundary.tif'
-
+"""
 # ISPRS color palette
 # Let's define the standard ISPRS color palette
 palette = {0 : (255, 255, 255), # Impervious surfaces (white)
@@ -251,9 +345,10 @@ def CrossEntropy2d(input, target, weight=None, size_average=True):
     else:
         raise ValueError('Expected 2 or 4 dimensions (got {})'.format(dim))
 
-
+"""
 def accuracy(input, target):
     return 100 * float(np.count_nonzero(input == target)) / target.size
+"""
 
 
 def sliding_window(top, step=10, window_size=(20, 20)):
@@ -289,7 +384,7 @@ def grouper(n, iterable):
             return
         yield chunk
 
-
+"""
 def metrics(predictions, gts, label_values=LABELS):
     cm = confusion_matrix(
         gts,
@@ -339,3 +434,48 @@ def metrics(predictions, gts, label_values=LABELS):
     print("---")
 
     return accuracy
+"""
+
+def accuracy(pred, gt):
+    """计算像素精度"""
+    valid = (gt != 255)  # 忽略特定值（如边界）
+    acc = (pred[valid] == gt[valid]).sum() / valid.sum()
+    return acc.item() * 100
+
+def metrics(preds, gts):
+    """综合评估函数，可替换为您的评估指标"""
+    metric = SegmentationMetric(N_CLASSES)
+    metric.addBatch(preds, gts)
+    pa = metric.pixelAccuracy()
+    cpa = metric.classPixelAccuracy()
+    mpa = metric.meanPixelAccuracy()
+    mIoU = metric.meanIntersectionOverUnion()
+    
+    return pa, cpa, mpa, mIoU
+    
+
+if __name__ == "__main__":
+    # 在这里设置目标目录
+    TARGET_DIR = "/root/MUSeg/dataset/Depth"  # 替换为您的目录路径
+    
+    # 设置选项
+    RECURSIVE = False      # 是否递归获取子目录中的文件
+    INCLUDE_EXT = True     # 是否包含文件扩展名
+    SORT = True            # 是否对结果排序
+    OUTPUT_FILE = None     # 输出文件路径 (None表示打印到控制台)
+    # OUTPUT_FILE = "file_list.py"  # 取消注释以保存到文件
+    
+    # 获取文件列表
+    files = get_file_list(
+        directory=TARGET_DIR,
+        recursive=RECURSIVE,
+        include_ext=INCLUDE_EXT,
+        sort=SORT
+    )
+    
+    # 输出结果
+    if files:
+        print(f"找到 {len(files)} 个文件:")
+        save_as_python_list(files, OUTPUT_FILE)
+    else:
+        print("目录中没有找到文件")
