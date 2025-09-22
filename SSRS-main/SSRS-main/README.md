@@ -1,3 +1,18 @@
+# 目录文件详情
+我提交的代码在Visual-Multimodality/SSRS-main/SSRS-main/FTransUNet里，目录里的文件内容如下：
+|文件|内容|
+|--|--|
+|model|原仓库中自定义的FTransUNet模型代码目录|
+|README.md|原仓库的README|
+|shut_off.py|用于控制服务器运行完代码后自动关机的代码|
+|test.txt|剪切为256x256的数据集中的val.txt中的图片名列表|
+|test_result.txt|实验六的最终测试结果|
+|train-experiment1.py~train-experiment6.py|实验一~六的代码|
+|train.py|原仓库的训练测试代码|
+|train.txt|剪切为256x256的数据集中的train.txt中的图片名列表|
+|utils.py|原仓库的代码|
+|val.txt|数据集中的val.txt|
+|visual_interface.py|数据集\MUSeg\Processing里的可视化代码|
 # FTransUNet在Vaihingen数据集上的复现结果
 | 项目        | 分析                                       |
 | --------- | ---------------------------------------- |
