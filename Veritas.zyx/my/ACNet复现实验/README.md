@@ -1,6 +1,6 @@
 ACNet在MUSeg数据集上的复现实验报告
 
-**一、模型概述**
+## 一、模型概述
 
 **ACNet (Attention Complementary Network)** 是一种用于RGB-D语义分割的多模态融合模型。其核心思想在于通过**互补注意力机制**（Complementary Attention）在RGB和Depth分支之间实现信息交互，既保持模态独立性，又增强融合特征的判别性。
 
@@ -15,7 +15,7 @@ ACNet在MUSeg数据集上的复现实验报告
 | 参数            | 值                              |
 | ------------- | ------------------------------ |
 | 数据集           | MUSeg                          |
-| 设备            | NVIDIA GPU（CUDA）               |
+| 设备            | NVIDIA GeForce RTX 4050 Laptop GPU |              |
 | Batch Size    | 2                              |
 | Epochs        | 100                            |
 | Learning Rate | 0.0001                         |
