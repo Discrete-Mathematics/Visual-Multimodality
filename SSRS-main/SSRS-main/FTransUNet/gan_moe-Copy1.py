@@ -1,0 +1,849 @@
+# 在文件开头添加以下导入
+from enhancement import MoE_ISP_Model, ImageQualityRegularizer
+from utils import (calculate_metrics, read_txt_to_list, plot_training_history, 
+                   initialize_weights, check_nan_hook)
+from sklearn.metrics import confusion_matrix
+from torch.utils.data import Dataset, DataLoader
+import os
+import gc
+import time
+import numpy as np
+from glob import glob
+from tqdm import tqdm
+import random
+import itertools
+from datetime import datetime
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torch.utils.data as data
+import torch.autograd as autograd
+from torch.autograd import Variable
+import torch.cuda.amp as amp
+import torchvision.transforms as transforms
+
+import cv2          
+from PIL import Image, ImageFilter
+import matplotlib.pyplot as plt
+import json
+# ==================== 模型导入 ====================
+from gan import build_model
+from lib.utils.configurator import cfg, load_config
+from model.vitcross_seg_modeling import VisionTransformer as ViT_seg
+from model.vitcross_seg_modeling import CONFIGS as CONFIGS_ViT_seg
+class SSIMLoss(nn.Module):
+    """SSIM损失 - 修复版 (增加数值稳定性)"""
+    # ... (保持 __init__, gaussian, create_window 不变)
+    def __init__(self, window_size=11, size_average=True):
+        super(SSIMLoss, self).__init__()
+        self.window_size = window_size
+        self.size_average = size_average
+        self.channel = 3
+        window = self.create_window(window_size, self.channel)
+        self.register_buffer('window', window)
+
+    # ... (辅助函数省略，保持原样)
+    def gaussian(self, window_size, sigma):
+        gauss = torch.Tensor([np.exp(-(x - window_size//2)**2/float(2*sigma**2)) for x in range(window_size)])
+        return gauss/gauss.sum()
+
+    def create_window(self, window_size, channel):
+        _1D_window = self.gaussian(window_size, 1.5).unsqueeze(1)
+        _2D_window = _1D_window.mm(_1D_window.t()).float().unsqueeze(0).unsqueeze(0)
+        window = _2D_window.expand(channel, 1, window_size, window_size).contiguous()
+        return window
+
+    def forward(self, img1, img2):
+        # 确保输入在合理范围内，防止数值爆炸
+        img1 = torch.clamp(img1, 0, 1)
+        img2 = torch.clamp(img2, 0, 1)
+
+        (_, channel, _, _) = img1.size()
+        window = self.window.to(img1.device)
+        
+        if channel != self.channel:
+            window = self.create_window(self.window_size, channel).to(img1.device)
+
+        mu1 = F.conv2d(img1, window, padding=self.window_size//2, groups=channel)
+        mu2 = F.conv2d(img2, window, padding=self.window_size//2, groups=channel)
+
+        mu1_sq = mu1.pow(2)
+        mu2_sq = mu2.pow(2)
+        mu1_mu2 = mu1 * mu2
+
+        sigma1_sq = F.conv2d(img1*img1, window, padding=self.window_size//2, groups=channel) - mu1_sq
+        sigma2_sq = F.conv2d(img2*img2, window, padding=self.window_size//2, groups=channel) - mu2_sq
+        sigma12 = F.conv2d(img1*img2, window, padding=self.window_size//2, groups=channel) - mu1_mu2
+
+        C1 = 0.01**2
+        C2 = 0.03**2
+        
+        # 增加 epsilon 防止分母为0
+        denominator = ((mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2))
+        denominator = torch.clamp(denominator, min=1e-8) 
+        
+        ssim_map = ((2*mu1_mu2 + C1)*(2*sigma12 + C2)) / denominator
+        ssim_value = torch.clamp(ssim_map.mean(), min=-1.0, max=1.0)
+        return 1 - ssim_value
+class ColorConstancyLoss(nn.Module):
+    """色彩恒常性损失"""
+    def __init__(self):
+        super(ColorConstancyLoss, self).__init__()
+
+    def forward(self, enhanced):
+        # 计算RGB通道之间的差异
+        r = enhanced[:, 0, :, :]
+        g = enhanced[:, 1, :, :]
+        b = enhanced[:, 2, :, :]
+        
+        # 色彩恒常性约束：相邻像素的色彩应该平滑变化
+        mean_rg = torch.mean(torch.abs(r - g))
+        mean_gb = torch.mean(torch.abs(g - b))
+        mean_br = torch.mean(torch.abs(b - r))
+        
+        return (mean_rg + mean_gb + mean_br) / 3.0
+
+def load_checkpoint(model, save_dir, device, optimizer=None, scheduler=None, strict=True):
+    """
+    加载检查点（完全兼容 PyTorch 2.6+）
+    由于 numpy dtype 不在白名单，强制 weights_only=False
+    """
+    last_file = os.path.join(save_dir, 'last_checkpoint.pth')
+    if not os.path.exists(last_file):
+        print('⚠️ 未发现检查点，从头开始训练。')
+        return 0, 0.0, []
+
+    print(f'✅ 发现检查点：正在加载 {last_file} ...')
+    # 允许 numpy 相关全局对象（即使 weights_only=False 也 harmless）
+    torch.serialization.add_safe_globals([np.dtype, np.core.multiarray.scalar,
+                                          np.dtypes.Float64DType, np.dtypes.Float32DType])
+    # 关键：PyTorch 2.6 默认 True，这里显式回退
+    checkpoint = torch.load(last_file, map_location=device, weights_only=False)
+
+    model.load_state_dict(checkpoint['model_state_dict'], strict=strict)
+
+    if optimizer is not None and 'optimizer_state_dict' in checkpoint:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    if scheduler is not None and 'scheduler_state_dict' in checkpoint:
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+
+    start_epoch = checkpoint['epoch'] + 1
+    best_mIoU = checkpoint.get('best_mIoU', 0.0)
+    history = checkpoint.get('history', [])
+    print(f'✅ 加载完成。将从 Epoch {start_epoch} 开始，当前最佳 mIoU: {best_mIoU:.4f}')
+    return start_epoch, best_mIoU, history
+
+# ==================== 2. 端到端三阶段模型 ====================
+class EndToEndDepthCompletionEnhancementSegmentation(nn.Module):
+    def __init__(self, depth_completion_model, enhancement_model, segmentation_model,
+                 freeze_depth=False, freeze_enh=False, freeze_seg=False):
+        super().__init__()
+        self.depth_completion_model = depth_completion_model
+        self.enhancement_model = enhancement_model
+        self.segmentation_model = segmentation_model
+
+        # 冻结指定模块
+        if freeze_depth:
+            for p in self.depth_completion_model.parameters():
+                p.requires_grad = False
+        if freeze_enh:
+            for p in self.enhancement_model.parameters():
+                p.requires_grad = False
+        if freeze_seg:
+            for p in self.segmentation_model.parameters():
+                p.requires_grad = False
+        
+    def forward(self, rgb, depth, mask_missing):
+        """
+        前向传播：
+        1. 图像增强：rgb + depth → enhanced_rgb
+        2. 深度补全：enhanced_rgb + depth + mask → completed_depth
+        3. 语义分割：enhanced_rgb + completed_depth → seg_logits
+        """ 
+        # ========== 阶段1：图像增强 ==========
+        # MoE增强器需要 [B, H, W] 的深度输入
+        if depth.dim() == 4:
+            depth = depth.squeeze(1)  # [B, H, W]
+        enhanced_rgb = self.enhancement_model(rgb, depth)
+        enhanced_rgb = torch.clamp(enhanced_rgb, 0.0, 1.0)
+        
+        # ========== 阶段2：深度补全 ==========
+        depth = depth.to(dtype=rgb.dtype, device=rgb.device)
+        mask_missing = mask_missing.to(dtype=rgb.dtype, device=rgb.device)
+        #depth = depth.unsqueeze(1)  # [B,1,H,W]
+        
+        # RDFCGAN forward_test
+        ret = self.depth_completion_model.forward_test(
+            rgb=enhanced_rgb, raw_depth=depth, mask_missing=mask_missing
+        )
+        pred_depth = ret['pred_depth']
+        
+        # 防御性修复：确保通道数为1
+        if pred_depth.dim() == 4 and pred_depth.shape[1] != 1:
+            pred_depth = pred_depth[:, 0:1, :, :]
+
+        depth = depth.unsqueeze(1)
+        
+        # 填充缺失区域
+        completed_depth = depth * (1 - mask_missing) + pred_depth * mask_missing # [B,1,H,W]
+        
+        # ========== 阶段3：语义分割 ==========
+        # FTransUNet需要 [B, H, W] 的深度输入
+        completed_depth = completed_depth.squeeze(1)
+        seg_logits = self.segmentation_model(enhanced_rgb, depth_for_enh)
+        
+        return completed_depth, enhanced_rgb, seg_logits
+
+class ExperimentLogger:
+    def __init__(self, save_dir):
+        self.save_dir = save_dir
+        self.experiment_start_time = datetime.now()
+        self.experiment_id = self.experiment_start_time.strftime("%Y%m%d_%H%M%S")
+        self.log_file = os.path.join(save_dir, f"experiment_{self.experiment_id}.log")
+        self.config_file = os.path.join(save_dir, f"experiment_{self.experiment_id}_config.json")
+        self.results_file = os.path.join(save_dir, f"experiment_{self.experiment_id}_results.json")
+        os.makedirs(save_dir, exist_ok=True)
+
+    def log(self, message):
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_entry = f"[{timestamp}] {message}\n"
+        print(log_entry.strip())
+        with open(self.log_file, "a", encoding="utf-8") as f:
+            f.write(log_entry)
+
+    def save_config(self, config):
+        config["experiment_id"] = self.experiment_id
+        config["start_time"] = self.experiment_start_time.strftime("%Y-%m-%d %H:%M:%S")
+        config["device"] = str(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+        with open(self.config_file, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+        self.log(f"实验配置已保存至 {self.config_file}")
+
+    def save_results(self, results):
+        results["experiment_id"] = self.experiment_id
+        results["end_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        results["duration"] = str(datetime.now() - self.experiment_start_time)
+        with open(self.results_file, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False, indent=4)
+        self.log(f"实验结果已保存至 {self.results_file}")
+
+# ==================== 3. 三任务损失函数 ====================
+class TripleTaskLoss(nn.Module):
+    def __init__(self, depth_weight=0.5, enh_weight=0.3, seg_weight=1.0, 
+                 class_weights=None, enh_weights=None):
+        super().__init__()
+        self.depth_weight = depth_weight
+        self.enh_weight = enh_weight
+        self.seg_weight = seg_weight
+        
+        # 深度补全损失
+        self.depth_criterion = nn.SmoothL1Loss(reduction='none')
+        
+        # 图像增强质量损失
+        if enh_weights is None:
+            enh_weights = {'ssim': 0.3, 'edge': 0.3, 'color': 0.2, 'exposure': 0.2}
+        self.enh_criterion = ImageQualityRegularizer(enh_weights)
+        
+        # 语义分割损失
+        self.seg_criterion = nn.CrossEntropyLoss(weight=class_weights, ignore_index=255)
+        
+    def forward(self, completed_depth, enhanced_rgb, seg_logits,
+                target_depth, target_labels, mask_missing, original_rgb):
+        """
+        计算三个任务的损失
+        """
+        # ========== 深度补全损失 ==========
+        valid_mask = 1.0 - mask_missing
+        depth_diff = self.depth_criterion(completed_depth, target_depth)
+        depth_loss = torch.sum(depth_diff * valid_mask) / (torch.sum(valid_mask) + 1e-8)
+        
+        # ========== 图像增强损失 ==========
+        # 只在有效深度区域计算增强质量
+        if valid_mask.dim() == 3:
+            valid_mask_3ch = valid_mask.unsqueeze(1).expand_as(enhanced_rgb)
+        else:
+            valid_mask_3ch = valid_mask.expand_as(enhanced_rgb)
+        
+        enh_loss_total, enh_details = self.enh_criterion(
+            enhanced_rgb * valid_mask_3ch, 
+            original_rgb * valid_mask_3ch
+        )
+        
+        # ========== 语义分割损失 ==========
+        seg_loss = self.seg_criterion(seg_logits, target_labels)
+        
+        # ========== 总损失 ==========
+        total_loss = (self.depth_weight * depth_loss + 
+                      self.enh_weight * enh_loss_total + 
+                      self.seg_weight * seg_loss)
+        
+        return total_loss, depth_loss, enh_loss_total, seg_loss, enh_details
+
+# ==================== 4. 训练函数 ====================
+def train_epoch_triple(model, train_loader, optimizer, criterion, device, 
+                       stage, logger=None):
+    """三阶段训练（深度补全 + 增强 + 分割）"""
+    model.train()
+    
+    # 使用logger或默认打印
+    log_func = logger.log if logger else print
+    
+    total_loss = 0.0
+    depth_loss_total = 0.0
+    enh_loss_total = 0.0
+    seg_loss_total = 0.0
+    
+    # 增强细节统计
+    enh_details_accum = {'ssim': 0.0, 'edge': 0.0, 'color': 0.0, 'exposure': 0.0}
+    
+    progress_bar = tqdm(train_loader, desc=f'阶段{stage} 训练中')
+    
+    # 【内存优化】在每个 Epoch 开始前清理
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    for batch_idx, (images, depths, labels, masks) in enumerate(progress_bar):
+        try:
+            # 数据转移到设备
+            images = images.to(device, non_blocking=True)
+            depths = depths.to(device, non_blocking=True)
+            labels = labels.to(device, non_blocking=True)
+            masks = masks.to(device, non_blocking=True)
+            
+            optimizer.zero_grad()
+            
+            # 混合精度训练
+            with amp.autocast():
+                # 前向传播
+                completed_depth, enhanced_rgb, seg_logits = model(images, depths, masks)
+                
+                # 计算三任务损失
+                loss, depth_loss, enh_loss, seg_loss, enh_details = criterion(
+                    completed_depth, enhanced_rgb, seg_logits,
+                    depths, labels, masks, images
+                )
+            
+            # 检查损失是否有效
+            if torch.isnan(loss) or torch.isinf(loss):
+                log_func(f"❌ 批次 {batch_idx}: 损失为 NaN/Inf，跳过")
+                # 清理并跳过
+                del images, depths, labels, masks
+                del completed_depth, enhanced_rgb, seg_logits
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                continue
+            
+            # 反向传播
+            # 【PyTorch 2.6+】使用 GradScaler
+            scaler = amp.GradScaler()
+            scaler.scale(loss).backward()
+            
+            # 梯度裁剪
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            
+            # 更新参数
+            scaler.step(optimizer)
+            scaler.update()
+            
+            # 记录损失
+            total_loss += loss.item()
+            depth_loss_total += depth_loss.item()
+            enh_loss_total += enh_loss.item()
+            seg_loss_total += seg_loss.item()
+            
+            # 记录增强细节
+            for key in enh_details:
+                enh_details_accum[key] += enh_details[key].item()
+            
+            if batch_idx % 10 == 0:
+                progress_bar.set_postfix({
+                    'Total': f'{loss.item():.4f}',
+                    'Depth': f'{depth_loss.item():.4f}',
+                    'Enh': f'{enh_loss.item():.4f}',
+                    'Seg': f'{seg_loss.item():.4f}'
+                })
+        
+        except RuntimeError as e:
+            log_func(f"❌ 运行时错误: {str(e)}")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            continue
+        
+        finally:
+            # 清理批次数据
+            if 'images' in locals(): del images
+            if 'depths' in locals(): del depths
+            if 'labels' in locals(): del labels
+            if 'masks' in locals(): del masks
+            if 'completed_depth' in locals(): del completed_depth
+            if 'enhanced_rgb' in locals(): del enhanced_rgb
+            if 'seg_logits' in locals(): del seg_logits
+            if batch_idx % 100 == 0 and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+    
+    # 计算平均值
+    num_batches = len(train_loader)
+    avg_total = total_loss / num_batches
+    avg_depth = depth_loss_total / num_batches
+    avg_enh = enh_loss_total / num_batches
+    avg_seg = seg_loss_total / num_batches
+    avg_details = {k: v / num_batches for k, v in enh_details_accum.items()}
+    
+    # Epoch 结束清理
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    return avg_total, {
+        'depth_loss': avg_depth,
+        'enh_loss': avg_enh,
+        'seg_loss': avg_seg,
+        'enh_details': avg_details
+    }
+
+# ==================== 5. 渐进式训练策略 ====================
+def train_progressive_triple(model, train_loader, val_loader, device, save_dir, 
+                             total_epochs=500, logger=None, start_epoch=0, 
+                             best_mIoU=0.0, history=None):
+    """
+    三阶段渐进式训练：
+    阶段1：仅训练深度补全（10轮预热）
+    阶段2：深度补全 + 分割联合训练
+    阶段3：三任务联合训练
+    """
+    os.makedirs(save_dir, exist_ok=True)
+    if logger is None:
+        logger = ExperimentLogger(save_dir)
+    history = history or []
+
+    stage_configs = [
+        {'name': '阶段1-深度补全预热', 'epochs': 10, 'stage': 1,
+         'depth_w': 1.0, 'enh_w': 0.0, 'seg_w': 0.0, 'lr': 1e-4},
+        {'name': '阶段2-深度+分割联合', 'epochs': 150, 'stage': 2,
+         'depth_w': 0.5, 'enh_w': 0.0, 'seg_w': 1.0, 'lr': 1e-5},
+        {'name': '阶段3-三任务平衡', 'epochs': 340, 'stage': 3,
+         'depth_w': 0.3, 'enh_w': 0.2, 'seg_w': 1.0, 'lr': 1e-6}
+    ]
+
+    epochs_done = 0
+    for cfg in stage_configs:
+        name, epochs, stage = cfg['name'], cfg['epochs'], cfg['stage']
+        depth_w, enh_w, seg_w, lr = cfg['depth_w'], cfg['enh_w'], cfg['seg_w'], cfg['lr']
+        
+        if start_epoch >= epochs_done + epochs:
+            epochs_done += epochs
+            logger.log(f'跳过 {name}，已完成 {epochs} 轮')
+            continue
+        
+        logger.log(f'\n{"="*60}\n开始 {name}\n{"="*60}')
+        
+        # 创建阶段优化器和损失
+        optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2)
+        criterion = TripleTaskLoss(depth_weight=depth_w, enh_weight=enh_w, seg_weight=seg_w).to(device)
+        
+        # 参数冻结策略
+        if stage == 1:
+            # 仅训练深度补全
+            for p in model.enhancement_model.parameters():
+                p.requires_grad = False
+            for p in model.segmentation_model.parameters():
+                p.requires_grad = False
+        elif stage == 2:
+            # 解冻深度和分割
+            for p in model.depth_completion_model.parameters():
+                p.requires_grad = True
+            for p in model.segmentation_model.parameters():
+                p.requires_grad = True
+            for p in model.enhancement_model.parameters():
+                p.requires_grad = False
+        else:
+            # 三任务全解冻
+            for p in model.parameters():
+                p.requires_grad = True
+        
+        for epoch in range(epochs):
+            curr_epoch = epochs_done + epoch + 1
+            if curr_epoch < start_epoch:
+                continue
+            
+            # 训练
+            train_loss, train_details = train_epoch_triple(
+                model, train_loader, optimizer, criterion, device, stage, logger
+            )
+            
+            # 验证
+            if curr_epoch % 5 == 0:
+                val_metrics = validate_model(model, val_loader, criterion, device, logger)
+                scheduler.step(val_metrics['val_loss'])
+                
+                is_best = val_metrics['mIoU'] > best_mIoU
+                best_mIoU = max(best_mIoU, val_metrics['mIoU'])
+                
+                # 保存checkpoint
+                save_checkpoint({
+                    'epoch': curr_epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'scheduler_state_dict': scheduler.state_dict(),
+                    'best_mIoU': best_mIoU,
+                    'stage': stage
+                }, is_best, save_dir)
+                
+                logger.log(f'Epoch {curr_epoch}: TL={train_loss:.4f}, '
+                           f'DL={train_details["depth_loss"]:.4f}, '
+                           f'EL={train_details["enh_loss"]:.4f}, '
+                           f'SL={train_details["seg_loss"]:.4f}, '
+                           f'Val mIoU={val_metrics["mIoU"]:.4f}')
+            
+            # 周期性清理
+            if curr_epoch % 10 == 0 and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        
+        epochs_done += epochs
+        del criterion, optimizer, scheduler
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    
+    return history, best_mIoU
+
+# ==================== 6. 测试函数 ====================
+def test_triple_model(model, test_loader, device, output_dir, logger=None):
+    """测试三阶段模型"""
+    model.eval()
+    os.makedirs(output_dir, exist_ok=True)
+    
+    log_func = logger.log if logger else print
+    all_preds = []
+    all_gts = []
+    
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    with torch.no_grad():
+        for i, (images, depths, labels, masks) in enumerate(tqdm(test_loader, desc='测试')):
+            # 数据准备
+            images = images.to(device, non_blocking=True)
+            depths = depths.to(device, non_blocking=True)
+            masks = masks.to(device, non_blocking=True)
+            labels_cpu = labels.numpy()
+            
+            # 前向传播
+            completed_depth, enhanced_rgb, seg_logits = model(images, depths, masks)
+            
+            # 预测
+            _, preds = torch.max(seg_logits, 1)
+            preds_numpy = preds.cpu().numpy()
+            
+            all_preds.extend(preds_numpy)
+            all_gts.extend(labels_cpu)
+            
+            # 可视化（前5个batch）
+            if i < 5:
+                # 数据转移到CPU
+                vis_completed = completed_depth.cpu()
+                vis_enhanced = enhanced_rgb.cpu()
+                vis_images = images.cpu()
+                
+                # 创建四联可视化：原图 | 增强图 | 补全深度 | 预测
+                for j in range(min(3, images.shape[0])):
+                    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+                    
+                    # 原始RGB
+                    img_np = vis_images[j].numpy().transpose(1, 2, 0)
+                    mean = np.array([0.485, 0.456, 0.406])
+                    std = np.array([0.229, 0.224, 0.225])
+                    img_np = std * img_np + mean
+                    axes[0, 0].imshow(np.clip(img_np, 0, 1))
+                    axes[0, 0].set_title('Original RGB')
+                    
+                    # 增强RGB
+                    enh_np = vis_enhanced[j].numpy().transpose(1, 2, 0)
+                    axes[0, 1].imshow(np.clip(enh_np, 0, 1))
+                    axes[0, 1].set_title('Enhanced RGB')
+                    
+                    # 补全深度
+                    depth_np = vis_completed[j].squeeze().numpy()
+                    im = axes[1, 0].imshow(depth_np, cmap='magma')
+                    axes[1, 0].set_title('Completed Depth')
+                    plt.colorbar(im, ax=axes[1, 0])
+                    
+                    # 预测结果
+                    axes[1, 1].imshow(preds_numpy[j], cmap='tab20')
+                    axes[1, 1].set_title('Prediction')
+                    
+                    for ax in axes.flat:
+                        ax.axis('off')
+                    
+                    plt.tight_layout()
+                    save_path = os.path.join(output_dir, f'test_sample_{i}_{j}.png')
+                    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+                    plt.close()
+            
+            # 清理
+            del images, depths, labels, masks
+            del completed_depth, enhanced_rgb, seg_logits, preds
+            if i % 100 == 0 and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+    
+    # 计算指标
+    if all_preds and all_gts:
+        pa, cpa, mpa, mIoU = calculate_metrics(
+            np.concatenate([p.ravel() for p in all_preds]),
+            np.concatenate([g.ravel() for g in all_gts])
+        )
+    else:
+        pa, cpa, mpa, mIoU = 0, [], 0, 0
+    
+    # 保存结果
+    results = {
+        'pa': pa, 'mpa': mpa, 'mIoU': mIoU,
+        'cpa': cpa.tolist() if isinstance(cpa, np.ndarray) else cpa
+    }
+    
+    with open(os.path.join(output_dir, 'test_results.json'), 'w') as f:
+        json.dump(results, f, indent=4)
+    
+    log_func(f'测试完成 - PA: {pa:.4f}, MPA: {mpa:.4f}, mIoU: {mIoU:.4f}')
+    return results
+class EndToEndDataset(data.Dataset):
+    def __init__(self, ids, rgb_folder, depth_folder, label_folder, target_size=(256, 256)):
+        self.ids = ids
+        self.rgb_fmt = rgb_folder
+        self.depth_fmt = depth_folder
+        self.label_fmt = label_folder
+        self.target_size = target_size
+        
+        # 预定义最大深度（单位：毫米，假设 16-bit 深度图 1000 代表 1米）
+        # 请根据你的数据集说明调整此值，常见的有 10000 (10m) 或 65535 (最大量程)
+        self.MAX_DEPTH_VAL = 65535
+
+        self.rgb_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+
+    def __getitem__(self, idx):
+        id_ = self.ids[idx]
+
+        # 1. RGB 处理 (维持原样)
+        rgb = Image.open(self.rgb_fmt.format(id_)).convert('RGB')
+        rgb = rgb.resize(self.target_size, Image.BICUBIC)
+        rgb_tensor = self.rgb_transform(rgb)
+
+        # 2. 16-bit 深度图处理 (重点改进)
+        depth16 = cv2.imread(self.depth_fmt.format(id_), cv2.IMREAD_ANYDEPTH)
+        if depth16 is None:
+            raise FileNotFoundError(f"无法读取深度图: {id_}")
+        
+        # 使用 INTER_NEAREST 防止在缺失边缘产生插值噪点
+        depth16 = cv2.resize(depth16, self.target_size, interpolation=cv2.INTER_NEAREST)
+        
+        # 创建缺失区域掩码 (0 表示缺失)
+        mask_missing = (depth16 == 0).astype(np.float32) 
+        
+        # 物理距离归一化：将毫米/原始数值映射到 [0, 1]
+        # 这种方式保证了不同图片的相同深度具有相同的 Tensor 值
+        depth_arr = depth16.astype(np.float32) / self.MAX_DEPTH_VAL
+        
+        # 剪裁超过量程的值，确保在 [0, 1] 范围内
+        depth_arr = np.clip(depth_arr, 0.0, 1.0)
+
+        depth_tensor = torch.from_numpy(depth_arr).unsqueeze(0)  # [1, H, W]
+        mask_missing_tensor = torch.from_numpy(mask_missing).unsqueeze(0) # [1, H, W]
+
+        # 3. 语义标签 (维持原样)
+        label = Image.open(self.label_fmt.format(id_)).convert('L')
+        label = label.resize(self.target_size, Image.NEAREST)
+        label_tensor = torch.from_numpy(np.array(label, dtype=np.uint8)).long()
+
+        return rgb_tensor, depth_tensor, label_tensor, mask_missing_tensor
+    def __init__(self, ids, rgb_folder, depth_folder, label_folder,
+                 transform=None, target_size=(256, 256)):
+        self.ids = ids
+        self.rgb_fmt = rgb_folder
+        self.depth_fmt = depth_folder
+        self.label_fmt = label_folder
+        self.target_size = target_size
+        self.transform = transform or transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406],
+                                 [0.229, 0.224, 0.225])
+        ])
+
+    def __len__(self):
+        return len(self.ids)
+
+    def __getitem__(self, idx):
+        id_ = self.ids[idx]
+
+        # 1. RGB 用 PIL
+        rgb = Image.open(self.rgb_fmt.format(id_)).convert('RGB')
+        rgb = rgb.filter(ImageFilter.GaussianBlur(radius=1))
+        rgb = rgb.resize(self.target_size, Image.BICUBIC)
+
+        # 2. 深度图用 cv2 读 16-bit
+        depth16 = cv2.imread(self.depth_fmt.format(id_), cv2.IMREAD_ANYDEPTH)  # uint16
+        if depth16 is None:
+            raise FileNotFoundError(self.depth_fmt.format(id_))
+        depth16 = cv2.resize(depth16, self.target_size, interpolation=cv2.INTER_NEAREST)
+
+        # 归一化到 0-1（用全局最大最小，可改成数据集统计值）
+        d_min, d_max = depth16.min(), depth16.max()
+        depth_arr = (depth16.astype(np.float32) - d_min) / (d_max - d_min + 1e-8)
+
+        # 3. 语义标签用 PIL
+        label = Image.open(self.label_fmt.format(id_)).convert('L')
+        label = label.resize(self.target_size, Image.NEAREST)
+        label_arr = np.array(label, dtype=np.uint8)
+        
+        # 4. 转 tensor
+        rgb_tensor = self.transform(rgb)                       # [3,H,W]
+        depth_tensor = torch.from_numpy(depth_arr).unsqueeze(0)  # [1,H,W]
+        label_tensor = torch.from_numpy(label_arr).long()        # [H,W]
+        # print('rgb dtype:', rgb_tensor.dtype)   # 应该是 torch.float32
+        # print('depth dtype:', depth_tensor.dtype)   # 应该是 torch.float32
+        mask_missing = (depth16 == 0).astype(np.float32)  # [H, W], 缺失处为1，否则为0
+        mask_valid = 1 - mask_missing  # 有效区域掩码
+
+        # 将mask转换为tensor
+        mask_missing_tensor = torch.from_numpy(mask_missing).unsqueeze(0)  # [1, H, W]
+        return rgb_tensor, depth_tensor, label_tensor, mask_missing_tensor
+        
+# ==================== 7. 主入口 ====================
+if __name__ == '__main__':
+    # 设置随机种子
+    torch.manual_seed(42)
+    np.random.seed(42)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(42)
+
+    # 设备
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using device: {device}')
+
+    # ---- 数据路径 ----
+    # 使用您现有的数据集格式
+    DATA_ROOT = '/root/autodl-tmp/dataset'
+    rgb_fmt = os.path.join(DATA_ROOT, 'Image', '{}.jpg')
+    depth_fmt = os.path.join(DATA_ROOT, 'Depth', '{}.png')
+    label_fmt = os.path.join(DATA_ROOT, 'Label_Label', '{}_label.png')
+
+    # 读取数据ID
+    train_ids = read_txt_to_list('train.txt')
+    val_ids = read_txt_to_list('val.txt')
+    test_ids = read_txt_to_list('test.txt')
+
+    # ---- 数据加载器 ----
+    # 使用您现有的EndToEndDataset
+    train_set = EndToEndDataset(train_ids, rgb_fmt, depth_fmt, label_fmt, target_size=(256, 256))
+    val_set = EndToEndDataset(val_ids, rgb_fmt, depth_fmt, label_fmt, target_size=(256, 256))
+    test_set = EndToEndDataset(test_ids, rgb_fmt, depth_fmt, label_fmt, target_size=(256, 256))
+
+    BATCH_SIZE = 8
+    NUM_WORKERS = 4
+
+    train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True,
+                              num_workers=NUM_WORKERS, pin_memory=True)
+    val_loader = DataLoader(val_set, batch_size=BATCH_SIZE, shuffle=False,
+                            num_workers=NUM_WORKERS, pin_memory=True)
+    test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=False,
+                             num_workers=NUM_WORKERS, pin_memory=True)
+
+    # ---- 构建子模块 ----
+    # 1. 深度补全模型 (RDFCGAN)
+    cfg_path = 'rdf_cycle_patchgan_config.yaml'
+    load_config(cfg, cfg_path)
+    depth_model = build_model(cfg, device)
+
+    # 2. 图像增强模型 (MoE)
+    enh_model = MoE_ISP_Model(num_experts=3).to(device)
+    initialize_weights(enh_model)
+
+    # 3. 语义分割模型 (FTransUNet)
+    config_vit = CONFIGS_ViT_seg['R50-ViT-B_16']
+    config_vit.n_classes = 16
+    config_vit.n_skip = 3
+    config_vit.patches.grid = (256 // 16, 256 // 16)
+    seg_model = ViT_seg(config_vit, img_size=256, num_classes=16).to(device)
+    
+    # 加载预训练权重（可选）
+    pretrained_path = getattr(config_vit, 'pretrained_path', None)
+    if pretrained_path and os.path.exists(pretrained_path):
+        try:
+            seg_model.load_from(np.load(pretrained_path, allow_pickle=True))
+            print('✅ FTransUNet pretrained weights loaded')
+        except Exception as e:
+            print(f'⚠️  Failed to load pretrained FTransUNet: {e}')
+
+    # ---- 构建端到端模型 ----
+    model = EndToEndDepthCompletionEnhancementSegmentation(
+        depth_completion_model=depth_model,
+        enhancement_model=enh_model,
+        segmentation_model=seg_model
+    ).to(device)
+
+    # ---- 实验记录 ----
+    save_dir = './checkpoints_triple_stage'
+    logger = ExperimentLogger(save_dir)
+
+    # ---- 断点续训 ----
+    start_epoch, best_mIoU, history = load_checkpoint(
+        model, save_dir, device, optimizer=None, scheduler=None
+    )
+
+    # ---- 注册NaN检测 ----
+    for name, module in model.named_modules():
+        module.register_forward_hook(check_nan_hook)
+
+    # ---- 训练配置 ----
+    experiment_config = {
+        "model": "DepthCompletion+Enhancement+Segmentation",
+        "num_classes": 16,
+        "batch_size": BATCH_SIZE,
+        "num_workers": NUM_WORKERS,
+        "total_epochs": 500,
+        "start_epoch": start_epoch,
+        "device": str(device),
+        "stage_config": "渐进式三阶段训练"
+    }
+    logger.save_config(experiment_config)
+
+    # ---- 训练 ----
+    total_epochs = 500
+    logger.log(f'\n开始 {total_epochs} 轮训练...')
+    
+    history, best_mIoU = train_progressive_triple(
+        model, train_loader, val_loader, device, save_dir,
+        total_epochs=total_epochs, logger=logger,
+        start_epoch=start_epoch, best_mIoU=best_mIoU, history=history
+    )
+    
+    logger.log(f'训练完成！最佳mIoU: {best_mIoU:.4f}')
+
+    # ---- 测试 ----
+    logger.log('\n开始测试...')
+    best_model_file = os.path.join(save_dir, 'best_model.pth')
+    
+    if os.path.exists(best_model_file):
+        torch.serialization.add_safe_globals([np.dtype, np.core.multiarray.scalar,
+                                      np.dtypes.Float64DType, np.dtypes.Float32DType])
+        ckpt = torch.load(best_model_file, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model_state_dict'], strict=True)
+        logger.log(f'✅ 加载最佳模型 (epoch {ckpt["epoch"]}, mIoU {ckpt["best_mIoU"]:.4f})')
+    
+    test_output_dir = os.path.join(save_dir, 'test_results')
+    test_metrics = test_triple_model(model, test_loader, device, test_output_dir, logger)
+
+    # ---- 保存结果 ----
+    final_results = {
+        "best_val_mIoU": best_mIoU,
+        "test_metrics": test_metrics,
+        "training_history": history
+    }
+    logger.save_results(final_results)
+
+    # ---- 可视化历史 ----
+    plot_training_history(history, save_dir)
+    logger.log(f'\n全部完成！结果保存至 {save_dir}')

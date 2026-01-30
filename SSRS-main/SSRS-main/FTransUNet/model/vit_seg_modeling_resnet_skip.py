@@ -52,6 +52,8 @@ class StdConv2d(nn.Conv2d):
         w = self.weight
         v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
         w = (w - m) / torch.sqrt(v + 1e-5)
+        #print(f"x:{x.shape}, w:{w.shape}")
+        #x=x.unsqueeze(0)
         return F.conv2d(x, w, self.bias, self.stride, self.padding,
                         self.dilation, self.groups)
 
@@ -260,7 +262,16 @@ class FuseResNetV2(nn.Module):
         # SE = False
         features = []
         b, c, in_size, _ = x.size()
+        if y.dim() == 3:
+            y = y.unsqueeze(1)  # [B, H, W] -> [B, 1, H, W]
+        
+        # 确保 y 只有一个通道（深度图应该是单通道）
+        if y.shape[1] != 1:
+            print(f"⚠️  Warning: y has {y.shape[1]} channels, taking first")
+            y = y[:, 0:1, :, :]  # 取第一个通道
         x = self.root(x) #64*128
+        # print(f"x:{x.shape}")
+        # print(f"y:{y.shape}")
         y = self.rootd(y) #64*128
         if SE:
             x = self.se_layer0(x, y)

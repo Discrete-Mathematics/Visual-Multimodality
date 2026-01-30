@@ -262,6 +262,7 @@ class Embeddings(nn.Module):
     def forward(self, x, y):
         y = y.unsqueeze(1)
         if self.hybrid:
+            #print(f"x:{x.shape}, y:{y.shape}")
             x, y, features = self.hybrid_model(x, y)
         else:
             features = None
@@ -403,6 +404,7 @@ class Transformer(nn.Module):
         self.encoder = Encoder(config, vis)
 
     def forward(self, input_ids, dsm_ids):
+        #print(f"input:{input_ids.shape}, dsm:{dsm_ids.shape}")
         embeddingsx, embeddingsy, features = self.embeddings(input_ids, dsm_ids)
         encodedx, encodedy, attn_weights = self.encoder(embeddingsx, embeddingsy)  # (B, n_patch, hidden)
         return encodedx, encodedy, attn_weights, features
@@ -535,6 +537,7 @@ class VisionTransformer(nn.Module):
         self.config = config
 
     def forward(self, x, y):
+        #print(f"x:{x.shape}, y:{y.shape}")
         x, y, attn_weights, features = self.transformer(x, y)  # (B, n_patch, hidden)
         x = x + y
         x = self.decoder(x, features)

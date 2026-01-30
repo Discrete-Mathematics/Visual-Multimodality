@@ -11,7 +11,99 @@ import os
 import os
 import sys
 from pathlib import Path
-from metric import SegmentationMetric
+from metric import *
+import torch.nn as nn
+def initialize_weights(model):
+    for name, param in model.named_parameters():
+        if param.dim() > 1 and 'weight' in name:
+            nn.init.kaiming_normal_(param, mode='fan_out', nonlinearity='relu')
+        elif 'bias' in name:
+            nn.init.constant_(param, 0)
+    print('✅ 模型权重初始化完成')
+
+def calculate_metrics(y_pred, y_true):
+    cm = confusion_matrix(y_true, y_pred)
+    pa = np.diag(cm).sum() / cm.sum()
+    cpa = np.diag(cm) / cm.sum(axis=1)
+    mpa = np.nanmean(cpa)
+    iou = np.diag(cm) / (cm.sum(axis=1) + cm.sum(axis=0) - np.diag(cm))
+    mIoU = np.nanmean(iou)
+    return pa, cpa, mpa, mIoU
+
+def read_txt_to_list(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return [line.strip() for line in f if line.strip()]
+    except Exception as e:
+        print(f'读取文件时出错: {e}')
+        return []
+
+def plot_training_history(train_history, save_dir):
+    """绘制训练历史图表"""
+    if not train_history:
+        return
+    
+    epochs = [entry['epoch'] for entry in train_history]
+    train_losses = [entry['train_loss'] for entry in train_history]
+    val_mIoUs = [entry['val_metrics']['mIoU'] for entry in train_history]
+    
+    # 创建图表
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+    
+    # 损失曲线
+    ax1.plot(epochs, train_losses, 'b-', label='train loss')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss')
+    ax1.set_title('train loss curve')
+    ax1.legend()
+    ax1.grid(True)
+    
+    # mIoU曲线
+    ax2.plot(epochs, val_mIoUs, 'r-', label='val mIoU')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('mIoU')
+    ax2.set_title('val mIoU curve')
+    ax2.legend()
+    ax2.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, 'training_history.png'), dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print("✅ 训练历史图表已保存")
+
+def check_nan_hook(module, input, output):
+    """
+    前向传播 Hook，用于检查模块输出中是否存在 NaN 或 Inf 值。
+    已优化内存安全性，确保检查结果不保留计算图引用。
+    """
+    
+    # 辅助函数：安全地检查张量中的 NaN/Inf
+    def _safe_check_bad_values(t):
+        if isinstance(t, torch.Tensor) and t.is_floating_point():
+            # 使用 .any().item() 确保检查结果立即转换为 Python 布尔值
+            # 检查 NaN (Not a Number) 和 Inf (Infinity)
+            has_nan = torch.isnan(t).any().item()
+            has_inf = torch.isinf(t).any().item()
+            return has_nan or has_inf
+        return False
+
+    # 1. 检查单个 Tensor 输出
+    if isinstance(output, torch.Tensor):
+        if _safe_check_bad_values(output):
+            error_msg = f"❌ NaN or Inf detected in {module.__class__.__name__} output."
+            print(error_msg)
+            # 抛出运行时错误，立即中断训练
+            raise RuntimeError(error_msg)
+            
+    # 2. 检查 tuple/list 形式的多个 Tensor 输出 (例如 Transformer Blocks 或 RNN)
+    elif isinstance(output, (tuple, list)):
+        for i, out in enumerate(output):
+            if _safe_check_bad_values(out):
+                error_msg = f"❌ NaN or Inf detected in {module.__class__.__name__} output[{i}]."
+                print(error_msg)
+                # 抛出运行时错误，立即中断训练
+                raise RuntimeError(error_msg)
 
 # 修改数据集路径配置
 DATA_FOLDER = "/root/autodl-tmp/dataset/croped_Image/{}.jpg"
