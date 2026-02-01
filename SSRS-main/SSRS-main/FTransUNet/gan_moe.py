@@ -3,17 +3,49 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 import os
-
+import numpy as np
 # 导入配置和模块
 from config import *
-from models.rdfc_gan import GeneratorA2B, GeneratorB2A, DiscriminatorA, DiscriminatorB
 from models.backbone import ResNet50
 from models.fusion import CBAM
 from models.segmentation import DeepLabV3Plus_Head
 from utils.init import init_weights
 from utils.losses import DepthL1Loss, SegCrossEntropyLoss, GANLoss
 from torch.utils.data import Dataset, DataLoader
+import torchvision.transforms as transforms
+import cv2          
+from PIL import Image, ImageFilter
+from utils.metrics import (
+    calculate_ssim, calculate_gradient_similarity, calculate_phash_similarity,
+    calculate_pixel_accuracy, calculate_miou
+)
+from models.rdfc_gan import UnsupervisedRDFCGAN, UNSUPERVISED_CONFIG
 
+# 初始化模型
+depth_model = UnsupervisedRDFCGAN, UNSUPERVISED_CONFIG(UNSUPERVISED_CONFIG).to(DEVICE)
+
+# 定义优化器（生成器：约束网络+RDF-GAN生成器；判别器：仅RDF-GAN判别器）
+optimizer_gen = torch.optim.Adam(
+    list(model.constraint_net.parameters()) + list(model.rdfgan_gen.parameters()),
+    lr=1e-4, betas=(0.5, 0.999)
+)
+optimizer_disc = torch.optim.Adam(
+    model.rdfgan_disc.parameters(),
+    lr=1e-4, betas=(0.5, 0.999)
+)
+
+STAGE1_EPOCHS = 1
+STAGE2_EPOCHS = 1
+STAGE3_EPOCHS = 1
+
+def read_txt_to_list(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return [line.strip() for line in f if line.strip()]
+    except Exception as e:
+        print(f'读取文件时出错: {e}')
+        return []
+        
 class EndToEndDataset(Dataset):
     def __init__(self, ids, rgb_folder, depth_folder, label_folder,
                  target_size=(256, 256), max_depth_val=65535):  # 添加max_depth_val参数
@@ -97,35 +129,185 @@ train_set = EndToEndDataset(
 val_set = EndToEndDataset(val_ids, rgb_fmt, depth_fmt, label_fmt, target_size=(256, 256))
 test_set = EndToEndDataset(test_ids, rgb_fmt, depth_fmt, label_fmt, target_size=(256, 256))
 
-BATCH_SIZE = 8
+BATCH_SIZE = 2
 NUM_WORKERS = 4
 
-train_dataloader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True,
-                              num_workers=NUM_WORKERS, pin_memory=True)
-val_loader = DataLoader(val_set, batch_size=BATCH_SIZE, shuffle=False,
-                            num_workers=NUM_WORKERS, pin_memory=True)
+train_dataloader = iter(DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True,
+                              num_workers=NUM_WORKERS, pin_memory=True))
+val_dataloader = iter(DataLoader(val_set, batch_size=BATCH_SIZE, shuffle=False,
+                            num_workers=NUM_WORKERS, pin_memory=True))
 test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=False,
                              num_workers=NUM_WORKERS, pin_memory=True)
+def validate_stage1(netG_A2B):
+    """
+    阶段1验证：仅无监督深度补全指标
+    """
+    print("----- 开始阶段1验证（无监督深度补全）-----")
+    netG_A2B.eval()  # 切换为评估模式，关闭BN/Dropout
+    ssim_scores = []
+    grad_scores = []
+    phash_scores = []
+    
+    with torch.no_grad():  # 关闭梯度计算，节省显存和计算资源
+        # 遍历验证集（取固定批次，避免无限循环）
+        for _ in range(50):  # 50批次足够反映验证集整体效果
+            _, raw_depth, _ = next(val_dataloader)
+            fake_depth = netG_A2B(raw_depth)
+            
+            # 计算无监督指标
+            ssim_score = calculate_ssim(raw_depth, fake_depth)
+            grad_score = calculate_gradient_similarity(raw_depth, fake_depth)
+            phash_score = calculate_phash_similarity(raw_depth, fake_depth)
+            
+            ssim_scores.append(ssim_score)
+            grad_scores.append(grad_score)
+            phash_scores.append(phash_score)
+    
+    # 计算平均指标
+    avg_ssim = np.mean(ssim_scores)
+    avg_grad = np.mean(grad_scores)
+    avg_phash = np.mean(phash_scores)
+    
+    print(f"阶段1验证结果 | SSIM: {avg_ssim:.4f} | Grad SIM: {avg_grad:.4f} | pHash SIM: {avg_phash:.4f}")
+    netG_A2B.train()  # 切换回训练模式
+    return avg_ssim  # 以SSIM作为核心最优指标（可替换为其他）
+    
+def validate_stage2(netG_A2B, backbone_rgb, backbone_depth, fusion_module, seg_head):
+    """
+    阶段2验证：无监督深度补全 + 有监督语义分割
+    """
+    print("----- 开始阶段2验证（深度+分割）-----")
+    # 切换eval模式
+    netG_A2B.eval()
+    backbone_rgb.eval()
+    backbone_depth.eval()
+    fusion_module.eval()
+    seg_head.eval()
+    
+    # 初始化指标列表
+    ssim_scores = []
+    grad_scores = []
+    pixel_acc_scores = []
+    miou_scores = []
+    compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
+    
+    with torch.no_grad():
+        for _ in range(50):
+            rgb_img, raw_depth, seg_gt = next(val_dataloader)
+            fake_depth = netG_A2B(raw_depth)
+            
+            # 深度补全指标计算
+            ssim_score = calculate_ssim(raw_depth, fake_depth)
+            grad_score = calculate_gradient_similarity(raw_depth, fake_depth)
+            
+            # 语义分割前向传播
+            feat_rgb = backbone_rgb(rgb_img)
+            feat_depth = backbone_depth(fake_depth)
+            fused_input = torch.cat([feat_rgb, feat_depth], dim=1)
+            fused_feat = compress_conv(fused_input)
+            refined_feat = fusion_module(fused_feat)
+            pred_seg = seg_head(refined_feat)
+            
+            # 分割指标计算
+            pixel_acc = calculate_pixel_accuracy(pred_seg, seg_gt, ignore_index=-1)
+            miou = calculate_miou(pred_seg, seg_gt, num_classes=NUM_CLASSES, ignore_index=-1)
+            
+            # 累计指标
+            ssim_scores.append(ssim_score)
+            grad_scores.append(grad_score)
+            pixel_acc_scores.append(pixel_acc)
+            miou_scores.append(miou)
+    
+    # 平均指标
+    avg_ssim = np.mean(ssim_scores)
+    avg_grad = np.mean(grad_scores)
+    avg_pixel_acc = np.mean(pixel_acc_scores)
+    avg_miou = np.mean(miou_scores)
+    
+    print(f"阶段2验证结果 | SSIM: {avg_ssim:.4f} | Grad SIM: {avg_grad:.4f} | Pixel Acc: {avg_pixel_acc:.4f} | mIoU: {avg_miou:.4f}")
+    # 切换回训练模式
+    netG_A2B.train()
+    backbone_rgb.train()
+    backbone_depth.train()
+    fusion_module.train()
+    seg_head.train()
+    
+    return avg_miou  # 以mIoU作为核心最优指标（分割任务核心）
 
+def validate_stage3(netG_A2B, netG_B2A, backbone_rgb, backbone_depth, fusion_module, seg_head):
+    """
+    阶段3验证：全模块（深度+图像增强+分割）
+    """
+    print("----- 开始阶段3验证（全模块）-----")
+    # 切换eval模式
+    netG_A2B.eval()
+    netG_B2A.eval()
+    backbone_rgb.eval()
+    backbone_depth.eval()
+    fusion_module.eval()
+    seg_head.eval()
+    
+    # 初始化指标列表
+    depth_ssim_scores = []
+    rgb_ssim_scores = []
+    miou_scores = []
+    compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
+    
+    with torch.no_grad():
+        for _ in range(50):
+            rgb_img, raw_depth, seg_gt = next(val_dataloader)
+            fake_depth = netG_A2B(raw_depth)
+            fake_rgb = netG_B2A(rgb_img)
+            
+            # 深度补全指标
+            depth_ssim = calculate_ssim(raw_depth, fake_depth)
+            
+            # 图像增强指标（输入RGB vs 增强RGB）
+            rgb_ssim = calculate_ssim(rgb_img, fake_rgb)
+            
+            # 分割前向传播
+            feat_rgb = backbone_rgb(fake_rgb)
+            feat_depth = backbone_depth(fake_depth)
+            fused_input = torch.cat([feat_rgb, feat_depth], dim=1)
+            fused_feat = compress_conv(fused_input)
+            refined_feat = fusion_module(fused_feat)
+            pred_seg = seg_head(refined_feat)
+            
+            # 分割指标
+            miou = calculate_miou(pred_seg, seg_gt, num_classes=NUM_CLASSES, ignore_index=-1)
+            
+            # 累计指标
+            depth_ssim_scores.append(depth_ssim)
+            rgb_ssim_scores.append(rgb_ssim)
+            miou_scores.append(miou)
+    
+    # 平均指标
+    avg_depth_ssim = np.mean(depth_ssim_scores)
+    avg_rgb_ssim = np.mean(rgb_ssim_scores)
+    avg_miou = np.mean(miou_scores)
+    
+    print(f"阶段3验证结果 | Depth SSIM: {avg_depth_ssim:.4f} | RGB SSIM: {avg_rgb_ssim:.4f} | mIoU: {avg_miou:.4f}")
+    # 切换回训练模式
+    netG_A2B.train()
+    netG_B2A.train()
+    backbone_rgb.train()
+    backbone_depth.train()
+    fusion_module.train()
+    seg_head.train()
+    
+    return avg_miou  # 以mIoU作为全模块核心最优指标
+    
 # ===================== 阶段1：深度补全预热训练 =====================
 def train_stage1():
     print("="*60)
     print("开始阶段1：深度补全预热训练")
     print("="*60)
 
-    # 1. 初始化模型（仅深度相关模块）
-    netG_A2B = GeneratorA2B().to(DEVICE)
-    netD_A = DiscriminatorA().to(DEVICE)
-    init_weights(netG_A2B, init_type='normal', init_gain=0.02)
-    init_weights(netD_A, init_type='normal', init_gain=0.02)
-
-    # 2. 定义损失函数和优化器
-    criterion_gan = GANLoss(gan_mode='lsgan', device=DEVICE)
-    criterion_l1 = DepthL1Loss()
-    optimizer_G = optim.Adam(netG_A2B.parameters(), lr=LR_G, betas=(0.5, 0.999))
-    optimizer_D = optim.Adam(netD_A.parameters(), lr=LR_D, betas=(0.5, 0.999))
+    init_weights(depth_model, init_type='normal', init_gain=0.02)
 
     # 3. 开始训练
+    best_ssim = -1
+    
     for epoch in range(1, STAGE1_EPOCHS+1):
         epoch_g_loss = 0.0
         epoch_d_loss = 0.0
@@ -135,14 +317,14 @@ def train_stage1():
         pbar = tqdm(range(100), desc=f"Stage1 Epoch {epoch}/{STAGE1_EPOCHS}")
         for _ in pbar:
             # 加载数据
-            _, raw_depth, _ = next(train_dataloader)
+            rgb_img, raw_depth, _, _ = next(train_dataloader)
             real_depth = raw_depth  # 模拟真实深度标签（实际需替换为真实深度GT）
 
-            # ----------------------
-            # 训练生成器 G_A2B
-            # ----------------------
-            optimizer_G.zero_grad()
-            fake_depth = netG_A2B(raw_depth)
+            # 训练生成器（约束网络+RDF-GAN生成器）
+            optimizer_gen.zero_grad()
+            loss_dict, d_pred = depth_model.calculate_loss(raw_depth, rgb_img)
+            loss_dict['L_overall'].backward()
+            optimizer_gen.step()
 
             # 对抗损失
             pred_fake = netD_A(fake_depth)
@@ -197,6 +379,22 @@ def train_stage1():
         avg_l1_loss = epoch_l1_loss / 100
         print(f"Stage1 Epoch {epoch} | Avg G Loss: {avg_g_loss:.4f} | Avg D Loss: {avg_d_loss:.4f} | Avg L1 Loss: {avg_l1_loss:.4f}")
 
+        # 验证
+        if epoch % VAL_EVERY_N_EPOCHS == 0:
+            current_ssim = validate_stage1(netG_A2B)
+            
+            # 6. 新增：保存最优模型
+            if current_ssim > best_ssim:
+                best_ssim = current_ssim
+                torch.save({
+                    "epoch": epoch,
+                    "netG_A2B": netG_A2B.state_dict(),
+                    "netD_A": netD_A.state_dict(),
+                    "best_ssim": best_ssim,
+                    "optimizer_G": optimizer_G.state_dict()
+                }, STAGE1_CKPT_PATH)
+                print(f"阶段1最优模型更新！当前最优SSIM: {best_ssim:.4f}，已保存至 {STAGE1_CKPT_PATH}")
+                
         # 保存最终权重
         if epoch == STAGE1_EPOCHS:
             torch.save({
@@ -261,6 +459,7 @@ def train_stage2():
     optimizer_D = optim.Adam(params_D, lr=LR_D, betas=(0.5, 0.999))
     optimizer_seg = optim.Adam(params_seg, lr=LR_SEG, betas=(0.5, 0.999))
 
+    best_mIoU = 0
     # 3. 开始训练
     for epoch in range(1, STAGE2_EPOCHS+1):
         epoch_g_loss = 0.0
@@ -271,7 +470,7 @@ def train_stage2():
         pbar = tqdm(range(100), desc=f"Stage2 Epoch {epoch}/{STAGE2_EPOCHS}")
         for _ in pbar:
             # 加载数据
-            rgb_img, raw_depth, seg_gt = next(train_dataloader)
+            rgb_img, raw_depth, seg_gt, _ = next(train_dataloader)
             real_depth = raw_depth
 
             # ----------------------
@@ -350,6 +549,22 @@ def train_stage2():
         avg_seg_loss = epoch_seg_loss / 100
         print(f"Stage2 Epoch {epoch} | Avg G Loss: {avg_g_loss:.4f} | Avg D Loss: {avg_d_loss:.4f} | Avg Seg Loss: {avg_seg_loss:.4f}")
 
+        # 验证
+        if epoch % VAL_EVERY_N_EPOCHS == 0:
+            avg_mIoU = validate_stage2(netG_A2B, backbone_rgb, backbone_depth, fusion_module, seg_head)
+            
+            # 6. 新增：保存最优模型
+            if avg_mIoU > best_mIoU:
+                best_mIoU = avg_mIoU
+                torch.save({
+                    "epoch": epoch,
+                    "netG_A2B": netG_A2B.state_dict(),
+                    "netD_A": netD_A.state_dict(),
+                    "best_ssim": best_ssim,
+                    "optimizer_G": optimizer_G.state_dict()
+                }, STAGE1_CKPT_PATH)
+                print(f"阶段2最优模型更新！当前最优SSIM: {best_ssim:.4f}，已保存至 {STAGE1_CKPT_PATH}")
+
         # 保存最终权重
         if epoch == STAGE2_EPOCHS:
             torch.save({
@@ -417,7 +632,7 @@ def train_stage3():
         pbar = tqdm(range(100), desc=f"Stage3 Epoch {epoch}/{STAGE3_EPOCHS}")
         for _ in pbar:
             # 加载数据
-            rgb_img, raw_depth, seg_gt = next(train_dataloader)
+            rgb_img, raw_depth, seg_gt, _ = next(train_dataloader)
             real_depth = raw_depth
 
             # ----------------------

@@ -3,16 +3,7 @@ import torch
 # 设备配置
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# 数据配置
-IMG_SIZE = 256
-NUM_CLASSES = 15  # 语义分割类别数（Cityscapes）
-BATCH_SIZE = 4
-NUM_WORKERS = 4
-
-# 训练配置
-STAGE1_EPOCHS = 50  # 阶段1：深度补全预热
-STAGE2_EPOCHS = 100 # 阶段2：深度+分割联合训练
-STAGE3_EPOCHS = 150 # 阶段3：全模块联合训练
+NUM_CLASSES = 16
 
 LR_G = 1e-4  # 生成器学习率
 LR_D = 1e-4  # 判别器学习率
@@ -27,3 +18,17 @@ LAMBDA_CYCLE = 10.0 # 循环一致性损失权重（阶段3）
 STAGE1_CKPT_PATH = "stage1_depth_pretrain.pth"
 STAGE2_CKPT_PATH = "stage2_depth_seg_ckpt.pth"
 STAGE3_CKPT_PATH = "stage3_full_model_ckpt.pth"
+
+# 验证集配置
+VAL_BATCH_SIZE = 2
+
+# ===================== 配置参数示例 =====================
+UNSUPERVISED_CONFIG = {
+    'device': torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+    'lambda_cycle': 10.0,    # 循环损失权重（论文伪深度图逻辑延伸）
+    'lambda_normal': 5.0,    # 法向量损失权重（几何约束）
+    'lambda_crossmodal': 3.0, # 跨模态损失权重（RGB-D融合）
+    'lambda_D': 0.5,         # 判别器损失权重（论文WGAN配置）
+    'ngf': 64,
+    'ndf': 64
+}
