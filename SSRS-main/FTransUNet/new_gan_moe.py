@@ -200,7 +200,7 @@ def validate_stage1(depth_model):
     depth_model.train()
     return avg_ssim
 
-def validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head):
+def validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head, compress_conv):
     """
     阶段2验证：无监督深度补全 + 有监督语义分割
     """
@@ -218,7 +218,7 @@ def validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, se
     pixel_acc_scores = []
     miou_scores = []
     # 压缩卷积移到循环外（避免重复创建）
-    compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
+    #compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
     
     with torch.no_grad():
         for batch_idx, (rgb_img, raw_depth, seg_gt, _) in enumerate(val_dataloader):
@@ -266,7 +266,7 @@ def validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, se
     
     return avg_miou
 
-def validate_stage3(depth_model, img_enhance_model, backbone_rgb, backbone_depth, fusion_module, seg_head):
+def validate_stage3(depth_model, img_enhance_model, backbone_rgb, backbone_depth, fusion_module, seg_head, compress_conv):
     """
     阶段3验证：全模块（深度+图像增强+分割）
     """
@@ -283,7 +283,7 @@ def validate_stage3(depth_model, img_enhance_model, backbone_rgb, backbone_depth
     depth_ssim_scores = []
     rgb_ssim_scores = []
     miou_scores = []
-    compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
+    #compress_conv = nn.Conv2d(4096, 2048, kernel_size=1, bias=False).to(DEVICE)
     
     with torch.no_grad():
         for batch_idx, (rgb_img, raw_depth, seg_gt, _) in enumerate(val_dataloader):
@@ -334,6 +334,7 @@ def validate_stage3(depth_model, img_enhance_model, backbone_rgb, backbone_depth
 
 # ---------------------- 阶段1：深度补全预热训练（适配UnsupervisedRDFCGAN） ----------------------
 def train_stage1():
+    no_improve_epochs = 0
     print("="*60)
     print("开始阶段1：深度补全预热训练")
     print("="*60)
@@ -421,10 +422,6 @@ def train_stage1():
         if epoch % VAL_EVERY_N_EPOCHS == 0:
             current_ssim = validate_stage1(depth_model)
             
-            # 新增：初始化连续不提升计数
-            if 'no_improve_epochs' not in locals():
-                no_improve_epochs = 0
-            
             # 保存最优模型
             if current_ssim > best_ssim:
                 best_ssim = current_ssim
@@ -458,6 +455,7 @@ def train_stage1():
 
 # ---------------------- 阶段2：深度+分割联合训练 ----------------------
 def train_stage2():
+    no_improve_epochs = 0
     print("\n" + "="*60)
     print("开始阶段2：深度+分割联合训练")
     print("="*60)
@@ -465,7 +463,7 @@ def train_stage2():
     # 1. 初始化模型（继承阶段1权重 + 初始化分割模块）
     ## 1.1 加载阶段1深度模型权重
     depth_model = UnsupervisedRDFCGAN(UNSUPERVISED_CONFIG).to(DEVICE)
-    stage1_ckpt = torch.load(STAGE1_CKPT_PATH, map_location=DEVICE)
+    stage1_ckpt = torch.load(STAGE1_CKPT_PATH, map_location=DEVICE, weights_only=False)
     depth_model.load_state_dict(stage1_ckpt["depth_model"], strict=False)
     print("成功加载阶段1深度模块权重")
     ## 1.2 初始化双模态骨干
@@ -592,7 +590,6 @@ def train_stage2():
             epoch_depth_loss += (loss_depth_l1.item() + loss_gan.item())
             epoch_disc_loss += (batch_d_loss / DISC_TRAIN_STEPS)  # 取平均保证epoch损失准确
             epoch_seg_loss += loss_seg.item()
-            epoch_seg_loss += loss_seg.item()
 
             # 更新进度条
             pbar.set_postfix({
@@ -611,10 +608,7 @@ def train_stage2():
 
         # 验证
         if epoch % VAL_EVERY_N_EPOCHS == 0:
-            avg_mIoU = validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head)
-
-            if 'no_improve_epochs' not in locals():
-                no_improve_epochs = 0
+            avg_mIoU = validate_stage2(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head, compress_conv)
             
             # 保存最优模型（修正路径+变量错误）
             if avg_mIoU > best_mIoU:
@@ -653,13 +647,14 @@ def train_stage2():
 
 # ---------------------- 阶段3：全模块联合训练 ----------------------
 def train_stage3():
+    no_improve_epochs = 0
     print("\n" + "="*60)
     print("开始阶段3：全模块联合训练（深度+分割+图像增强）")
     print("="*60)
 
     # 1. 初始化模型（继承阶段2权重 + 启用图像增强模块）
     ## 1.1 加载阶段2权重
-    stage2_ckpt = torch.load(STAGE2_CKPT_PATH, map_location=DEVICE)
+    stage2_ckpt = torch.load(STAGE2_CKPT_PATH, map_location=DEVICE, weights_only=False)
     depth_model = UnsupervisedRDFCGAN(UNSUPERVISED_CONFIG).to(DEVICE)
     backbone_rgb = ResNet50(num_classes=None, pretrained=False, in_channels=3).to(DEVICE)
     backbone_depth = ResNet50(num_classes=None, pretrained=False, in_channels=1).to(DEVICE)
@@ -792,10 +787,7 @@ def train_stage3():
         print(f"Stage3 Epoch {epoch} | Avg G Loss: {avg_g_loss:.4f} | Avg D Loss: {avg_d_loss:.4f} | Avg Cycle Loss: {avg_cycle_loss:.4f}")
 
         if epoch % VAL_EVERY_N_EPOCHS == 0:
-            avg_mIoU = validate_stage3(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head)
-
-            if 'no_improve_epochs' not in locals():
-                no_improve_epochs = 0
+            avg_mIoU = validate_stage3(depth_model, backbone_rgb, backbone_depth, fusion_module, seg_head, compress_conv)
             
             # 保存最优模型（修正路径+变量错误）
             if avg_mIoU > best_mIoU:
@@ -809,7 +801,7 @@ def train_stage3():
                     "fusion_module": fusion_module.state_dict(),
                     "seg_head": seg_head.state_dict(),
                     "best_mIoU": best_mIoU
-                }, STAGE2_CKPT_PATH)
+                }, STAGE3_CKPT_PATH)
                 print(f"阶段3最优模型更新！当前最优mIoU: {best_mIoU:.4f}，已保存至 {STAGE3_CKPT_PATH}")
             else:
                 no_improve_epochs += 1
@@ -838,7 +830,7 @@ if __name__ == "__main__":
     os.makedirs(CKPT_DIR, exist_ok=True)
 
     # 依次运行三个阶段
-    train_stage1()
+    #train_stage1()
     train_stage2()
     train_stage3()
 
