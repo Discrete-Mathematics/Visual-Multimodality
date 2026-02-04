@@ -17,6 +17,9 @@
 | **mIoU** | **71.45%** |
 | **mPA** | **81.31%** |
 | **Accuracy** | **89.50%** |
+<img width="640" height="480" alt="mIoU" src="https://github.com/user-attachments/assets/f0d73517-c2b2-4796-b0ad-70a286a877c4" />
+
+<img width="640" height="480" alt="mPA" src="https://github.com/user-attachments/assets/8ca1ab14-7e10-4a47-b714-1b83f87389de" />
 
 ### 2. 类别表现分析
 
