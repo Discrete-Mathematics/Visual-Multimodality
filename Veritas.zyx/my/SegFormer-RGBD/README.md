@@ -11,6 +11,7 @@
 ## 📊 实验结果 (Final Results)
 
 模型在 **150 Epochs** 训练后，在验证集上的表现如下：
+`Installation.txt`
 
 ### 核心指标
 
