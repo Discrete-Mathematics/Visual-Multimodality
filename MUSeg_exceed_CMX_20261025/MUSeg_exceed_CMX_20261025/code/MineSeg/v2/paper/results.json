@@ -1,0 +1,54 @@
+{
+  "scope": "v2 runs only; v3 complement results are excluded",
+  "date": "2026-10-25",
+  "primary_test": {
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+    "epoch": 7,
+    "split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt",
+    "images": 788,
+    "height": 768,
+    "width": 896,
+    "tta": false,
+    "pa16": 0.859316710835642,
+    "mpa16": 0.7546086468842159,
+    "miou16": 0.6241713531931834,
+    "pa15": 0.7925485518534554,
+    "mpa15": 0.7431050995123026,
+    "miou15": 0.6510089434134104
+  },
+  "debf_b5_test": {
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/debf_b5_ftrans/best.pth",
+    "epoch": 14,
+    "tta_command": true,
+    "pa15": 0.7170968055725098,
+    "mpa15": 0.6670239567756653,
+    "miou15": 0.5035293102264404
+  },
+  "prior_test": {
+    "chosen_bias": 0.6,
+    "zero": {
+      "miou16": 62.418831376078245,
+      "mpa16": 75.45915921872492,
+      "pa16": 85.93243088790233,
+      "miou15": 60.78554448882911,
+      "mpa15": 74.30868542946425,
+      "pa15": 79.25628369626835
+    },
+    "chosen": {
+      "miou16": 62.659453998796685,
+      "mpa16": 74.64443370107483,
+      "pa16": 86.04817361626499,
+      "miou15": 61.04506049518805,
+      "mpa15": 73.35039448458384,
+      "pa15": 78.1684276216711
+    },
+    "beats_cmx_16": false
+  },
+  "pa2_checkpoint_saved": false,
+  "pa2_any_epoch_met_floors": false,
+  "claim": {
+    "all_three_metrics_exceed_cmx_on_test": false,
+    "reason": "16-class test PA of the saved SelectiveMine checkpoint is 85.93, below CMX 86.30. MPA and mIoU exceed CMX. DEBF-B5 does not."
+  },
+  "ftrans_config_init_epoch_logged": "/root/autodl-tmp/MineSeg/v2/runs/selective_hi/best.pth"
+}

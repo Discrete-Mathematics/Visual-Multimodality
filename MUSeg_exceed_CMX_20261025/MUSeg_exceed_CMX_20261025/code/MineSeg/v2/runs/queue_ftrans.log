@@ -1,0 +1,98 @@
+Sun Oct 25 04:22:28 CST 2026 queue start
+Sun Oct 25 04:22:28 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:22:58 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:23:28 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:23:58 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:24:28 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:24:58 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:25:28 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:25:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:26:29 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:26:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:27:29 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:27:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:28:29 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:28:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:29:29 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:29:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:30:29 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:30:59 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:31:30 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:32:00 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:32:30 CST 2026 waiting, GPU busy: 4400, python, 34206 MiB
+Sun Oct 25 04:33:15 CST 2026 waiting, GPU busy: 6994, python, 904 MiB
+Sun Oct 25 04:33:45 CST 2026 waiting, GPU busy: 6994, python, 32564 MiB
+Sun Oct 25 04:34:15 CST 2026 waiting, GPU busy: 6994, python, 32564 MiB
+Sun Oct 25 04:34:45 CST 2026 waiting, GPU busy: 6994, python, 32564 MiB
+Sun Oct 25 04:35:15 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:35:45 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:36:15 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:36:45 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:37:16 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:37:46 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:38:16 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:38:46 CST 2026 waiting, GPU busy: 6994, python, 32688 MiB
+Sun Oct 25 04:39:16 CST 2026 waiting, GPU busy: 8243, python, 6386 MiB
+Sun Oct 25 04:39:46 CST 2026 waiting, GPU busy: 8243, python, 6386 MiB
+Sun Oct 25 04:40:31 CST 2026 GPU idle
+Sun Oct 25 04:40:31 CST 2026 selective init /root/autodl-tmp/MineSeg/v2/runs/selective_hi/best.pth
+loading checkpoint
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_hi/best.pth epoch 4
+steps/epoch 398 trainable 59.06M
+epoch 1/16 loss 0.5376 paper mIoU 60.48 MPA 69.22 PA 79.27 16-class mIoU 58.98 211s
+saved best epoch 1 paper mIoU 60.48
+epoch 2/16 loss 0.4607 paper mIoU 62.07 MPA 71.05 PA 80.03 16-class mIoU 60.11 279s
+saved best epoch 2 paper mIoU 62.07
+epoch 3/16 loss 0.4308 paper mIoU 62.41 MPA 71.55 PA 80.32 16-class mIoU 60.43 302s
+saved best epoch 3 paper mIoU 62.41
+epoch 4/16 loss 0.4113 paper mIoU 62.53 MPA 71.02 PA 80.25 16-class mIoU 60.72 236s
+saved best epoch 4 paper mIoU 62.53
+epoch 5/16 loss 0.3886 paper mIoU 61.88 MPA 70.61 PA 80.26 16-class mIoU 60.07 291s
+epoch 6/16 loss 0.3857 paper mIoU 62.80 MPA 71.76 PA 80.83 16-class mIoU 60.90 308s
+saved best epoch 6 paper mIoU 62.80
+epoch 7/16 loss 0.3617 paper mIoU 63.42 MPA 72.20 PA 81.08 16-class mIoU 61.22 157s
+saved best epoch 7 paper mIoU 63.42
+epoch 8/16 loss 0.3450 paper mIoU 62.36 MPA 71.02 PA 80.49 16-class mIoU 60.72 156s
+epoch 9/16 loss 0.3466 paper mIoU 63.28 MPA 71.97 PA 80.90 16-class mIoU 61.38 155s
+epoch 10/16 loss 0.3372 paper mIoU 62.66 MPA 71.22 PA 80.46 16-class mIoU 61.02 155s
+epoch 11/16 loss 0.3382 paper mIoU 62.66 MPA 71.02 PA 80.58 16-class mIoU 60.99 155s
+epoch 12/16 loss 0.3323 paper mIoU 63.00 MPA 71.39 PA 80.62 16-class mIoU 61.25 155s
+epoch 13/16 loss 0.3425 paper mIoU 62.95 MPA 71.56 PA 80.40 16-class mIoU 61.31 155s
+epoch 14/16 loss 0.3202 paper mIoU 63.02 MPA 71.56 PA 80.70 16-class mIoU 61.31 155s
+epoch 15/16 loss 0.3289 paper mIoU 62.67 MPA 70.61 PA 80.29 16-class mIoU 61.26 156s
+epoch 16/16 loss 0.3301 paper mIoU 63.06 MPA 71.62 PA 80.77 16-class mIoU 61.35 158s
+finished best paper mIoU 63.42
+Sun Oct 25 05:33:54 CST 2026 selective exit 0
+scanning 1595 fit labels
+paste bank {0: 40, 9: 40, 10: 40, 11: 39, 12: 40} rare images 383
+params 104.09M steps/epoch 398
+epoch 1/30 loss 2.6167 holdout mIoU 23.37 MPA 45.66 PA 47.22 worst support equipment=0.031 209s
+saved best epoch 1 mIoU 23.37
+epoch 2/30 loss 1.6735 holdout mIoU 36.24 MPA 57.61 PA 61.32 worst tools and materials=0.125 99s
+saved best epoch 2 mIoU 36.24
+epoch 3/30 loss 1.2498 holdout mIoU 39.28 MPA 59.96 PA 63.84 worst tools and materials=0.152 134s
+saved best epoch 3 mIoU 39.28
+epoch 4/30 loss 1.0551 holdout mIoU 42.05 MPA 62.08 PA 65.54 worst tools and materials=0.183 128s
+saved best epoch 4 mIoU 42.05
+epoch 5/30 loss 0.9599 holdout mIoU 43.76 MPA 62.94 PA 67.65 worst tools and materials=0.216 145s
+saved best epoch 5 mIoU 43.76
+epoch 6/30 loss 0.8282 holdout mIoU 45.38 MPA 62.80 PA 69.14 worst container=0.187 129s
+saved best epoch 6 mIoU 45.38
+epoch 7/30 loss 0.7919 holdout mIoU 46.71 MPA 63.55 PA 70.52 worst container=0.189 135s
+saved best epoch 7 mIoU 46.71
+epoch 8/30 loss 0.6920 holdout mIoU 47.57 MPA 64.14 PA 71.37 worst tools and materials=0.220 137s
+saved best epoch 8 mIoU 47.57
+epoch 9/30 loss 0.6462 holdout mIoU 47.90 MPA 64.23 PA 71.82 worst tools and materials=0.203 130s
+saved best epoch 9 mIoU 47.90
+epoch 10/30 loss 0.5879 holdout mIoU 48.13 MPA 64.09 PA 71.95 worst tools and materials=0.196 144s
+saved best epoch 10 mIoU 48.13
+epoch 11/30 loss 0.5624 holdout mIoU 48.82 MPA 64.38 PA 72.19 worst tools and materials=0.200 130s
+saved best epoch 11 mIoU 48.82
+epoch 12/30 loss 0.5418 holdout mIoU 49.35 MPA 64.47 PA 72.76 worst tools and materials=0.203 134s
+saved best epoch 12 mIoU 49.35
+epoch 13/30 loss 0.4971 holdout mIoU 49.53 MPA 64.39 PA 73.07 worst container=0.201 99s
+saved best epoch 13 mIoU 49.53
+epoch 14/30 loss 0.4508 holdout mIoU 50.21 MPA 64.60 PA 73.69 worst container=0.203 140s
+saved best epoch 14 mIoU 50.21
+/root/miniconda3/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 52 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

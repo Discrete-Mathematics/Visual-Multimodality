@@ -1,0 +1,15 @@
+{
+  "split": {"train": 1595, "val": 788, "test": 788},
+  "val_miou_no_tta": {
+    "rgb": 0.3204,
+    "early": 0.3661,
+    "edge": 0.3402,
+    "debf": 0.3986,
+    "debf_paste": 0.3817,
+    "debf_nobd_40ep": 0.3736,
+    "debf_epoch40": 0.3804
+  },
+  "debf_val_tta": 0.4061,
+  "debf_test_tta": {"miou": 0.4014, "pixel_acc": 0.6374},
+  "selection": "runs/debf/best.pth epoch 59, flip TTA chosen on val"
+}

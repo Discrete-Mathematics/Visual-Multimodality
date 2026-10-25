@@ -1,0 +1,30 @@
+===== ftrans test tta 2026-10-25T06:03:00+08:00 =====
+loaded backbone /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+{
+  "holdout_miou": 0.653491303706516,
+  "holdout_mpa": 0.7461201812039489,
+  "holdout_pa": 0.7963339301623183,
+  "miou_16": 0.6260579374093715,
+  "beats": {
+    "CMX": {
+      "pa": false,
+      "mpa": true,
+      "miou": true
+    },
+    "DFormer": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    },
+    "SA-Gate": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    },
+    "CMNeXt": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    }
+  }
+}

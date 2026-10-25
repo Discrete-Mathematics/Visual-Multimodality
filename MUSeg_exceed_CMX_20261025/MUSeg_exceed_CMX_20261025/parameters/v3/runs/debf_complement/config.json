@@ -1,0 +1,67 @@
+{
+  "model": "DEBFNet-Complement",
+  "ideas": [
+    "depth completion",
+    "low-light residual",
+    "bidirectional gates",
+    "teacher distillation",
+    "class-balanced loss"
+  ],
+  "args": {
+    "epochs": 8,
+    "batch_size": 2,
+    "height": 640,
+    "width": 768,
+    "lr": 3e-05,
+    "workers": 2,
+    "seed": 2026,
+    "variant": "b5",
+    "init": "/root/autodl-tmp/MineSeg/v2/runs/debf_b5_ftrans/best.pth",
+    "teacher": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v3/runs/debf_complement",
+    "max_steps": 0,
+    "eval_only": false,
+    "eval_test": false
+  },
+  "train_images": 1595,
+  "val_images": 788,
+  "test_images": 788,
+  "train_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/train.txt",
+  "val_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/val.txt",
+  "test_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt",
+  "class_names": [
+    "person",
+    "cable",
+    "tube",
+    "indicator",
+    "electrical equipment",
+    "electronic equipment",
+    "mining equipment",
+    "rail area",
+    "support equipment",
+    "door",
+    "tools and materials",
+    "rescue equipment",
+    "container",
+    "metal fixture",
+    "anchoring equipment"
+  ],
+  "baselines": {
+    "CMX": {
+      "pa": 86.3,
+      "mpa": 72.72,
+      "miou": 61.83
+    },
+    "DFormer": {
+      "pa": 85.63,
+      "mpa": 70.37,
+      "miou": 59.74
+    },
+    "SA-Gate": {
+      "pa": 84.77,
+      "mpa": 71.34,
+      "miou": 59.38
+    }
+  },
+  "metric": "15 MUSeg classes, raw label 0 and 255 ignored"
+}

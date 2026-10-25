@@ -1,0 +1,50 @@
+{
+  "args": {
+    "epochs": 10,
+    "batch_size": 4,
+    "height": 768,
+    "width": 896,
+    "lr": 6e-06,
+    "workers": 4,
+    "seed": 2026,
+    "rare_crop": 0.0,
+    "lovasz_weight": 0.15,
+    "uniform_weights": true,
+    "select_margin": false,
+    "select_pa": true,
+    "tta": false,
+    "eval_only": false,
+    "eval_test": false,
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa"
+  },
+  "train_images": 1595,
+  "holdout_images": 788,
+  "official_test_images": 788,
+  "class_counts": [
+    847329967,
+    3493244,
+    89515308,
+    60298355,
+    32005220,
+    29382333,
+    19568777,
+    112456762,
+    33088306,
+    70204017,
+    13423548,
+    20353974,
+    7407301,
+    7394087,
+    76925502,
+    185589579
+  ],
+  "class_weights": null,
+  "metric": "15 MUSeg classes, raw label 0 and 255 ignored",
+  "init": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+  "selection": {
+    "select_pa": true,
+    "pa_floor_miou16": 0.61,
+    "pa_floor_mpa16": 0.728
+  }
+}

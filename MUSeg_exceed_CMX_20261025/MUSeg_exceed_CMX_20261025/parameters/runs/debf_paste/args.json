@@ -1,0 +1,16 @@
+{
+  "mode": "debf",
+  "epochs": 60,
+  "batch_size": 16,
+  "size": 640,
+  "lr": 0.0003,
+  "workers": 6,
+  "seed": 42,
+  "warmup": 3,
+  "no_boundary": false,
+  "paste": true,
+  "dice_weight": 0.5,
+  "boundary_weight": 0.4,
+  "outdir": "/root/autodl-tmp/MineSeg/runs/debf_paste",
+  "max_steps": 0
+}

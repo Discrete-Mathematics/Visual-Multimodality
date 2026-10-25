@@ -1,0 +1,8 @@
+student init copied=1284 classifier_expanded=True missing=2
+teacher /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 797
+epoch 1/8 loss 1.8941 mIoU 41.36 MPA 58.80 PA 74.30 190s
+saved best epoch 1 mIoU 41.36
+epoch 2/8 loss 1.5278 mIoU 44.10 MPA 64.58 PA 75.39 176s
+saved best epoch 2 mIoU 44.10
+epoch 3/8 loss 1.3937 mIoU 43.89 MPA 62.16 PA 76.62 174s

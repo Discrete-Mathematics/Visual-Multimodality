@@ -1,0 +1,94 @@
+{
+  "state": "admission",
+  "created_utc": "2026-10-23T01:38:58.996370+00:00",
+  "deadline_utc": "2026-10-23T09:27:40+00:00",
+  "source_hashes": {
+    "mine_relay/__init__.py": "af6a050735d4d57234636a4a4c1c168325327312fc6d92a9aed7dce53df9cce3",
+    "mine_relay/cloud_checks.py": "a193a1cce7452a999501468518451d4beb477c8c2a6a9ea6c8c58992de637424",
+    "mine_relay/compare.py": "dd2b126fc01fe7d9b7cea43c2aa73f04296d31524627ee4f685f7525987ae134",
+    "mine_relay/data.py": "f69cfbf80dee3014d2f32e67f1e7f3128935522678912d9c4a8c1a2f03ecbfb1",
+    "mine_relay/engine.py": "58d95998737760aae95313e2fb153cbedcf2758c7dc57ae2489316c0ae557557",
+    "mine_relay/evaluate.py": "601c233cf5bd2cd1dce5d848c7ffe07606fceea93094d46560d9b02dc9591427",
+    "mine_relay/evaluation_stats.py": "9d9664ff1faea494e7c331cc838ba1fc7ea397b75883d31c53366df37275c389",
+    "mine_relay/legacy/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mine_relay/legacy/backbone.py": "aeafc2bf43fee945097941c7eec57458d52de3c9c8be7f6e38d391c1badcdd1a",
+    "mine_relay/legacy/dataset.py": "bf737a596b5f9ea9ef928abdc3f708d93f290ab29108dfd3e87f1c7ca7769ae8",
+    "mine_relay/legacy/gate.py": "63a2ff16c634b4eb0d232ae79329a4e3922a4babe57c11367f01bf275df59db7",
+    "mine_relay/legacy/geometry.py": "7fe3f2cb739cc263b014f72e8e9791687da007eab2c11d1916276a13b469300d",
+    "mine_relay/legacy/hha.py": "56c345f82098ddd8da18226664eb9139d45aa49078d588c189e3aae2d92d185f",
+    "mine_relay/legacy/labels.py": "ca52f73af750ba91d27cf60086d307a6ebe261a8ef6f955c087d7b7a800f209d",
+    "mine_relay/legacy/metrics.py": "a7ebf71e6b5570abb9d8eff73bf658a3a5519ce24cab5a85963967bdb4ab9443",
+    "mine_relay/losses.py": "69a19bb7a8bd7f8403568b3210444778aeabc7623bce49e4cec743b0c334e85d",
+    "mine_relay/model.py": "9d4cad3bb6ca56f16c92ce34c62de0e084bad1618996da68ade17f639974c017",
+    "mine_relay/preflight.py": "379ceb678e0073f79fc0214204353958e9849745611cb134da4bdcfa1fffa643",
+    "mine_relay/prepare.py": "f795d7d807411f046eec57274374fd29260ca33e4ee31a893642a54753d25f45",
+    "mine_relay/train.py": "58e3888c5bbe948dd128ac672c85da144114c3bc327f865222b0e15f7a6e1922",
+    "mine_selective/__init__.py": "07cb0041b63bd5daf41942410d5f17017d7c7ca9200883f02c4bf4fcac2799b6",
+    "mine_selective/evaluate.py": "51e89c56f9eec5d206ada2212602826f987e2bece5771d7745d8472f1f65f6d7",
+    "mine_selective/losses.py": "de4254101de6736e41e5089f8682371d451b20bd93a10068faab88bbdc11b778",
+    "mine_selective/model.py": "c72c9a4a1aa1e7ff6020fe06460ca168ebe8af9a47bfbcd973bc52fa6d4f1624",
+    "mine_selective/runtime.py": "1d03fa99d62dbbf61c6874f8bcd62a987139c4aa65842c140dd6d381cc18e5b7",
+    "mine_selective/train.py": "553f984ccc81681f78d1334c1973048dc396c204519af5396da44295ad285cb1"
+  },
+  "helper_hashes": {
+    "/root/autodl-tmp/research_20261023/cloud_validation/run_matched_selective_20261023.py": "59cd8972bd6877f3bcdca5d0a1bd150a6d47a1c29f4dc338f88dfc7b7c0e2b8b",
+    "/root/autodl-tmp/research_20261023/readiness_v2.json": "a35ac72f18d7268865b249ccce257edbfc6492bc2eb063ecff808bb02a8643a9",
+    "/root/autodl-tmp/research_20261023/cloud_validation/budget_20261023.json": "4e65daaaa8434b1d4da6957aebce319b72a0961a01aa52189a57c18b2101807f",
+    "/root/autodl-tmp/mine_relay_project_20261021_v012/cloud_validation/run_selective_readiness_after_cmx.py": "a8da683d7435c6284dc8ef5b37ad300e1397632047148dc1e258ece796b23f6d",
+    "/root/autodl-tmp/research_20261023/disposable_timing_2epochs/completion.json": "2ffcc6dd4e39c3deac13200f995730a9d93893da5cd2559203af6aa0da7d4346",
+    "/root/autodl-tmp/research_20261023/disposable_timing_2epochs/history.jsonl": "42ead4b41233d5a0b2cc839171896d2c2f2636f7d341e1e52a2db12fa9916787",
+    "/root/autodl-tmp/research_20261023/timing_job.json": "306a3464ab87f101588222d19099851831e803e19e8708897b947bcd580c6cd6"
+  },
+  "budget_sha256": "4e65daaaa8434b1d4da6957aebce319b72a0961a01aa52189a57c18b2101807f",
+  "epochs": 120,
+  "conservative_epoch_seconds": 108.28808306891005,
+  "current": null,
+  "stages": {},
+  "results": {},
+  "primary_evaluation_reserve_seconds": 1200,
+  "timing_calibration": {
+    "full_epoch_seconds": [
+      82.63046645512804,
+      76.54794559022412
+    ],
+    "rule": "1.25 * max(max_epoch_seconds, cumulative_seconds/2) + 5",
+    "disposable_checkpoint_never_used_for_research": true
+  },
+  "primary_arms": [
+    "utility",
+    "fixed_control"
+  ],
+  "secondary_arm": "router_no_utility",
+  "primary_endpoint": "Clean development mIoU; each arm selects its own best clean-development checkpoint.",
+  "secondary_endpoints": [
+    "Natural dark and depth-hole regions",
+    "Fixed artificial holes/dark/dropout/noise"
+  ],
+  "common_recipe": {
+    "fusion": "logits",
+    "seed": 2026,
+    "batch_size": 8,
+    "input_size": [
+      480,
+      640
+    ],
+    "paired_weight": 0.5,
+    "rgb_weight": 0.5,
+    "fused_weight": 0.5,
+    "geo_weight": 0.2,
+    "imagenet_sha256": "ced22617efb7bae3c34ad0a80f20a9b8afb4d27368cb0835a23456baa9d0e092",
+    "split_hashes": {
+      "train": "642ccd0891d55ced2cbcbcb59fa099b83516c570e38ab51412089ba9979007e5",
+      "val": "d3105aec63cd60fdb5ec1bcb3cd6b16176890466f4a47a9c7cbb7649738c1c49"
+    }
+  },
+  "limits": [
+    "One exploratory seed on the fixed development split; no SOTA or publication claim.",
+    "Fixed control has the same experts, auxiliary objectives and corrupted observations.",
+    "Utility versus fixed control measures learned selection plus utility supervision together.",
+    "The optional same-epoch router_no_utility arm isolates utility supervision.",
+    "Different GPU and fresh fixed-horizon schedule prevent strict comparison to historical 80+40 runs.",
+    "CUDA post-backward bitwise replay is not guaranteed; exact saved state and RNG recovery passed.",
+    "No official test evaluation. No automatic instance poweroff; stopping jobs does not stop billing."
+  ]
+}

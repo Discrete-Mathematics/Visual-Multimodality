@@ -1,0 +1,13 @@
+{
+  "state": "complete",
+  "completed_epochs": 120,
+  "planned_epochs": 120,
+  "deadline_utc": "2026-10-23T09:27:40+00:00",
+  "budget_sha256": "4e65daaaa8434b1d4da6957aebce319b72a0961a01aa52189a57c18b2101807f",
+  "best": 0.5946996762024632,
+  "best_epoch": 98,
+  "elapsed_seconds": 9285.557236939203,
+  "updated_utc": "2026-10-23T04:13:55.550155+00:00",
+  "reason": "epochs_complete",
+  "note": "Stopping this program does not stop instance billing. No automatic poweroff."
+}

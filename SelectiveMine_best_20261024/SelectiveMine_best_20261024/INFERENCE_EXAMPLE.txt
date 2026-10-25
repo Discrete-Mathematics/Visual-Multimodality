@@ -1,0 +1,62 @@
+AutoDL使用示例：加载最佳推理权重并复评固定开发集
+
+这是已存在接口的调用示例。本次整理没有执行此代码；不要把它当作新机器上的实测成功记录。只在已获准的AutoDL实例运行。
+
+1. 环境和数据
+
+建议使用原Python3.12 / PyTorch2.8.0+cu128镜像，所需NumPy/Pillow版本见source/requirements.txt。
+将交接包解压到 /root/autodl-tmp/SelectiveMine_best_20261024。
+将原MUSeg数据放到 /root/autodl-tmp/MUSeg，保留以下布局：
+
+MUSeg/RGB/<样本ID>.jpg
+MUSeg/Depth/<样本ID>.png        原始16位深度，数值单位毫米，0表示无效。
+MUSeg/Label/<样本ID>_label.png  原始类别ID标签，255为忽略。
+MUSeg/train.txt
+MUSeg/val.txt
+
+RGB、深度和标签应是数据集原有的对齐图像，不能把彩色深度预览图代替原始深度。使用随包固定开发名单；本示例不评估官方测试集。
+
+2. 在AutoDL终端执行
+
+cd /root/autodl-tmp/SelectiveMine_best_20261024/source
+export PYTHONPATH="$PWD:$PWD/tools"
+python - <<'PY'
+from pathlib import Path
+import json
+import torch
+from torch.utils.data import DataLoader
+from selective_inference_bundle_20261023 import load_for_inference, digest
+from mine_relay.data import MineDataset
+from mine_relay.engine import evaluate, require_cuda, seed_everything
+
+require_cuda()
+torch.set_num_threads(4)
+seed_everything(2026)
+model, metadata = load_for_inference('../weights/best_inference.pth', device='cuda')
+split = Path('splits/dev_val.txt')
+assert digest(split) == metadata['split_hashes']['val']
+assert metadata['selected_epoch'] == 99 and metadata['completed_epochs'] == 120
+dataset = MineDataset('/root/autodl-tmp/MUSeg', split, (480, 640),
+                      corruption='none', seed=2026)
+loader = DataLoader(dataset, batch_size=8, num_workers=8, pin_memory=True)
+metrics = evaluate(model, loader)
+print(json.dumps({'development_miou_percent': metrics['all']['miou'] * 100,
+                  'completed_epochs': 120, 'selected_epoch': 99}, indent=2))
+PY
+
+预期参照是原实验的59.46996762024632%；本次组合包尚未在新环境重新运行此命令。不同硬件和数值实现可能出现差异，应保留真实复评结果，不能手动改成参照值。本例使用原forward/evaluate函数，保持bf16、480×640和batch8；如因显存调整batch，应记录配置变化。
+
+3. 其他条件和预测输出
+
+需要核对原五条件时，分别将corruption改为none、holes、dark、dropout、noise，始终使用同一权重及seed=2026。不能按不同条件另挑检查点。
+
+如需单批预测，可在已加载model及batch后调用：
+
+from mine_relay.engine import forward_batch
+with torch.inference_mode():
+    output = forward_batch(model, batch)
+    labels = output['logits'].argmax(dim=1)
+
+labels为[B,H,W]类别ID，不是RGB彩色图。0—15类别顺序见weights/export.json的class_names。几何预处理、相机内参与归一化须使用随包MineDataset，不能将原始图像数组直接传给模型。
+
+完整训练入口mine_selective.evaluate需要原best/last和完整审计记录，本推理包不满足该入口要求；不要绕过来源核验来假装提供了可续训检查点。

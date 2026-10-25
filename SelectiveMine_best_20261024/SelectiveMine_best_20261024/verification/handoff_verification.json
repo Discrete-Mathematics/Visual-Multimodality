@@ -1,0 +1,29 @@
+{
+  "assembled_at": "2026-10-24T15:07:26.3807999+08:00",
+  "model": "SelectiveMine",
+  "selection": "utility",
+  "fusion": "logits",
+  "completed_epochs": 120,
+  "selected_epoch": 99,
+  "ordinary_development_miou": 0.5946996762024632,
+  "canonical_condition_miou": {
+    "none": 0.5946996762024632,
+    "holes": 0.5829220706775597,
+    "dark": 0.5804251677141112,
+    "dropout": 0.438611369019254,
+    "noise": 0.4386570081569665
+  },
+  "source_snapshot_files": 37,
+  "matched_model_python_files": 26,
+  "source_and_weight_hashes_match": true,
+  "complete_history_and_evaluation_identities_match": true,
+  "inference_weight_sha256": "f7bd8de044ec8fd6e747a670f08de4dd2955d7f0c831b7639244de42d3a78cef",
+  "inference_weight_bytes": 238273211,
+  "new_local_python_or_model_execution": false,
+  "new_cloud_execution": false,
+  "full_training_checkpoints_included": false,
+  "original_group_archives_included": false,
+  "data_images_included": false,
+  "imagenet_initialization_weights_included": false,
+  "fresh_machine_full_gpu_reproduction_verified": false
+}

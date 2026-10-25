@@ -1,0 +1,19 @@
+论文已经写完，测试集只评估了一次。
+
+结果（真实实验，没有改数字）：
+- 验证集 mIoU：只使用彩色 32.04%，早期融合 36.61%，深度边缘门控 34.02%，DEBFNet 39.86%
+- 稀有类粘贴 38.17%，没有超过 DEBFNet
+- 按验证集选择水平翻转增强后，测试集 mIoU 40.14%，像素准确率 63.74%
+
+文件：
+- /root/autodl-tmp/MineSeg/paper/paper.md
+- /root/autodl-tmp/MineSeg/paper/paper.tex
+- /root/autodl-tmp/MineSeg/paper/paper.docx
+- /root/autodl-tmp/MineSeg/paper/paper.pdf
+- 权重 /root/autodl-tmp/MineSeg/runs/debf/best.pth
+
+这达不到 CCF-A 投稿标准：没有在同一划分上复现 CMX / DFormer / SA-Gate，只有 MUSeg 一个数据集，工具与材料、容器等长尾类仍然很差。论文第 4.4 节写了这些局限。
+
+邮件没有发出。这台机器没有 sendmail，也没有 SMTP 授权码；用第三方表单发到 914279795@qq.com 时对方返回 403。磁盘没有满，没有删数据。
+
+按你的要求，论文写完后关闭服务器。如果这是 AutoDL 实例，请在控制台再确认实例已停止，避免继续计费。

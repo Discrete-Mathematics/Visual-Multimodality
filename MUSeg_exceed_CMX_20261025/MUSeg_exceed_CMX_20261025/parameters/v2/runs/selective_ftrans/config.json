@@ -1,0 +1,41 @@
+{
+  "args": {
+    "epochs": 16,
+    "batch_size": 4,
+    "height": 768,
+    "width": 896,
+    "lr": 1e-05,
+    "workers": 4,
+    "seed": 2026,
+    "rare_crop": 0.45,
+    "lovasz_weight": 0.25,
+    "tta": false,
+    "eval_only": false,
+    "eval_test": false,
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_hi/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans"
+  },
+  "train_images": 1595,
+  "holdout_images": 788,
+  "official_test_images": 788,
+  "class_counts": [
+    847329967,
+    3493244,
+    89515308,
+    60298355,
+    32005220,
+    29382333,
+    19568777,
+    112456762,
+    33088306,
+    70204017,
+    13423548,
+    20353974,
+    7407301,
+    7394087,
+    76925502,
+    185589579
+  ],
+  "metric": "15 MUSeg classes, raw label 0 and 255 ignored",
+  "init": "/root/autodl-tmp/SelectiveMine_best_20261024/weights/best_inference.pth"
+}

@@ -1,0 +1,38 @@
+{
+  "args": {
+    "epochs": 12,
+    "batch_size": 4,
+    "height": 768,
+    "width": 896,
+    "lr": 1.5e-05,
+    "workers": 4,
+    "seed": 2026,
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_hi/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v2/runs/selective_hard",
+    "eval_only": false,
+    "eval_test": false,
+    "tta": false
+  },
+  "train_images": 1281,
+  "holdout_images": 314,
+  "official_test_images": 1576,
+  "hard_images": 1017,
+  "class_counts": [
+    684087441,
+    2721705,
+    72076038,
+    49589375,
+    26416704,
+    24244242,
+    17561497,
+    89142536,
+    25304894,
+    51004190,
+    10350361,
+    17803428,
+    5456273,
+    6100516,
+    61071586,
+    148860358
+  ]
+}

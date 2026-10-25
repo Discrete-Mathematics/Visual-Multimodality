@@ -1,0 +1,4 @@
+# Keep the authorized AutoDL image's PyTorch 2.8.0+cu128 installation.
+# These are the observed versions in the 2026-10-23 training environment.
+numpy==2.3.2
+Pillow==11.3.0

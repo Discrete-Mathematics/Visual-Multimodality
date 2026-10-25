@@ -1,0 +1,72 @@
+{
+  "model": "SelectiveMine-Complement",
+  "ideas": [
+    "modality imbalance reweighting",
+    "depth completion",
+    "low-light residual",
+    "hard-class sampling"
+  ],
+  "args": {
+    "epochs": 6,
+    "batch_size": 2,
+    "height": 640,
+    "width": 768,
+    "lr": 1.2e-05,
+    "workers": 2,
+    "seed": 2026,
+    "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v3/runs/selective_complement",
+    "eval_only": false,
+    "eval_test": false,
+    "tta": false,
+    "max_steps": 0
+  },
+  "train_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/train.txt",
+  "val_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/val.txt",
+  "test_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt",
+  "train_images": 1595,
+  "val_images": 788,
+  "test_images": 788,
+  "hard_images": 1263,
+  "class_counts": [
+    847329967,
+    3493244,
+    89515308,
+    60298355,
+    32005220,
+    29382333,
+    19568777,
+    112456762,
+    33088306,
+    70204017,
+    13423548,
+    20353974,
+    7407301,
+    7394087,
+    76925502,
+    185589579
+  ],
+  "baselines": {
+    "CMX": {
+      "pa": 86.3,
+      "mpa": 72.72,
+      "miou": 61.83
+    },
+    "DFormer": {
+      "pa": 85.63,
+      "mpa": 70.37,
+      "miou": 59.74
+    },
+    "SA-Gate": {
+      "pa": 84.77,
+      "mpa": 71.34,
+      "miou": 59.38
+    },
+    "CMNeXt": {
+      "pa": 84.05,
+      "mpa": 66.77,
+      "miou": 56.06
+    }
+  },
+  "metric": "checkpoint selected by 16-class mIoU (background included), which matches Table 5's PA scale; 15-class scores are also logged"
+}

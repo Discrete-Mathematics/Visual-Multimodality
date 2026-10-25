@@ -1,0 +1,30 @@
+===== complement test tta 2026-10-25T06:07:14+08:00 =====
+loaded wrapper /root/autodl-tmp/MineSeg/v3/runs/selective_complement/best.pth epoch 5
+{
+  "holdout_miou": 0.6549581550124578,
+  "holdout_mpa": 0.755846701712377,
+  "holdout_pa": 0.7988121557894561,
+  "miou_16": 0.6241386760909882,
+  "beats": {
+    "CMX": {
+      "pa": false,
+      "mpa": true,
+      "miou": true
+    },
+    "DFormer": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    },
+    "SA-Gate": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    },
+    "CMNeXt": {
+      "pa": true,
+      "mpa": true,
+      "miou": true
+    }
+  }
+}

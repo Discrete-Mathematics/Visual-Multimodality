@@ -1,0 +1,321 @@
+{
+  "images": 788,
+  "pixels": 542244864,
+  "pa16": 0.8683694125316787,
+  "top_confusions": [
+    {
+      "count": 4432444,
+      "share_of_errors": 0.062099912841863815,
+      "true": "background",
+      "pred": "anchoring equipment"
+    },
+    {
+      "count": 3713685,
+      "share_of_errors": 0.0520298767050722,
+      "true": "metal fixture",
+      "pred": "background"
+    },
+    {
+      "count": 3104450,
+      "share_of_errors": 0.043494305719806975,
+      "true": "anchoring equipment",
+      "pred": "background"
+    },
+    {
+      "count": 2773355,
+      "share_of_errors": 0.03885556225404026,
+      "true": "background",
+      "pred": "metal fixture"
+    },
+    {
+      "count": 2671833,
+      "share_of_errors": 0.037433207600144645,
+      "true": "background",
+      "pred": "cable"
+    },
+    {
+      "count": 2370874,
+      "share_of_errors": 0.03321667882528037,
+      "true": "metal fixture",
+      "pred": "anchoring equipment"
+    },
+    {
+      "count": 2318823,
+      "share_of_errors": 0.03248742819891445,
+      "true": "cable",
+      "pred": "background"
+    },
+    {
+      "count": 2221655,
+      "share_of_errors": 0.031126074433132363,
+      "true": "background",
+      "pred": "mining equipment"
+    },
+    {
+      "count": 2145768,
+      "share_of_errors": 0.03006287406651058,
+      "true": "rail area",
+      "pred": "background"
+    },
+    {
+      "count": 2044996,
+      "share_of_errors": 0.0286510271448348,
+      "true": "mining equipment",
+      "pred": "background"
+    },
+    {
+      "count": 1904496,
+      "share_of_errors": 0.026682578642319738,
+      "true": "background",
+      "pred": "rail area"
+    },
+    {
+      "count": 1739233,
+      "share_of_errors": 0.0243671928425251,
+      "true": "metal fixture",
+      "pred": "cable"
+    },
+    {
+      "count": 1616283,
+      "share_of_errors": 0.02264462527395409,
+      "true": "background",
+      "pred": "tube"
+    },
+    {
+      "count": 1367442,
+      "share_of_errors": 0.01915828581620071,
+      "true": "metal fixture",
+      "pred": "mining equipment"
+    },
+    {
+      "count": 1359407,
+      "share_of_errors": 0.01904571297835225,
+      "true": "tube",
+      "pred": "background"
+    },
+    {
+      "count": 1135622,
+      "share_of_errors": 0.015910415838598993,
+      "true": "electrical equipment",
+      "pred": "mining equipment"
+    },
+    {
+      "count": 1078789,
+      "share_of_errors": 0.01511416791159943,
+      "true": "cable",
+      "pred": "metal fixture"
+    },
+    {
+      "count": 1011729,
+      "share_of_errors": 0.014174636548050248,
+      "true": "background",
+      "pred": "support equipment"
+    },
+    {
+      "count": 990582,
+      "share_of_errors": 0.013878360530379885,
+      "true": "cable",
+      "pred": "anchoring equipment"
+    },
+    {
+      "count": 982071,
+      "share_of_errors": 0.01375911878514924,
+      "true": "mining equipment",
+      "pred": "metal fixture"
+    },
+    {
+      "count": 948039,
+      "share_of_errors": 0.013282319927942175,
+      "true": "electrical equipment",
+      "pred": "metal fixture"
+    },
+    {
+      "count": 838289,
+      "share_of_errors": 0.011744688446440197,
+      "true": "anchoring equipment",
+      "pred": "cable"
+    },
+    {
+      "count": 833914,
+      "share_of_errors": 0.011683393341824515,
+      "true": "support equipment",
+      "pred": "cable"
+    },
+    {
+      "count": 804920,
+      "share_of_errors": 0.011277178424515463,
+      "true": "anchoring equipment",
+      "pred": "metal fixture"
+    },
+    {
+      "count": 764481,
+      "share_of_errors": 0.010710615513531788,
+      "true": "cable",
+      "pred": "support equipment"
+    }
+  ],
+  "per_class_recall": [
+    {
+      "name": "background",
+      "support": 264531094,
+      "recall": 0.9288388948332856
+    },
+    {
+      "name": "person",
+      "support": 524388,
+      "recall": 0.5556763312661617
+    },
+    {
+      "name": "cable",
+      "support": 30805355,
+      "recall": 0.7839635998351585
+    },
+    {
+      "name": "tube",
+      "support": 23931133,
+      "recall": 0.8576094579391623
+    },
+    {
+      "name": "indicator",
+      "support": 12791236,
+      "recall": 0.914251210750861
+    },
+    {
+      "name": "electrical equipment",
+      "support": 14728069,
+      "recall": 0.7140151909934697
+    },
+    {
+      "name": "electronic equipment",
+      "support": 6025953,
+      "recall": 0.7185041104701613
+    },
+    {
+      "name": "mining equipment",
+      "support": 36496242,
+      "recall": 0.846085605197379
+    },
+    {
+      "name": "rail area",
+      "support": 9937880,
+      "recall": 0.7654412208640072
+    },
+    {
+      "name": "support equipment",
+      "support": 20285279,
+      "recall": 0.8635345858442469
+    },
+    {
+      "name": "door",
+      "support": 4363442,
+      "recall": 0.7340358826816078
+    },
+    {
+      "name": "tools and materials",
+      "support": 6552917,
+      "recall": 0.4622220913220784
+    },
+    {
+      "name": "rescue equipment",
+      "support": 3383287,
+      "recall": 0.7388524828074
+    },
+    {
+      "name": "container",
+      "support": 1803800,
+      "recall": 0.3376876593857412
+    },
+    {
+      "name": "metal fixture",
+      "support": 31053958,
+      "recall": 0.6159400679295052
+    },
+    {
+      "name": "anchoring equipment",
+      "support": 75030831,
+      "recall": 0.9220981438950077
+    }
+  ],
+  "per_class_precision": [
+    {
+      "name": "background",
+      "predicted": 263251336,
+      "precision": 0.9333543097384319
+    },
+    {
+      "name": "person",
+      "predicted": 482306,
+      "precision": 0.6041600145965424
+    },
+    {
+      "name": "cable",
+      "predicted": 32207674,
+      "precision": 0.7498299007869987
+    },
+    {
+      "name": "tube",
+      "predicted": 25364262,
+      "precision": 0.8091528939418777
+    },
+    {
+      "name": "indicator",
+      "predicted": 13449406,
+      "precision": 0.8695107427049195
+    },
+    {
+      "name": "electrical equipment",
+      "predicted": 12712951,
+      "precision": 0.8271930726390749
+    },
+    {
+      "name": "electronic equipment",
+      "predicted": 6124086,
+      "precision": 0.7069907248199976
+    },
+    {
+      "name": "mining equipment",
+      "predicted": 38279244,
+      "precision": 0.8066759364422139
+    },
+    {
+      "name": "rail area",
+      "predicted": 10274750,
+      "precision": 0.7403453125380179
+    },
+    {
+      "name": "support equipment",
+      "predicted": 20712278,
+      "precision": 0.8457321787588985
+    },
+    {
+      "name": "door",
+      "predicted": 3828430,
+      "precision": 0.8366152704894696
+    },
+    {
+      "name": "tools and materials",
+      "predicted": 4484846,
+      "precision": 0.675363880944853
+    },
+    {
+      "name": "rescue equipment",
+      "predicted": 3165622,
+      "precision": 0.7896552399496845
+    },
+    {
+      "name": "container",
+      "predicted": 1669521,
+      "precision": 0.3648477617232727
+    },
+    {
+      "name": "metal fixture",
+      "predicted": 28191353,
+      "precision": 0.6784838244549667
+    },
+    {
+      "name": "anchoring equipment",
+      "predicted": 78046799,
+      "precision": 0.8864654397933732
+    }
+  ]
+}

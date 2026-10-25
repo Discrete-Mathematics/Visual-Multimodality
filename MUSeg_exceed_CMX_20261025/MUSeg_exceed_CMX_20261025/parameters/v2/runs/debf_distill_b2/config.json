@@ -1,0 +1,66 @@
+{
+  "model": "DEBFNet",
+  "teacher": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+  "teacher_epoch": 7,
+  "args": {
+    "epochs": 16,
+    "batch_size": 2,
+    "height": 768,
+    "width": 896,
+    "lr": 2e-05,
+    "workers": 4,
+    "seed": 2026,
+    "variant": "b2",
+    "kl_weight": 3.0,
+    "ce_weight": 0.25,
+    "lovasz_weight": 0.15,
+    "temperature": 2.0,
+    "rare_crop": 0.25,
+    "teacher": "/root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth",
+    "outdir": "/root/autodl-tmp/MineSeg/v2/runs/debf_distill_b2",
+    "eval_test": false,
+    "checkpoint": ""
+  },
+  "train_images": 1595,
+  "val_images": 788,
+  "test_images": 788,
+  "train_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/train.txt",
+  "val_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/val.txt",
+  "test_split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt",
+  "class_names": [
+    "background",
+    "person",
+    "cable",
+    "tube",
+    "indicator",
+    "electrical equipment",
+    "electronic equipment",
+    "mining equipment",
+    "rail area",
+    "support equipment",
+    "door",
+    "tools and materials",
+    "rescue equipment",
+    "container",
+    "metal fixture",
+    "anchoring equipment"
+  ],
+  "baselines": {
+    "CMX": {
+      "pa": 86.3,
+      "mpa": 72.72,
+      "miou": 61.83
+    },
+    "DFormer": {
+      "pa": 85.63,
+      "mpa": 70.37,
+      "miou": 59.74
+    },
+    "SA-Gate": {
+      "pa": 84.77,
+      "mpa": 71.34,
+      "miou": 59.38
+    }
+  },
+  "selection": "highest validation 16-class mIoU; test is not read during training"
+}

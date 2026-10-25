@@ -1,0 +1,12 @@
+{
+  "state": "verified",
+  "evidence_sha256": "254352e59b44cf1f0974964098c1d460cba69a1de6009e4bda7866c5f2cbe107",
+  "package_sha256": "61f649c688489bb48ee1395908138b9e409b277b6317df201b24c8642df8eeff",
+  "package_bytes": 72196,
+  "checked_at": "2026-10-23T11:06:21.4406185+08:00",
+  "checked_files": 37,
+  "isolated_python": true,
+  "software_fixture_only": true,
+  "formal_research_weights_included": false,
+  "local_model_execution": false
+}

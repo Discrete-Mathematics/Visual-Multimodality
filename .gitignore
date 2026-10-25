@@ -32,12 +32,18 @@ wheels/
 .ipynb_checkpoints
 
 # Data and models
+# Weight files are not stored in git. The three checkpoints over GitHub's
+# 100 MB limit are attached to the weights-20261025 release.
 *.pth
 *.pt
 *.ckpt
 data/
 work_dirs/
 checkpoints/
+
+# Secrets
+*.env
+smtp.env
 
 # OS
 .DS_Store

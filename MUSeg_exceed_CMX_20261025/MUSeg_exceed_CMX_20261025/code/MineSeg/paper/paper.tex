@@ -1,0 +1,160 @@
+\documentclass[11pt]{article}
+\usepackage{xeCJK}
+\setCJKmainfont{WenQuanYi Micro Hei}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.3cm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\graphicspath{{../runs/debf/eval_test_tta/vis/}}
+
+\title{井下 RGB-D 语义分割中的深度边缘双向融合\\
+\large Depth-Edge Bidirectional Fusion for Underground RGB-D Semantic Segmentation}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+井下图像光照差，线缆、管路和轨道在彩色图中很细，在深度图上却有清楚的几何边界。本文在 MUSeg 的既定划分上做 RGB-D 语义分割。\texttt{train.txt}、\texttt{val.txt}、\texttt{test.txt} 分别有 1595、788、788 张图，15 个前景类；标签 0 为未标注，不参与损失和指标。DEBFNet 用 ImageNet 预训练的 ResNet-50 提取彩色特征，用轻量编码器读取对数深度和深度边缘，并在四个尺度上做双向门控。验证集 mIoU 为：只使用彩色 32.04\%，早期拼接 36.61\%，仅深度边缘空间门控 34.02\%，DEBFNet 39.86\%。水平翻转增强在验证集上提高到 40.61\%，随后只在测试集上评估一次，mIoU 为 40.14\%，像素准确率为 63.74\%。增益主要来自轨道、锚固设备、管路和线缆。长尾类仍然差，也没有复现 CMX、DFormer 等已发表模型，因此本稿是受控实验记录，不是已经达到 CCF-A 接收标准的完整投稿。
+\end{abstract}
+
+\section{引言}
+
+矿井场景要同时看清设备和细长结构。彩色图能区分设备外观，但灯光不均、反光和粉尘会把线缆、管路吞进背景。深度图没有颜色，却保留遮挡边界以及轨道、锚杆这类几何结构。MUSeg 按矿井存放彩色图、16 位深度和语义标签。划分已经写在 FTransUNet 目录的三个名单里，本文不再随机重划。3171 个名单样本全部能在磁盘上找到。
+
+RGB-D 分割常用早期拼接，或用两个编码器加门控交换信息，例如 SA-Gate 和 CMX。井下数据的特点是细结构依赖深度不连续，而人员、工具、容器、救援设备的像素很少。本文针对前一点设计双向融合，并用实验检查后一点能不能靠粘贴增强解决。
+
+本文给出这套名单上的可复现流程，提出深度边缘双向融合网络 DEBFNet，并在同一骨干、同一损失下与彩色基线、早期融合和纯边缘门控对比。模型和测试时增强都只按验证集选择，测试集只评估一次。
+
+\section{相关工作}
+
+彩色分割广泛使用 ImageNet 预训练骨干和特征金字塔解码。本文的 ResNet-50 与简化 FPN 属于这一常规设置。RGB-D 的差别主要在融合位置。早期融合改第一层卷积，是本文最重要的对照。SA-Gate 用分离—聚合门双向传递特征。CMX 用跨模态校正处理深度等多种辅模态。DFormer 在图像—深度对上预训练，减轻彩色骨干读取深度时的错配。FTransUNet 在遥感数据上做浅层卷积与深层 Transformer 的多级融合；MUSeg 的名单放在该代码目录中，但其公开实验是 Vaihingen 和 Potsdam，不是这 15 类矿井数据。
+
+本文没有在 MUSeg 上重新训练这些模型，因此不声称超过它们。DEBFNet 沿用双向校正的想法，但辅分支的输入是对数深度和 Sobel 边缘，而不是把深度复制成三通道再送进另一个彩色骨干。
+
+\section{方法}
+
+\subsection{数据}
+
+样本编号的前两位是矿井号。彩色、深度和标签分别为 \texttt{<矿井>-Mine/Image/<编号>.jpg}、\texttt{Depth/<编号>.png} 和 \texttt{Label/<编号>\_label.png}。抽查样本的分辨率是 $1082\times932$。深度是 16 位单通道，训练时使用 $\log(1+d)/\log(1+10000)$ 并截断到 $[0,1]$。
+
+像素值 1 到 15 依次为人员、线缆、管路、指示标识、电气设备、电子设备、采矿设备、轨道区域、支护设备、门、工具与材料、救援设备、容器、金属构件、锚固设备。像素值 0 视为未标注，映射后忽略索引为 255。训练集中 1 到 6 号矿井分别有 341、222、309、207、50、466 张；验证集为 190、135、118、116、34、195 张；测试集为 223、124、122、94、31、194 张。
+
+\subsection{网络}
+
+彩色分支为 ImageNet-1K 预训练的 ResNet-50。四个阶段先用 $1\times1$ 卷积压到 128、128、256、256。若在 2048 通道上直接做 $3\times3$ 双向门控，参数会超过三亿，相对于 1595 张训练图过大。
+
+深度分支输入两通道：归一化深度，以及每张图内部按最大值归一化的 Sobel 梯度幅值。编码器由卷积、批归一化和 ReLU 组成，分辨率和通道与压缩后的彩色特征对齐。
+
+记彩色特征和深度特征为 $F_r$、$F_d$。每个尺度把二者拼接后预测两个门。彩色侧乘 $(1+\text{门})$，深度侧乘自身的门，投影后以残差加回 $F_r$。残差使网络可以退回纯彩色特征。解码器是 128 通道的 FPN。边界头预测一张边界图，特征乘 $(1+\sigma(\text{边界}))$ 后再分类，logits 双线性上采样到输入大小。
+
+对照模型共用解码器和损失。RGB 不读深度。早期融合把第一层改为 4 通道，新通道用原彩色核的均值初始化。边缘门控没有深度编码器，只把深度和边缘下采样后去调制彩色特征。DEBFNet 约 35.5M 参数，RGB 与早期融合约 26.7M，边缘门控约 28.3M。
+
+\subsection{损失和训练}
+
+损失为
+\[
+L = L_{\mathrm{ce}} + 0.5\,L_{\mathrm{dice}} + 0.4\,L_{\mathrm{bd}}.
+\]
+类别权重用训练集前景像素的中位频率平衡，截断到 $[0.25,6]$ 后再归一化。边界由标签的 $3\times3$ 膨胀与腐蚀之差得到，未标注像素不产生边界监督，边界像素上的交叉熵额外乘 3。
+
+输入为 $640\times640$。训练使用缩放 $[0.75,1.25]$、随机裁剪、水平翻转和彩色亮度对比度抖动。使用深度的模型还随机挖去一块深度并加入少量噪声。AdamW 的头部分支学习率为 $3\times10^{-4}$，骨干为其 0.1 倍，权重衰减 $1\times10^{-4}$。前 3 个 epoch 预热，之后余弦退火，共 60 个 epoch，批大小 16，种子 42。按验证集 mIoU 保存权重。
+
+稀有类粘贴从训练集裁出人员、门、工具与材料、救援设备和容器共 322 块，以 0.8 的概率贴到训练图上。去掉边界头的模型训练 40 个 epoch，与 DEBFNet 第 40 个 epoch 比较。
+
+\section{实验}
+
+\subsection{验证集对照}
+
+表~\ref{tab:main} 是无测试时增强的验证结果。除边界消融外均训练 60 个 epoch。
+
+\begin{table}[ht]
+\centering
+\caption{验证集对照。无边界模型只训练 40 个 epoch；DEBFNet 在第 40 个 epoch 的 mIoU 为 38.04\%。}
+\label{tab:main}
+\begin{tabular}{lrrr}
+\toprule
+模型 & 参数量 & mIoU & 像素准确率 \\
+\midrule
+只使用彩色 & 26.7M & 32.04\% & 56.62\% \\
+早期融合 & 26.7M & 36.61\% & 62.33\% \\
+深度边缘空间门控 & 28.3M & 34.02\% & 59.13\% \\
+DEBFNet & 35.5M & 39.86\% & 66.05\% \\
+DEBFNet + 稀有类粘贴 & 35.5M & 38.17\% & 64.55\% \\
+去掉边界头（40 epoch） & 35.5M & 37.36\% & 63.14\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+早期融合比彩色高 4.57 个百分点，DEBFNet 比早期融合再高 3.25 个百分点。只做空间门控不如早期融合，说明辅分支需要自己的特征。40 个 epoch 时边界头约贡献 0.7 个百分点。稀有类粘贴把轨道区域 IoU 从 66.7\% 降到 61.7\%，总体降到 38.17\%。把物体贴到几何上不匹配的位置，会破坏深度和外观的对应。
+
+\subsection{类别}
+
+表~\ref{tab:cls} 是验证集各类 IoU。相对早期融合，DEBFNet 的轨道区域高 9.9 个百分点，锚固设备高 6.0 个百分点，管路高 6.1 个百分点，线缆高 3.1 个百分点。工具与材料上早期融合更高（14.6\% 对 11.9\%）。容器在各模型上都在 10\% 左右。
+
+\begin{table}[ht]
+\centering
+\caption{验证集各类 IoU（\%），无测试时增强。}
+\label{tab:cls}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+类别 & 彩色 & 早期融合 & 边缘门控 & DEBFNet \\
+\midrule
+人员 & 10.2 & 17.4 & 13.4 & 19.3 \\
+线缆 & 38.9 & 45.2 & 40.7 & 48.3 \\
+管路 & 35.6 & 42.7 & 37.8 & 48.8 \\
+指示标识 & 65.8 & 66.2 & 66.9 & 68.3 \\
+电气设备 & 27.2 & 33.0 & 26.6 & 32.0 \\
+电子设备 & 30.0 & 32.9 & 29.8 & 35.3 \\
+采矿设备 & 34.5 & 42.1 & 38.2 & 46.2 \\
+轨道区域 & 50.2 & 56.8 & 55.4 & 66.7 \\
+支护设备 & 37.4 & 40.8 & 38.0 & 45.6 \\
+门 & 28.0 & 29.8 & 30.7 & 36.7 \\
+工具与材料 & 7.9 & 14.6 & 10.9 & 11.9 \\
+救援设备 & 20.2 & 20.7 & 21.5 & 24.0 \\
+容器 & 11.7 & 9.7 & 11.3 & 11.2 \\
+金属构件 & 27.1 & 33.1 & 29.5 & 33.2 \\
+锚固设备 & 56.0 & 64.2 & 59.8 & 70.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{测试集}
+
+水平翻转后平均 logits，在验证集上把 DEBFNet 从 39.86\% 提高到 40.61\%。测试集按这一协议只评估一次：mIoU 40.14\%，像素准确率 63.74\%。与验证集加增强后的 40.61\% 接近。
+
+测试集各类 IoU（\%）为：人员 32.7，线缆 46.8，管路 44.9，指示标识 67.1，电气设备 34.4，电子设备 32.4，采矿设备 41.1，轨道区域 65.6，支护设备 44.2，门 39.6，工具与材料 10.0，救援设备 23.8，容器 16.1，金属构件 34.6，锚固设备 68.8。人员类在测试集上明显高于验证集，说明该类在两个子集中的分布不同。
+
+按矿井的测试 mIoU / 像素准确率为：1 号矿 34.34\% / 60.05\%，2 号矿 43.83\% / 64.40\%，3 号矿 32.36\% / 56.74\%，4 号矿 48.74\% / 77.69\%，5 号矿 34.30\% / 77.26\%，6 号矿 39.33\% / 77.09\%。5 号矿只有 31 张测试图。
+
+图~\ref{fig:vis} 从左到右是彩色、深度、标注和预测。标注中的黑色是未标注，不计入 mIoU；预测是稠密的，因此未标注区域也会有颜色。有标注的大块结构和线缆大致能对上，但预测边界更碎。
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{04-01-01-0023-230808080063-12-99.jpg}
+\caption{测试样本。左起：彩色、深度、标注、DEBFNet 预测。标注黑色区域为未标注。}
+\label{fig:vis}
+\end{figure}
+
+\subsection{局限}
+
+没有在同一名单上训练 CMX、DFormer、SA-Gate 或 FTransUNet，3.25 个百分点只是相对早期融合的增益。实验只有 MUSeg 这一套划分，没有 NYU Depth v2 或 SUN RGB-D。工具、容器和人员仍然差。40\% 左右的 mIoU 还不能直接用于部署。基于这些原因，本稿不能当作已经满足 CCF-A 接收标准的论文。
+
+\section{结论}
+
+在 MUSeg 的固定三分名单上，深度优于只使用彩色，深度边缘双向融合又优于把深度拼进第一层。验证集 mIoU 分别为 32.04\%、36.61\% 和 39.86\%。按验证集选定翻转增强后，测试集 mIoU 为 40.14\%。增益集中在轨道、锚固设备、管路和线缆。长尾类、跨矿井差异，以及与已发表 RGB-D 模型的同协议对比仍未完成。
+
+\begin{thebibliography}{9}
+\bibitem{he2016} K.~He, X.~Zhang, S.~Ren, and J.~Sun. Deep residual learning for image recognition. CVPR, 2016.
+\bibitem{long2015} J.~Long, E.~Shelhamer, and T.~Darrell. Fully convolutional networks for semantic segmentation. CVPR, 2015.
+\bibitem{chen2020} X.~Chen, K.-Y.~Lin, J.~Wang, W.~Wu, C.~Qian, H.~Li, and G.~Zeng. Bi-directional cross-modality feature propagation with separation-and-aggregation gate for RGB-D semantic segmentation. ECCV, 2020.
+\bibitem{zhang2023} J.~Zhang, H.~Liu, K.~Yang, X.~Hu, R.~Liu, and R.~Stiefelhagen. CMX: Cross-modal fusion for RGB-X semantic segmentation with transformers. IEEE T-ITS, 2023.
+\bibitem{yin2024} B.~Yin, X.~Zhang, Z.~Li, L.~Liu, M.-M.~Cheng, and Q.~Hou. DFormer: Rethinking RGBD representation learning for semantic segmentation. ICLR, 2024.
+\bibitem{ma2024} X.~Ma, X.~Zhang, M.-O.~Pun, and M.~Liu. A multilevel multimodal fusion transformer for remote sensing semantic segmentation. IEEE TGRS, 62:1--15, 2024.
+\end{thebibliography}
+
+\end{document}

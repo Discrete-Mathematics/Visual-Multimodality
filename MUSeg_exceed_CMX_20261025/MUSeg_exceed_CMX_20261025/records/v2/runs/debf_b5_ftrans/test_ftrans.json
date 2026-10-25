@@ -1,0 +1,185 @@
+{
+  "tag": "test_ftrans",
+  "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/debf_b5_ftrans/best.pth",
+  "epoch": 14,
+  "images": 788,
+  "split": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt",
+  "height": 768,
+  "width": 896,
+  "model": "debf",
+  "variant": "b5",
+  "pa_percent": 71.70968055725098,
+  "mpa_percent": 66.70239567756653,
+  "miou_percent": 50.35293102264404,
+  "per_class": [
+    {
+      "name": "person",
+      "iou": 0.27333930134773254,
+      "recall": 0.8007095456123352,
+      "support": 580389
+    },
+    {
+      "name": "cable",
+      "iou": 0.5218080878257751,
+      "recall": 0.6806033849716187,
+      "support": 30549640
+    },
+    {
+      "name": "tube",
+      "iou": 0.5472949743270874,
+      "recall": 0.6751621961593628,
+      "support": 23427842
+    },
+    {
+      "name": "indicator",
+      "iou": 0.7227202653884888,
+      "recall": 0.8502038717269897,
+      "support": 11489809
+    },
+    {
+      "name": "electrical equipment",
+      "iou": 0.5026237368583679,
+      "recall": 0.6965538859367371,
+      "support": 14025884
+    },
+    {
+      "name": "electronic equipment",
+      "iou": 0.4034636914730072,
+      "recall": 0.5664615631103516,
+      "support": 6953739
+    },
+    {
+      "name": "mining equipment",
+      "iou": 0.5449383854866028,
+      "recall": 0.7303091883659363,
+      "support": 38843556
+    },
+    {
+      "name": "rail area",
+      "iou": 0.6835625767707825,
+      "recall": 0.8116087913513184,
+      "support": 8022874
+    },
+    {
+      "name": "support equipment",
+      "iou": 0.5809399485588074,
+      "recall": 0.75135737657547,
+      "support": 23401746
+    },
+    {
+      "name": "door",
+      "iou": 0.7400054335594177,
+      "recall": 0.8561466932296753,
+      "support": 3919082
+    },
+    {
+      "name": "tools and materials",
+      "iou": 0.20423613488674164,
+      "recall": 0.28974947333335876,
+      "support": 6157847
+    },
+    {
+      "name": "rescue equipment",
+      "iou": 0.3856775760650635,
+      "recall": 0.5284192562103271,
+      "support": 2961317
+    },
+    {
+      "name": "container",
+      "iou": 0.3088565170764923,
+      "recall": 0.34877729415893555,
+      "support": 3787867
+    },
+    {
+      "name": "metal fixture",
+      "iou": 0.42693275213241577,
+      "recall": 0.5548416972160339,
+      "support": 34853112
+    },
+    {
+      "name": "anchoring equipment",
+      "iou": 0.7065395712852478,
+      "recall": 0.864454448223114,
+      "support": 64315336
+    }
+  ],
+  "per_mine": {
+    "01": {
+      "pa": 0.6755022406578064,
+      "mpa": 0.5919239521026611,
+      "miou": 0.4195990264415741
+    },
+    "02": {
+      "pa": 0.761164665222168,
+      "mpa": 0.7113547921180725,
+      "miou": 0.6008219718933105
+    },
+    "03": {
+      "pa": 0.6555907726287842,
+      "mpa": 0.6166950464248657,
+      "miou": 0.4399249851703644
+    },
+    "04": {
+      "pa": 0.8192160129547119,
+      "mpa": 0.7596578001976013,
+      "miou": 0.5861467719078064
+    },
+    "05": {
+      "pa": 0.7888949513435364,
+      "mpa": 0.5190377831459045,
+      "miou": 0.3511141836643219
+    },
+    "06": {
+      "pa": 0.8342370390892029,
+      "mpa": 0.6579890847206116,
+      "miou": 0.515992283821106
+    }
+  },
+  "baselines_percent": {
+    "DeeplabV3+": {
+      "pa": 76.67,
+      "mpa": 54.91,
+      "miou": 43.64
+    },
+    "SegFormer RGB": {
+      "pa": 78.75,
+      "mpa": 58.54,
+      "miou": 47.93
+    },
+    "SegFormer Depth": {
+      "pa": 81.16,
+      "mpa": 62.21,
+      "miou": 51.28
+    },
+    "SegFormer RGB-D": {
+      "pa": 83.0,
+      "mpa": 65.25,
+      "miou": 55.2
+    },
+    "CMNeXt": {
+      "pa": 84.05,
+      "mpa": 66.77,
+      "miou": 56.06
+    },
+    "SA-Gate": {
+      "pa": 84.77,
+      "mpa": 71.34,
+      "miou": 59.38
+    },
+    "DFormer": {
+      "pa": 85.63,
+      "mpa": 70.37,
+      "miou": 59.74
+    },
+    "CMX": {
+      "pa": 86.3,
+      "mpa": 72.72,
+      "miou": 61.83
+    }
+  },
+  "beats_cmx": {
+    "pa": false,
+    "mpa": false,
+    "miou": false
+  }
+}

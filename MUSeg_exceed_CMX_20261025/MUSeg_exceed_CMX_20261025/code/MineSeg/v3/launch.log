@@ -1,0 +1,172 @@
+===== waiter start 2026-10-25T04:47:50+08:00 =====
+2026-10-25T04:47:50+08:00 gpu_mem_mib=71062
+2026-10-25T04:48:20+08:00 gpu_mem_mib=71062
+2026-10-25T04:48:50+08:00 gpu_mem_mib=71222
+2026-10-25T04:49:21+08:00 gpu_mem_mib=71222
+2026-10-25T04:49:51+08:00 gpu_mem_mib=71222
+2026-10-25T04:50:21+08:00 gpu_mem_mib=71222
+2026-10-25T04:50:51+08:00 gpu_mem_mib=71222
+2026-10-25T04:51:21+08:00 gpu_mem_mib=71222
+2026-10-25T04:51:51+08:00 gpu_mem_mib=71222
+2026-10-25T04:52:21+08:00 gpu_mem_mib=71222
+2026-10-25T04:52:51+08:00 gpu_mem_mib=71222
+2026-10-25T04:53:21+08:00 gpu_mem_mib=71222
+2026-10-25T04:53:51+08:00 gpu_mem_mib=62529
+2026-10-25T04:54:21+08:00 gpu_mem_mib=62529
+2026-10-25T04:54:51+08:00 gpu_mem_mib=67736
+2026-10-25T04:55:22+08:00 gpu_mem_mib=67736
+2026-10-25T04:55:52+08:00 gpu_mem_mib=67736
+2026-10-25T04:56:22+08:00 gpu_mem_mib=67736
+2026-10-25T04:56:52+08:00 gpu_mem_mib=67736
+2026-10-25T04:57:22+08:00 gpu_mem_mib=67736
+2026-10-25T04:57:52+08:00 gpu_mem_mib=63438
+2026-10-25T04:58:22+08:00 gpu_mem_mib=95096
+2026-10-25T04:58:52+08:00 gpu_mem_mib=95096
+2026-10-25T04:59:22+08:00 gpu_mem_mib=95096
+2026-10-25T04:59:52+08:00 gpu_mem_mib=95096
+2026-10-25T05:00:22+08:00 gpu_mem_mib=95096
+2026-10-25T05:00:53+08:00 gpu_mem_mib=95096
+2026-10-25T05:01:23+08:00 gpu_mem_mib=95096
+2026-10-25T05:01:53+08:00 gpu_mem_mib=95122
+2026-10-25T05:02:23+08:00 gpu_mem_mib=95122
+2026-10-25T05:02:53+08:00 gpu_mem_mib=95122
+2026-10-25T05:03:23+08:00 gpu_mem_mib=95122
+2026-10-25T05:03:53+08:00 gpu_mem_mib=95122
+2026-10-25T05:04:23+08:00 gpu_mem_mib=95122
+2026-10-25T05:04:53+08:00 gpu_mem_mib=95122
+2026-10-25T05:05:23+08:00 gpu_mem_mib=95122
+2026-10-25T05:05:53+08:00 gpu_mem_mib=95122
+2026-10-25T05:06:24+08:00 gpu_mem_mib=95122
+2026-10-25T05:06:54+08:00 gpu_mem_mib=95122
+2026-10-25T05:07:24+08:00 gpu_mem_mib=95122
+2026-10-25T05:07:54+08:00 gpu_mem_mib=95122
+2026-10-25T05:08:24+08:00 gpu_mem_mib=62529
+2026-10-25T05:08:54+08:00 gpu_mem_mib=62529
+2026-10-25T05:09:24+08:00 gpu_mem_mib=62529
+2026-10-25T05:09:54+08:00 gpu_mem_mib=62529
+2026-10-25T05:10:24+08:00 gpu_mem_mib=62529
+2026-10-25T05:10:54+08:00 gpu_mem_mib=62531
+2026-10-25T05:11:24+08:00 gpu_mem_mib=62531
+2026-10-25T05:11:54+08:00 gpu_mem_mib=62531
+2026-10-25T05:12:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:12:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:13:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:13:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:14:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:14:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:15:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:15:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:16:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:16:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:17:25+08:00 gpu_mem_mib=62531
+2026-10-25T05:17:55+08:00 gpu_mem_mib=62531
+2026-10-25T05:18:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:18:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:19:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:19:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:20:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:20:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:21:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:21:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:22:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:22:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:23:26+08:00 gpu_mem_mib=62531
+2026-10-25T05:23:56+08:00 gpu_mem_mib=62531
+2026-10-25T05:24:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:24:57+08:00 gpu_mem_mib=62531
+2026-10-25T05:25:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:25:57+08:00 gpu_mem_mib=62531
+2026-10-25T05:26:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:26:57+08:00 gpu_mem_mib=62531
+2026-10-25T05:27:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:27:57+08:00 gpu_mem_mib=62531
+2026-10-25T05:28:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:28:57+08:00 gpu_mem_mib=62531
+2026-10-25T05:29:27+08:00 gpu_mem_mib=62531
+2026-10-25T05:29:58+08:00 gpu_mem_mib=62531
+2026-10-25T05:30:28+08:00 gpu_mem_mib=62531
+2026-10-25T05:30:58+08:00 gpu_mem_mib=62531
+2026-10-25T05:31:28+08:00 gpu_mem_mib=62531
+2026-10-25T05:31:58+08:00 gpu_mem_mib=62531
+2026-10-25T05:32:28+08:00 gpu_mem_mib=62531
+2026-10-25T05:32:58+08:00 gpu_mem_mib=62531
+2026-10-25T05:33:28+08:00 gpu_mem_mib=62531
+2026-10-25T05:33:58+08:00 gpu_mem_mib=0
+selective checkpoint /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth
+loaded backbone /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 hard 1263/1595
+Traceback (most recent call last):
+  File "/root/autodl-tmp/MineSeg/v3/train_selective.py", line 264, in <module>
+    main()
+  File "/root/autodl-tmp/MineSeg/v3/train_selective.py", line 235, in main
+    metrics = evaluate(model, val_loader)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/MineSeg/v2/finetune_selective.py", line 204, in evaluate
+    output = forward_batch(model, batch)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/engine.py", line 88, in forward_batch
+    return model(*tensors)
+           ^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/MineSeg/v3/train_selective.py", line 59, in forward
+    output = self.backbone(rgb, depth, valid, luma, hha)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_selective/model.py", line 50, in forward
+    geometry = net.geo_encoder(net.stem(hha))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 183, in forward
+    feat1 = self._stage(self.patch_embed1, self.block1, self.norm1, x)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 177, in _stage
+    tokens = block(tokens, height, width)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 112, in forward
+    x = x + self.drop_path(self.attn(self.norm1(x), height, width))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 97, in forward
+    attn = self.attn_drop(attn.softmax(dim=-1))
+                          ^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 442.00 MiB. GPU 0 has a total capacity of 94.97 GiB of which 22.64 GiB is free. Including non-PyTorch memory, this process has 46.05 GiB memory in use. Process 15652 has 26.26 GiB memory in use. 45.59 GiB allowed; Of the allocated memory 45.21 GiB is allocated by PyTorch, and 153.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+===== restart selective batch2 2026-10-25T05:39:11+08:00 =====
+loaded backbone /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 797 hard 1263/1595
+epoch 1/6 loss 0.5644 paper mIoU 62.39 MPA 72.07 PA 79.92 16-class mIoU 60.46 beats {'pa': True, 'mpa': True, 'miou': False} 245s
+saved best epoch 1 16-class mIoU 60.46
+epoch 2/6 loss 0.5462 paper mIoU 62.28 MPA 72.48 PA 80.44 16-class mIoU 60.10 beats {'pa': True, 'mpa': True, 'miou': False} 222s
+epoch 3/6 loss 0.4794 paper mIoU 63.14 MPA 72.60 PA 81.53 16-class mIoU 60.50 beats {'pa': True, 'mpa': True, 'miou': False} 227s
+saved best epoch 3 16-class mIoU 60.50
+epoch 4/6 loss 0.4729 paper mIoU 63.31 MPA 73.12 PA 81.37 16-class mIoU 60.70 beats {'pa': True, 'mpa': True, 'miou': False} 227s
+saved best epoch 4 16-class mIoU 60.70
+epoch 5/6 loss 0.4670 paper mIoU 63.67 MPA 73.12 PA 81.38 16-class mIoU 61.19 beats {'pa': True, 'mpa': True, 'miou': False} 221s
+saved best epoch 5 16-class mIoU 61.19
+epoch 6/6 loss 0.4492 paper mIoU 63.00 MPA 71.99 PA 80.16 16-class mIoU 61.01 beats {'pa': True, 'mpa': True, 'miou': False} 228s
+finished best 16-class mIoU 61.19

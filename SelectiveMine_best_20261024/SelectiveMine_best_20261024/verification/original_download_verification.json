@@ -1,0 +1,13 @@
+{
+  "verified_utc": "2026-10-23T04:32:45.3610395Z",
+  "bundle_sha256": "34501aed5da0ac04df945dd737cfdb2e5736aefac8d229a1469d76f234cb05c7",
+  "evidence_sha256": "7df5d7061523e91708d5f61278452fb2a17f730b9cf12f011350eaded893c84d",
+  "weight_sha256": "f7bd8de044ec8fd6e747a670f08de4dd2955d7f0c831b7639244de42d3a78cef",
+  "weight_bytes": 238273211,
+  "candidate_python_files_verified": 8,
+  "cloud_cpu_check_passed": true,
+  "local_model_execution": false,
+  "new_gpu_pilot_status": "queued_not_started",
+  "completed_original_epochs": 120,
+  "selected_original_epoch": 99
+}
