@@ -1,3 +1,10 @@
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
+
+# Experiment notes below are far under GitHub's 100 MB limit and stay in Git.
+# Checkpoints over that limit are GitHub Release assets, not Git LFS objects.
+MUSeg_exceed_CMX_20261025/SelectiveMineF_architecture_paper/** -filter -diff -merge
+MUSeg_exceed_CMX_20261025/report_slides/** -filter -diff -merge
+selectivemine1030/** -filter -diff -merge
+SelectiveMine_ablation_20261101/** -filter -diff -merge
