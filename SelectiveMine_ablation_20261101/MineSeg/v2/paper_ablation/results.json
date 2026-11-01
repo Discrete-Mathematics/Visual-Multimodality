@@ -1,0 +1,24 @@
+{
+  "checkpoint": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/best.pth",
+  "epoch": 12,
+  "test_full_16": {
+    "pa": "86.13",
+    "mpa": "74.52",
+    "miou": "62.79"
+  },
+  "largest_miou_drop": {
+    "id": "no_depth",
+    "title": "去掉深度和 HHA",
+    "delta": "-42.07"
+  },
+  "largest_pa_drop": {
+    "id": "no_depth",
+    "title": "去掉深度和 HHA",
+    "delta": "-28.19"
+  },
+  "largest_mpa_drop": {
+    "id": "no_depth",
+    "title": "去掉深度和 HHA",
+    "delta": "-50.13"
+  }
+}

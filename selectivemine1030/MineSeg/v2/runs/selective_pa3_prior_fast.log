@@ -1,0 +1,56 @@
+val 768x896
+  bias -0.15 PA 87.15 MPA 72.73 mIoU 61.50
+  bias 0.00 PA 87.17 MPA 72.49 mIoU 61.50
+  bias 0.10 PA 87.17 MPA 72.33 mIoU 61.50
+  bias 0.20 PA 87.17 MPA 72.16 mIoU 61.49
+  bias 0.30 PA 87.17 MPA 71.99 mIoU 61.48
+  bias 0.45 PA 87.15 MPA 71.72 mIoU 61.45
+  bias 0.60 PA 87.12 MPA 71.44 mIoU 61.41
+  bias 0.75 PA 87.08 MPA 71.15 mIoU 61.35
+  bias 0.90 PA 87.02 MPA 70.84 mIoU 61.28
+val 800x928
+  bias -0.15 PA 87.21 MPA 72.78 mIoU 61.46
+  bias 0.00 PA 87.23 MPA 72.55 mIoU 61.46
+  bias 0.10 PA 87.23 MPA 72.39 mIoU 61.45
+  bias 0.20 PA 87.23 MPA 72.22 mIoU 61.44
+  bias 0.30 PA 87.22 MPA 72.05 mIoU 61.42
+  bias 0.45 PA 87.20 MPA 71.78 mIoU 61.39
+  bias 0.60 PA 87.17 MPA 71.50 mIoU 61.33
+  bias 0.75 PA 87.12 MPA 71.20 mIoU 61.27
+  bias 0.90 PA 87.06 MPA 70.89 mIoU 61.18
+val 832x960
+  bias -0.15 PA 87.15 MPA 72.49 mIoU 61.21
+  bias 0.00 PA 87.16 MPA 72.25 mIoU 61.20
+  bias 0.10 PA 87.17 MPA 72.08 mIoU 61.19
+  bias 0.20 PA 87.17 MPA 71.90 mIoU 61.17
+  bias 0.30 PA 87.16 MPA 71.73 mIoU 61.15
+  bias 0.45 PA 87.14 MPA 71.45 mIoU 61.10
+  bias 0.60 PA 87.11 MPA 71.16 mIoU 61.04
+  bias 0.75 PA 87.07 MPA 70.86 mIoU 60.97
+  bias 0.90 PA 87.01 MPA 70.55 mIoU 60.88
+val 704x832
+  bias -0.15 PA 87.14 MPA 73.03 mIoU 61.75
+  bias 0.00 PA 87.16 MPA 72.80 mIoU 61.75
+  bias 0.10 PA 87.16 MPA 72.64 mIoU 61.75
+  bias 0.20 PA 87.16 MPA 72.47 mIoU 61.74
+  bias 0.30 PA 87.16 MPA 72.29 mIoU 61.72
+  bias 0.45 PA 87.14 MPA 72.02 mIoU 61.68
+  bias 0.60 PA 87.10 MPA 71.73 mIoU 61.62
+  bias 0.75 PA 87.06 MPA 71.43 mIoU 61.54
+  bias 0.90 PA 87.00 MPA 71.11 mIoU 61.45
+chosen 800|928|0.10 PA 87.23
+test 800x928 bias 0.10
+{
+  "chosen": "800|928|0.10",
+  "test": {
+    "pa16": 86.10029124228733,
+    "mpa16": 74.1138711332848,
+    "miou16": 62.568947211587265
+  },
+  "beats_cmx_16": false,
+  "zero_same_res": {
+    "pa16": 86.09395614989936,
+    "mpa16": 74.25046378129503,
+    "miou16": 62.54880620078509
+  }
+}

@@ -1,0 +1,36 @@
+loading checkpoint
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 trainable 59.06M
+epoch 1/12 loss 0.3499 paper mIoU 61.98 MPA 70.13 PA 79.65 16-class mIoU 60.82 MPA 71.65 PA 86.87 229s
+saved best_pa epoch 1 16-class PA 86.87
+epoch 2/12 loss 0.3377 paper mIoU 62.26 MPA 70.69 PA 79.96 16-class mIoU 60.83 MPA 72.15 PA 86.88 212s
+saved best_pa epoch 2 16-class PA 86.88
+saved best epoch 2 16-class PA 86.88
+epoch 3/12 loss 0.3453 paper mIoU 61.62 MPA 69.62 PA 79.79 16-class mIoU 60.46 MPA 71.18 PA 86.98 212s
+saved best_pa epoch 3 16-class PA 86.98
+epoch 4/12 loss 0.3329 paper mIoU 62.86 MPA 71.02 PA 80.23 16-class mIoU 61.30 MPA 72.47 PA 87.03 212s
+saved best_pa epoch 4 16-class PA 87.03
+saved best epoch 4 16-class PA 87.03
+epoch 5/12 loss 0.3370 paper mIoU 62.92 MPA 71.36 PA 80.69 16-class mIoU 61.28 MPA 72.76 PA 87.07 212s
+saved best_pa epoch 5 16-class PA 87.07
+saved best epoch 5 16-class PA 87.07
+epoch 6/12 loss 0.3341 paper mIoU 63.02 MPA 71.44 PA 80.78 16-class mIoU 61.39 MPA 72.83 PA 87.08 212s
+saved best_pa epoch 6 16-class PA 87.08
+saved best epoch 6 16-class PA 87.08
+epoch 7/12 loss 0.3269 paper mIoU 63.09 MPA 71.44 PA 80.71 16-class mIoU 61.43 MPA 72.84 PA 87.08 211s
+saved best_pa epoch 7 16-class PA 87.08
+saved best epoch 7 16-class PA 87.08
+epoch 8/12 loss 0.3306 paper mIoU 62.89 MPA 70.89 PA 80.15 16-class mIoU 61.54 MPA 72.35 PA 87.06 213s
+epoch 9/12 loss 0.3356 paper mIoU 63.13 MPA 71.40 PA 80.78 16-class mIoU 61.57 MPA 72.79 PA 87.11 213s
+saved best_pa epoch 9 16-class PA 87.11
+saved best epoch 9 16-class PA 87.11
+epoch 10/12 loss 0.3290 paper mIoU 62.94 MPA 70.86 PA 80.35 16-class mIoU 61.57 MPA 72.33 PA 87.12 214s
+saved best_pa epoch 10 16-class PA 87.12
+saved best epoch 10 16-class PA 87.12
+epoch 11/12 loss 0.3309 paper mIoU 62.72 MPA 70.72 PA 80.23 16-class mIoU 61.44 MPA 72.20 PA 87.15 213s
+saved best_pa epoch 11 16-class PA 87.15
+saved best epoch 11 16-class PA 87.15
+epoch 12/12 loss 0.3330 paper mIoU 62.91 MPA 71.04 PA 80.48 16-class mIoU 61.51 MPA 72.49 PA 87.17 214s
+saved best_pa epoch 12 16-class PA 87.17
+saved best epoch 12 16-class PA 87.17
+finished best score 87.17 best 16-class PA 87.17

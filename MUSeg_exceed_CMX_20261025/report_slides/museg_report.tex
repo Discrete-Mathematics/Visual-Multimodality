@@ -1,0 +1,268 @@
+\documentclass[aspectratio=169,11pt]{ctexbeamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\title{MUSeg 上的 RGB-D 语义分割实验汇报}
+\subtitle{SelectiveMine-F、补全前端与 DEBF-B5}
+\author{根据本目录实验记录整理}
+\date{2026-10-29}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{先说结论}
+  \begin{itemize}
+    \item 比较对象是 MUSeg 论文 Table~5 的 CMX（MiT-B2，RGB-D HHA）：\\
+      PA 86.30，mPA 72.72，mIoU 61.83。这些数字是引用，不是本目录重跑。
+    \item 与 Table~5 对齐的是 \textbf{16 类协议}：标签 0 计入，只忽略 255。
+    \item SelectiveMine-F，768$\times$896，六视图测试时增强，测试集 788 张：\\
+      PA \textbf{86.04}，mPA \textbf{75.73}，mIoU \textbf{62.61}。
+    \item mPA 与 mIoU 高于 CMX。PA 低 0.26 个百分点。三项没有同时超过。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{数据与划分}
+  \begin{itemize}
+    \item 数据：MUSeg，Azure Kinect DK，六个矿井。发布帧是 2048$\times$1536 彩色图上的 1082$\times$932 裁剪。
+    \item 划分固定为 FTransUNet 的 \texttt{train.txt} / \texttt{val.txt} / \texttt{test.txt}：1595 / 788 / 788。
+    \item 检查点只按验证集选择。已保存的检查点在测试集上评测一次，另有一次关闭测试时增强的对照。
+    \item 16 类名称从 0 到 15：背景、人、线缆、管道、指示牌、电气设备、电子设备、采矿设备、轨道、支护设备、门、工具材料、救援设备、容器、金属构件、锚固。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{两种协议不能混用}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{16 类}\\
+      只忽略 255，背景 0 进入混淆矩阵。\\
+      强模型的 PA 在 86\% 附近，才能和 CMX 的 86.30 比较。
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{15 类}\\
+      同时忽略 0 和 255。\\
+      SelectiveMine-F 加测试时增强：PA 79.63，mPA 74.61，mIoU 65.35。\\
+      这个 PA 不能拿去和 86.30 比较。
+    \end{column}
+  \end{columns}
+  \vspace{0.6em}
+  \small 15 类 mIoU 往往更高，因为未标注区域不再把平均拉低。正文里两种数字分列。
+\end{frame}
+
+\begin{frame}{模型在测试时怎么给出类别}
+  \begin{itemize}
+    \item 前向返回的 \texttt{logits} 已经是混合后的对数概率 $\log p$。
+    \item 单尺度测试：
+      \[
+        \hat y=\arg\max_{c\in\{0,\ldots,15\}}\log p^{(c)}.
+      \]
+    \item SelectiveMine-F 的主结果使用六视图：尺度 $0.75,1,1.25$，每个尺度再做水平翻转。
+    \item 每个视图把 $\log p$ 指数成概率，翻转视图翻回，缩回原图后求平均，再 $\arg\max$。
+    \item 标签 255 只在算指标时跳过，不改变分类规则。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{SelectiveMine 的数据流}
+  \centering
+  \begin{tikzpicture}[
+    font=\small,
+    box/.style={draw, rounded corners, align=center, inner sep=3pt, minimum height=2.2em},
+    arr/.style={-{Stealth}, thick}
+  ]
+    \node[box] (rgb) {RGB};
+    \node[box, right=0.55cm of rgb] (enc) {MiT-B2};
+    \node[box, below=0.45cm of rgb] (dep) {打包深度};
+    \node[box, right=0.35cm of dep] (denc) {DepthEncoder};
+    \node[box, right=0.7cm of enc] (gate) {四级门控};
+    \node[box, right=0.45cm of gate] (zb) {$z_B$};
+    \node[box, below=0.55cm of zb] (zf) {$z_F$};
+    \node[box, below=1.15cm of denc] (hha) {四通道几何};
+    \node[box, right=0.35cm of hha] (geo) {几何 MiT-B2};
+    \node[box, right=0.35cm of geo] (zg) {$z_G$};
+    \node[box, above=0.15cm of zf, xshift=2.6cm] (out) {$\log p$};
+    \draw[arr] (rgb) -- (enc);
+    \draw[arr] (dep) -- (denc);
+    \draw[arr] (enc) -- (gate);
+    \draw[arr] (denc) -- (gate);
+    \draw[arr] (gate) -- (zb);
+    \draw[arr] (zb) -- (zf);
+    \draw[arr] (hha) -- (geo);
+    \draw[arr] (geo) -- (zg);
+    \draw[arr] (zg) -- (zf);
+    \draw[arr] (zf) -- (out);
+  \end{tikzpicture}
+
+  \vspace{0.4em}
+  \small
+  门控：$F=F_{\mathrm{rgb}}+\alpha\cdot\delta(F_{\mathrm{depth}})$。\\
+  合成：$z_F=z_B+\tanh(\mathrm{open})\cdot\mathrm{mix}\cdot s\cdot z_G$。实际训练 $\mathrm{mix}=1$。
+\end{frame}
+
+\begin{frame}{五路输入}
+  \begin{itemize}
+    \item RGB：缩放到训练高宽后做 ImageNet 归一化。F 的微调分辨率是 $768\times 896$。
+    \item 打包深度三通道：归一化对数深度、有效掩码、梯度幅值。对数范围是 $\log 617$ 到 $\log 5658$（毫米）。
+    \item 有效掩码：深度毫米值大于 0。Kinect 的 0 表示没有回波。
+    \item 亮度：RGB 除以 255 之后、ImageNet 归一化之前，三个通道的均值。
+    \item 四通道几何：归一化逆深度、相机向上方向的高度、表面法线与该方向的夹角、有效性。前三个通道再做 ImageNet 归一化。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{两条编码器和门控}
+  \begin{itemize}
+    \item RGB 编码器是 \texttt{MixVisionTransformerB2}：通道 64/128/320/512，块数 3/4/6/3。
+    \item 每阶段先做重叠卷积嵌入，再做高效自注意力和 Mix-FFN。Mix-FFN 在两层线性之间插入 $3\times 3$ 深度卷积。
+    \item \texttt{DepthEncoder} 是四级 Conv-BN-ReLU，通道与空间步长和 MiT-B2 对齐，没有 ImageNet 权重。
+    \item 每级一个 \texttt{ReliabilityGate}。$\alpha=\sigma(\mathrm{score})\times\mathrm{valid}$。空洞处深度残差加不进去。
+    \item 融合解码器是 \texttt{FuseDecoder}：四级投到 256 维，拼成 1024，再收到 16 类，得到 $z_B$。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{几何支路、外观支路和路由器}
+  \begin{itemize}
+    \item $1\times 1$ stem 把 4 通道几何收成 3 通道，初始权重是 $[I\mid 0]$。几何编码器是第二个 MiT-B2，初始权重复制自 RGB 编码器。
+    \item 几何解码器是另一个 \texttt{FuseDecoder}，输出 $z_G$。\texttt{fusion=logits} 时，几何特征不加入融合解码器的输入。
+    \item 外观解码器在构造时深拷贝融合解码器，只吃 RGB 特征，得到 $z_R$。
+    \item 路由器把 52 通道证据收成 $a$，令 $g=\sigma(a)$。有深度时
+      \[
+        \log p=\log\big((1-g)p_R+g p_F\big).
+      \]
+      整图没有有效深度时改为 $\log p_R$。
+    \item 记录中的训练把 \texttt{fusion} 设为 \texttt{logits}。\texttt{GeometryRelay} 会创建，但这次前向不调用它。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{训练目标}
+  像素损失先按类别权重平均。权重是频率平方根的倒数，再截断到 $[0.25,3]$。官方 1595 张上，背景被截到 0.25，人约 2.68，容器约 1.84。
+  \[
+    L=\frac{L_M+0.5L_R+0.5L_F}{2}+0.2L_G+0.05L_U.
+  \]
+  \begin{itemize}
+    \item $L_M$ 是混合对数概率的负对数似然。$L_R,L_F,L_G$ 是三路分数的交叉熵。
+    \item $L_U$ 让路由器拟合 $q=\sigma((\mathrm{NLL}_R-\mathrm{NLL}_F)/0.5)$。两路分数在构造 $q$ 时切断梯度。
+    \item $L_F,L_G,L_U$ 还要求整图 $s=1$。标签 255 不进入平均。
+    \item \texttt{selective\_ftrans} 另加权重 0.25 的 Lov\'asz-Softmax。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{SelectiveMine-F 是怎么训出来的}
+  \begin{enumerate}
+    \item 120 epoch 开发实验：\texttt{utility}+\texttt{logits}，480$\times$640，batch 8，学习率 $6\times 10^{-5}$，成对深度权重 0.5。
+    \item \texttt{selective\_hi}：从该权重继续，768$\times$896。归档历史只有计划 20 轮中的 10 轮。
+    \item \texttt{selective\_ftrans}：官方 1595/788，16 轮，batch 4，学习率 $10^{-5}$，稀有裁剪概率 0.45，种子 2026。
+  \end{enumerate}
+  \vspace{0.4em}
+  保存依据是 \textbf{15 类}验证 mIoU。写出的 \texttt{best.pth} 是第 7 轮：\\
+  15 类 mIoU 63.42\%；16 类 PA 86.84，mPA 73.49，mIoU 61.22。\\
+  更晚的轮次在 16 类上更高，但 15 类没有超过第 7 轮，那些权重没有保存。测试数字对应该文件。
+\end{frame}
+
+\begin{frame}{测试集主表}
+  \small
+  单位是百分比。Table~5 引自论文，不是本次重训。
+  \vspace{0.4em}
+  \begin{tabular}{lcccc}
+    \toprule
+    方法 & 协议 & TTA & PA & mPA & mIoU \\
+    \midrule
+    CMX & 16 类 & --- & 86.30 & 72.72 & 61.83 \\
+    DFormer & 16 类 & --- & 85.63 & 70.37 & 59.74 \\
+    SA-Gate & 16 类 & --- & 84.77 & 71.34 & 59.38 \\
+    CMNeXt & 16 类 & --- & 84.05 & 66.77 & 56.06 \\
+    SelectiveMine-F & 16 类 & 六视图 & 86.04 & 75.73 & \textbf{62.61} \\
+    SelectiveMine-F & 16 类 & 关闭 & 85.93 & 75.46 & 62.42 \\
+    SelectiveMine-C & 16 类 & 六视图 & \textbf{86.10} & \textbf{76.64} & 62.41 \\
+    DEBF-B5，第 14/30 轮 & 15 类 & 六视图 & 71.71 & 66.70 & 50.35 \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.5em}
+  \scriptsize C 的分辨率是 $640\times 768$，F 是 $768\times 896$。两者的 0.20 个 mIoU 差不能单独解释成补全模块的效果。
+\end{frame}
+
+\begin{frame}{前景类交并比}
+  \small
+  单位是百分比，对应标签 1 至 15，平均后是 15 类 mIoU，不是上表的 16 类 mIoU。
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{tabular}{lcc}
+        \toprule
+        类别 & F & C \\
+        \midrule
+        人 & 53.21 & 53.75 \\
+        线缆 & 65.96 & 64.65 \\
+        管道 & 76.63 & 76.02 \\
+        指示牌 & 79.17 & 80.76 \\
+        电气设备 & 65.89 & 66.99 \\
+        电子设备 & 54.48 & 54.84 \\
+        采矿设备 & 65.86 & 67.69 \\
+        轨道 & 82.69 & 82.32 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{tabular}{lcc}
+        \toprule
+        类别 & F & C \\
+        \midrule
+        支护 & 71.80 & 73.72 \\
+        门 & 78.26 & 79.89 \\
+        工具材料 & 43.05 & 42.95 \\
+        救援设备 & 66.09 & 61.07 \\
+        容器 & 37.23 & 37.46 \\
+        金属构件 & 54.93 & 55.62 \\
+        锚固 & 84.99 & 84.71 \\
+         &  &  \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  \vspace{0.4em}
+  \scriptsize 最弱的前景类是容器和工具材料。锚固、轨道、指示牌高于 78。
+\end{frame}
+
+\begin{frame}{另外两条轨迹}
+  \textbf{SelectiveMine-C}\\
+  在骨干前加深度补全和低照度残差。按 16 类验证 mIoU 保存第 5 轮。测试 PA 最高，但分辨率与 F 不同。
+
+  \vspace{0.5em}
+  \textbf{DEBF-B5}\\
+  计划 30 轮，停在第 14 轮。指标是 15 类。三项都低于 Table~5 的量级。人员类 IoU 27.33，工具材料 20.42。
+
+  \vspace{0.5em}
+  \textbf{selective\_pa2}\\
+  12 轮跑完。验证 PA 最高到 87.11，但 mPA 没有达到保存门槛 72.8。没有 \texttt{best.pth}，也没有测试集数字。验证集 PA 不能当作测试结论。
+\end{frame}
+
+\begin{frame}{汇报时需要主动说明的限制}
+  \begin{itemize}
+    \item CMX、DFormer、SA-Gate、CMNeXt 的数字来自论文 Table~5，不是本目录用同一代码重训。
+    \item 只有一个种子。F 的检查点按 15 类验证 mIoU 选择，丢掉了更晚、16 类更高的轮次。
+    \item \texttt{selective\_hi} 的归档只有计划 20 轮中的 10 轮。
+    \item 几何用的是相机向上方向，不是重力对齐的标准 HHA。局部深度空洞不会强制退回 RGB，只有整图没有有效深度时 $s=0$。
+    \item 焦距、主点和裁剪原点写在 \texttt{geometry.py} 里。分辨率和传感器与论文一致；这几个常数不在 MUSeg PDF 中。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{可以怎样讲这页结果}
+  \begin{itemize}
+    \item 在 16 类协议上，SelectiveMine-F 的 mIoU 是本目录已测试结果里最高的 62.61。
+    \item 相对 Table~5 的 CMX，mPA 高 3.01 个百分点，mIoU 高 0.78 个百分点，PA 低 0.26 个百分点。
+    \item 六视图测试时增强把 F 的 16 类 mIoU 从 62.42 提到 62.61，补不齐 PA 的缺口。
+    \item 容器和工具材料仍是主要短板。
+    \item 若只报 15 类 PA，会得到大约 80 的数字，和 86.30 不是同一把尺子。
+  \end{itemize}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,59 @@
+split audit {"files": {"train": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/train.txt", "val": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/val.txt", "test": "/root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt"}, "counts": {"train": 1595, "val": 788, "test": 788}, "overlap": {"train_val": 0, "train_test": 0, "val_test": 0}}
+loading /root/autodl-tmp/MineSeg/v2/runs/selective_pa3/best.pth
+epoch 12 open_scale 0.8109
+evaluating val /root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/val.txt
+val: full variant matches SelectiveMine.forward
+val step 0 images 4
+val step 20 images 84
+val step 40 images 164
+val step 60 images 244
+val step 80 images 324
+val step 100 images 404
+val step 120 images 484
+val step 140 images 564
+val step 160 images 644
+val step 180 images 724
+val full                   PA 87.17 MPA 72.49 mIoU 61.51 dPA +0.00
+val equal_mix              PA 85.96 MPA 70.57 mIoU 57.78 dPA -1.21
+val fused                  PA 87.11 MPA 72.25 mIoU 61.47 dPA -0.06
+val rgb                    PA 78.52 MPA 59.60 mIoU 44.97 dPA -8.64
+val geo                    PA 83.92 MPA 68.47 mIoU 54.21 dPA -3.25
+val no_geo_head            PA 78.10 MPA 58.71 mIoU 44.13 dPA -9.07
+val no_geo_head_fused      PA 75.58 MPA 55.21 mIoU 40.71 dPA -11.59
+val no_relay               PA 87.17 MPA 72.49 mIoU 61.51 dPA +0.00
+val no_relay_fused         PA 87.11 MPA 72.25 mIoU 61.47 dPA -0.06
+val no_geometry            PA 78.10 MPA 58.71 mIoU 44.13 dPA -9.07
+val no_geometry_fused      PA 75.58 MPA 55.21 mIoU 40.71 dPA -11.59
+val no_depth_gate          PA 86.96 MPA 71.76 mIoU 61.25 dPA -0.21
+val no_hha                 PA 57.26 MPA 24.43 mIoU 20.63 dPA -29.91
+val no_depth               PA 56.85 MPA 23.61 mIoU 19.90 dPA -30.32
+val rgb_fusion_decoder     PA 75.18 MPA 52.53 mIoU 40.30 dPA -11.98
+evaluating test /root/autodl-tmp/Visual-Multimodality/SSRS-main/FTransUNet/test.txt
+test: full variant matches SelectiveMine.forward
+test step 0 images 4
+test step 20 images 84
+test step 40 images 164
+test step 60 images 244
+test step 80 images 324
+test step 100 images 404
+test step 120 images 484
+test step 140 images 564
+test step 160 images 644
+test step 180 images 724
+test full                   PA 86.13 MPA 74.52 mIoU 62.79 dPA +0.00
+test equal_mix              PA 84.86 MPA 72.17 mIoU 58.94 dPA -1.27
+test fused                  PA 86.09 MPA 74.41 mIoU 62.95 dPA -0.03
+test rgb                    PA 75.76 MPA 60.17 mIoU 44.07 dPA -10.36
+test geo                    PA 83.06 MPA 71.51 mIoU 55.80 dPA -3.07
+test no_geo_head            PA 75.54 MPA 59.17 mIoU 43.27 dPA -10.59
+test no_geo_head_fused      PA 73.44 MPA 55.43 mIoU 39.84 dPA -12.69
+test no_relay               PA 86.13 MPA 74.52 mIoU 62.79 dPA +0.00
+test no_relay_fused         PA 86.09 MPA 74.41 mIoU 62.95 dPA -0.03
+test no_geometry            PA 75.54 MPA 59.17 mIoU 43.27 dPA -10.59
+test no_geometry_fused      PA 73.44 MPA 55.43 mIoU 39.84 dPA -12.69
+test no_depth_gate          PA 85.94 MPA 73.83 mIoU 62.65 dPA -0.19
+test no_hha                 PA 58.24 MPA 25.25 mIoU 21.51 dPA -27.89
+test no_depth               PA 57.94 MPA 24.39 mIoU 20.72 dPA -28.19
+test rgb_fusion_decoder     PA 73.03 MPA 52.81 mIoU 39.53 dPA -13.09
+official gap {'pa_16': 1.3704140865766767e-05, 'mpa_16': 6.562321219760747e-08, 'miou_16': 2.6225204454721762e-06} worst 0.00001370
+wrote /root/autodl-tmp/MineSeg/v2/runs/selective_pa3_ablation/ablation.json

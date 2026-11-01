@@ -1,0 +1,15 @@
+loading checkpoint
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_pa3/best.pth epoch 12
+{
+  "holdout_miou": 0.646507743853626,
+  "holdout_mpa": 0.7323299281219288,
+  "holdout_pa": 0.785024027908654,
+  "miou_16": 0.6278962789887121,
+  "mpa_16": 0.7452308772525587,
+  "pa_16": 0.8612696403520016,
+  "beats_cmx": {
+    "pa": false,
+    "mpa": true,
+    "miou": true
+  }
+}

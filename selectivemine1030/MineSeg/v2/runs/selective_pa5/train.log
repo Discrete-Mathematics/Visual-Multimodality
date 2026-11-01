@@ -1,0 +1,5 @@
+loading checkpoint
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_pa3/best.pth epoch 12
+steps/epoch 398 trainable 59.06M
+epoch 1/6 loss 0.2949 paper mIoU 62.46 MPA 70.18 PA 80.03 16-class mIoU 61.35 MPA 71.70 PA 87.11 229s
+saved best_pa epoch 1 16-class PA 87.11

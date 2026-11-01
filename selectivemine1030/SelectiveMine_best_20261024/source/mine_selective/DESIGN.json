@@ -1,0 +1,126 @@
+{
+  "status": "formal_development_training_in_progress_not_verified_improvement",
+  "version": "0.1.0-dev",
+  "documentation_updated": "2026-10-23",
+  "method_document": "METHOD.md",
+  "current_experiment_20261023": {
+    "state": "Fresh 120-epoch utility candidate is training; matched fixed control and post-training analysis are queued",
+    "cloud_suite": "/root/autodl-tmp/research_20261023",
+    "selection": "utility",
+    "fusion": "logits",
+    "epochs_per_primary_arm": 120,
+    "primary_arms": ["utility", "fixed_control"],
+    "conditional_same_epoch_ablation": "router_no_utility, only if the original remaining-time admission passes",
+    "initialization": "Fresh ImageNet source, seed 2026; not continuation of the previously trained relay weights",
+    "train_images": 1281,
+    "validation_images": 314,
+    "input_size": [480, 640],
+    "batch_size": 8,
+    "paired_weight": 0.5,
+    "utility_weight": 0.05,
+    "rare_crop": 0.0,
+    "deadline_utc": "2026-10-23T09:27:40+00:00",
+    "gpu_readiness": "Full-resolution cloud GPU checks passed; exact saved model/optimizer/RNG restore and next forward loss passed, but post-backward CUDA states are not bitwise identical",
+    "results": "Incomplete; no verified performance improvement, novelty, or SOTA claim",
+    "live_records": "cloud_validation/STATUS.md and rtx6000_20261023 evidence archives"
+  },
+  "problem_evidence": {
+    "completed_experiment": "Original seed 2026, matched 80-epoch development experiment",
+    "container_precision_logit_baseline_percent": 65.7914950719541,
+    "container_precision_relay_percent": 37.95771245298008,
+    "relay_dropout_versus_own_rgb_path": "Exact equality in two checked real images and consistent with masked architecture",
+    "full_cpu_diagnostic": "Removing geometry output reduces full-development mIoU from 55.3594 to 47.7460; unconditional deletion is unsupported"
+  },
+  "updated_80plus40_evidence": {
+    "status": "Both matched 80+40 runs, completion audits and five-condition GPU evaluations finished",
+    "clean_relay_minus_logits_pp": -1.2503856872459918,
+    "artificial_holes_relay_minus_logits_pp": -2.9683984962531884,
+    "whole_depth_dropout_relay_minus_logits_pp": -2.908573938718556,
+    "container_iou_relay_minus_logits_pp": 0.6428139091067653,
+    "container_precision_relay": 0.5347969442658444,
+    "container_precision_logits": 0.5488957688338494,
+    "interpretation": "The earlier large container deficit is checkpoint-dependent and disappeared after continuation. Do not treat it as the persistent explanation for overall deficits or the sole rationale for selective prediction. Clean accuracy and depth-corruption deficits remain in this fitted-model comparison.",
+    "uncertainty": "Single seed, development-selected models; conditional location intervals do not remove selection bias or establish causal mechanisms."
+  },
+  "architecture": {
+    "carrier": "Unmodified mine_relay feature extractors and fusion computations, selectable logits/inject/relay",
+    "appearance": "Shared RGB encoder, separate appearance decoder copied from the randomly initialized carrier decoder before training",
+    "selection": "p_final = (1-g) * p_rgb + g * p_fused, implemented with stable logaddexp",
+    "whole_depth_absent": "Exactly select the appearance prediction; not an accuracy guarantee",
+    "router_inputs": "Detached expert probabilities, absolute disagreement, two entropies, current coverage and brightness; no labels",
+    "router_resolution": "First-stage feature grid, bilinear upsampling of routing logits",
+    "utility_target": "sigmoid((NLL_rgb(y) - NLL_fused(y)) / 0.5), detached; training labels only",
+    "utility_scope": "Pixels with semantic labels in images with at least one depth observation; natural holes may have semantic supervision",
+    "loss": "(NLL_final + 0.5 * CE_rgb + 0.5 * CE_fused) / 2 + 0.2 * CE_geo + utility_weight * BCE_router",
+    "missing_depth_losses": "Exclude CE_fused, CE_geo and BCE_router for fully absent depth; retain final and RGB supervision",
+    "ignored_pixels": "Label 255 excluded; empty terms contribute zero"
+  },
+  "required_controls": [
+    {"name": "rgb_aux_control", "selection": "control", "utility_weight": 0.0},
+    {"name": "learned_selection_without_utility_target", "selection": "utility", "utility_weight": 0.0},
+    {"name": "learned_selection_with_utility_target", "selection": "utility", "utility_weight": 0.05}
+  ],
+  "historical_initial_training_plan_not_launched": {
+    "initialization": "Fresh shared ImageNet initialization on the same grouped development split",
+    "epochs": 80,
+    "batch_size": 8,
+    "input_size": [480, 640],
+    "paired_weight": 0.5,
+    "paired_observations": "Use frozen raw-depth corruption with shared RGB/crop/labels; same augmentation for all controls",
+    "reference_requirement": "Also compare paired logits and paired relay using the existing trainer; augmentation gains are not routing novelty",
+    "budget": "Do not launch without measured complete-run fit inside the human-authorized window; current queued jobs retain priority",
+    "selection_rule": "Best clean development mIoU; evaluate all five fixed conditions, natural-hole groups and all classes",
+    "claim_requirement": "Matched controls, strong CMX baseline, multiple seeds and disclosed costs before any performance or novelty claim"
+  },
+  "verified": [
+    "Cloud CPU FP32 batch 2 at 64 x 96, synthetic inputs",
+    "Exact inherited fusion output with nonzero residual paths",
+    "Normalized probabilities, absent-depth fallback, fixed-control selection and extreme routing logits",
+    "Relative target direction, exchange symmetry, stop-gradient and ignored-label handling",
+    "Finite nonzero gradients in RGB encoder, appearance decoder, geometry encoder and router",
+    "Independent CUDA-only train/evaluate entry points, strict source/split/recipe identity, completed-run and selected-checkpoint epochs recorded separately",
+    "Cloud CPU interrupted-file-commit repair, prior-best preservation, changed budget/source/split/epoch rejection, official-test isolation and concurrent-trainer lock checks",
+    "Actual candidate CPU FP32 AdamW save/load replay at batch 2, 64 x 96 with two data workers and paired depth dropout: two next-epoch batches, losses, model and optimizer state match exactly"
+  ],
+  "pipeline_evidence": {
+    "file_and_protocol_checks": "selective_pipeline_checks_v010_v2.json",
+    "optimizer_and_rng_replay": "selective_resume_cpu_checks_v010_v2.json",
+    "replay_scope": "Synthetic random initialization and CPU inputs; not a research training run, CUDA reproducibility check or dataset result",
+    "first_replay_check": "Synthetic fixture initially used three geometry channels; corrected to the actual four-channel contract before the successful run. Original failure log retained. Production model unchanged.",
+    "epoch_commit": "last.pth is atomic and authoritative; recover history and a newly selected best from it after interruption; do not commit partial epochs",
+    "time_control": "Read the original absolute authorization deadline; cumulative per-run cap is secondary. A separate hard-deadline supervisor remains required before a long GPU launch."
+  },
+  "gpu_readiness_queue": {
+    "historical_record_only": "2026-10-21 queue, superseded by the explicitly authorized 2026-10-23 experiment above",
+    "suite": "selective_gpu_readiness_v010",
+    "state_at_registration": "Waiting behind existing CMX training and evaluation; no candidate GPU execution yet",
+    "supervisor_pid": 26036,
+    "supervisor_start_token": "890362639",
+    "registered_utc": "2026-10-21T11:25:53.477677+00:00",
+    "absolute_deadline_utc": "2026-10-21T15:07:16+00:00",
+    "minimum_remaining_seconds": 720,
+    "maximum_check_seconds": 600,
+    "planned_scope": "480 x 640, batch 8, paired clean/corrupt loss, 20 disposable updates, fixed-batch CUDA/AdamW replay, finite validation and exact missing-depth RGB fallback",
+    "claim_limit": "Readiness and conservative timing estimate only; no research weights or accuracy claims",
+    "preflight_evidence": "selective_queue_cpu_checks_v010.json: source/CLI, predecessor state and process identity, and owned process-group termination checked on cloud CPU"
+  },
+  "remaining": [
+    "Complete the running matched training and full evaluation",
+    "Production branch diagnostics must match canonical full-set predictions",
+    "Run the same-epoch no-utility ablation when budget permits, then additional seeds and strong baselines",
+    "Determine whether any gain exceeds ordinary RGB supervision and modality dropout",
+    "Substantive novelty assessment against existing modality supervision, distillation and counterfactual gating"
+  ],
+  "limitations": [
+    "Not a verified improvement or a finalized paper method",
+    "The RGB encoder is shared and receives multiple objectives; the appearance branch is not fully isolated from multimodal learning",
+    "A probability mixture cannot guarantee choosing the correct expert when labels are unavailable",
+    "Synthetic correctness checks do not establish training stability or generalization",
+    "Use the independent mine_selective entry points; the frozen mine_relay trainer does not implement this candidate",
+    "Full-size GPU readiness and launch supervision have passed; that does not establish accuracy, generalization, or bitwise CUDA replay",
+    "Whole-image missing depth has an exact RGB-output fallback; local depth holes do not have a hard per-pixel fallback",
+    "Current paired training corrupts depth by holes or complete dropout, not the evaluation-time RGB darkening or depth-noise conditions",
+    "Rare-class crop sampling is disabled; current rare-class handling is shared clipped inverse-frequency weighting",
+    "Loss coefficients are not renormalized when the depth-dependent terms are masked out"
+  ]
+}

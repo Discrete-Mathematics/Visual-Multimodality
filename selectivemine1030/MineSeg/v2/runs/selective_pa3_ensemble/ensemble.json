@@ -1,0 +1,68 @@
+{
+  "checkpoints": {
+    "7": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/epoch_07.pth",
+    "9": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/epoch_09.pth",
+    "10": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/epoch_10.pth",
+    "11": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/epoch_11.pth",
+    "12": "/root/autodl-tmp/MineSeg/v2/runs/selective_pa3/epoch_12.pth"
+  },
+  "resolution": [
+    768,
+    896
+  ],
+  "selection_rule": "max validation 16-class PA among ensembles with mIoU>=61.20 and MPA>=71.80; fewer members win ties",
+  "val": {
+    "e12": {
+      "miou16": 61.51397912996062,
+      "mpa16": 72.4974374237444,
+      "pa16": 87.16839612149835,
+      "miou15": 59.78798385577206,
+      "mpa15": 71.0515213868442,
+      "pa15": 80.4837383468598
+    },
+    "e9+e12": {
+      "miou16": 61.57472366672852,
+      "mpa16": 72.670617925045,
+      "pa16": 87.15665603796296,
+      "miou15": 59.85162960559743,
+      "mpa15": 71.24926979457231,
+      "pa15": 80.64688113952721
+    },
+    "e7+e12": {
+      "miou16": 61.51837219834112,
+      "mpa16": 72.6991513317744,
+      "pa16": 87.14291169385793,
+      "miou15": 59.79299398143081,
+      "mpa15": 71.27967337169406,
+      "pa15": 80.61958685015871
+    },
+    "e7+e9+e12": {
+      "miou16": 61.56105515576539,
+      "mpa16": 72.74940501610571,
+      "pa16": 87.14464596570157,
+      "miou15": 59.837930827903676,
+      "mpa15": 71.33748545218972,
+      "pa15": 80.68309900513756
+    },
+    "e10+e11+e12": {
+      "miou16": 61.56314350441259,
+      "mpa16": 72.36726364300053,
+      "pa16": 87.15950050934921,
+      "miou15": 59.85150200187861,
+      "mpa15": 70.90603295714634,
+      "pa15": 80.37154873523195
+    }
+  },
+  "chosen": "e12",
+  "members": [
+    12
+  ],
+  "test": null,
+  "beats_cmx_16": null,
+  "cmx": {
+    "pa": 86.3,
+    "mpa": 72.72,
+    "miou": 61.83
+  },
+  "note": "e12 was not retested; use selective_pa3/official_test.json for that single checkpoint"
+}

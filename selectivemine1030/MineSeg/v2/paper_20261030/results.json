@@ -1,0 +1,20 @@
+{
+  "single_scale_16": {
+    "pa": "86.13",
+    "mpa": "74.52",
+    "miou": "62.79"
+  },
+  "tta_16": {
+    "pa": "86.34",
+    "mpa": "74.87",
+    "miou": "63.08"
+  },
+  "single_scale_beats_cmx": false,
+  "tta_beats_cmx": true,
+  "cmx_quoted": {
+    "pa": 86.3,
+    "mpa": 72.72,
+    "miou": 61.83
+  },
+  "pa5_tested": false
+}
