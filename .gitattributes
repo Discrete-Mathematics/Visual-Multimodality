@@ -8,3 +8,4 @@ MUSeg_exceed_CMX_20261025/SelectiveMineF_architecture_paper/** -filter -diff -me
 MUSeg_exceed_CMX_20261025/report_slides/** -filter -diff -merge
 selectivemine1030/** -filter -diff -merge
 SelectiveMine_ablation_20261101/** -filter -diff -merge
+relay_retrain_package/** -filter -diff -merge

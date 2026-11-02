@@ -1,0 +1,1161 @@
+===== 2026-11-01 23:48:25 relay retrain start =====
+wrote /root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json median_coverage 0.7694 bright_p20 0.0962 bright_p50 0.1823 far_mm 2616 viz ['06-01-01-0226-230920140511-04-99', '06-01-01-0066-230920140079-10-99', '05-01-01-0021-231211113110-02-99', '03-01-01-0051-240526113538-12-99']
+Geometry Relay 重训练进展 11-01 23:49
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-01 23:49:00
+主机：autodl-container-b14e45b04b-9443163b  区域：bj-B2
+
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+还没有训练记录。
+
+【GPU】
+NVIDIA GeForce RTX 5090  利用率 0%  显存 0/32607 MiB  温度 29°C
+
+【磁盘】
+/  已用 8.4G / 30G（28%）  剩余 22G
+/root/autodl-tmp  已用 19G / 50G（37%）  剩余 32G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+smoke full loss 0.3051 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_relay loss 0.2493 finite True trainable 59.06M active 59.25M relay 0.21M
+smoke const_valid loss 0.2520 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_neighbor loss 0.2756 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke raw_depth loss 2.9602 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_geometry loss 2.6311 finite True trainable 59.27M active 59.46M relay 0.21M
+SMOKE_OK
+===== 2026-11-01 23:49:42 train full seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant full seed 2026 trainable 59.27M
+Traceback (most recent call last):
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/train_relay_ablation.py", line 358, in <module>
+    main()
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/train_relay_ablation.py", line 354, in main
+    train_one(variant, seed)
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/train_relay_ablation.py", line 279, in train_one
+    metrics = evaluate(model, val_loader, tta=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/MineSeg/v2/finetune_selective.py", line 204, in evaluate
+    output = forward_batch(model, batch)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/engine.py", line 88, in forward_batch
+    return model(*tensors)
+           ^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/patch_model.py", line 124, in selective_forward
+    return original_forward(self, rgb, depth, valid, luma, hha)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_selective/model.py", line 50, in forward
+    geometry = net.geo_encoder(net.stem(hha))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 185, in forward
+    feat3 = self._stage(self.patch_embed3, self.block3, self.norm3, feat2)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 177, in _stage
+    tokens = block(tokens, height, width)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 112, in forward
+    x = x + self.drop_path(self.attn(self.norm1(x), height, width))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/SelectiveMine_best_20261024/source/mine_relay/legacy/backbone.py", line 97, in forward
+    attn = self.attn_drop(attn.softmax(dim=-1))
+                          ^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 138.00 MiB. GPU 0 has a total capacity of 31.36 GiB of which 7.06 MiB is free. Including non-PyTorch memory, this process has 31.34 GiB memory in use. Of the allocated memory 30.65 GiB is allocated by PyTorch, and 80.16 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+FAIL train full 2026
+Geometry Relay 重训练失败 11-01 23:53
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-01 23:53:41
+主机：autodl-container-b14e45b04b-9443163b  区域：bj-B2
+
+失败：train full 2026
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+还没有训练记录。
+
+【GPU】
+NVIDIA GeForce RTX 5090  利用率 0%  显存 0/32607 MiB  温度 39°C
+
+【磁盘】
+/  已用 8.4G / 30G（28%）  剩余 22G
+/root/autodl-tmp  已用 19G / 50G（37%）  剩余 32G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+===== 2026-11-01 23:59:26 relay retrain start =====
+cron: can't lock /var/run/crond.pid, otherpid may be 15224: Resource temporarily unavailable
+wrote /root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json median_coverage 0.7694 bright_p20 0.0962 bright_p50 0.1823 far_mm 2616 viz ['06-01-01-0226-230920140511-04-99', '06-01-01-0066-230920140079-10-99', '05-01-01-0021-231211113110-02-99', '03-01-01-0051-240526113538-12-99']
+Geometry Relay 重训练进展 11-02 00:00
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-02 00:00:01
+主机：autodl-container-b14e45b04b-9443163b  区域：bj-B2
+
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+还没有训练记录。
+
+【GPU】
+NVIDIA GeForce RTX 5090  利用率 0%  显存 0/32607 MiB  温度 28°C
+
+【磁盘】
+/  已用 8.4G / 30G（28%）  剩余 22G
+/root/autodl-tmp  已用 19G / 50G（37%）  剩余 32G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+smoke full loss 0.3051 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_relay loss 0.2493 finite True trainable 59.06M active 59.25M relay 0.21M
+smoke const_valid loss 0.2520 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_neighbor loss 0.2756 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke raw_depth loss 2.9602 finite True trainable 59.27M active 59.46M relay 0.21M
+smoke no_geometry loss 2.6311 finite True trainable 59.27M active 59.46M relay 0.21M
+SMOKE_OK
+===== 2026-11-02 00:00:42 train full seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant full seed 2026 trainable 59.27M
+epoch 1/12 full seed 2026 loss 0.3499 16-class mIoU 60.82 MPA 71.65 PA 86.87 232s
+epoch 2/12 full seed 2026 loss 0.3377 16-class mIoU 60.83 MPA 72.15 PA 86.89 212s
+saved floor epoch 2 PA 86.89
+epoch 3/12 full seed 2026 loss 0.3452 16-class mIoU 60.47 MPA 71.19 PA 86.98 214s
+epoch 4/12 full seed 2026 loss 0.3328 16-class mIoU 61.31 MPA 72.47 PA 87.04 215s
+saved floor epoch 4 PA 87.04
+epoch 5/12 full seed 2026 loss 0.3368 16-class mIoU 61.28 MPA 72.75 PA 87.07 214s
+saved floor epoch 5 PA 87.07
+epoch 6/12 full seed 2026 loss 0.3339 16-class mIoU 61.41 MPA 72.84 PA 87.08 214s
+saved floor epoch 6 PA 87.08
+epoch 7/12 full seed 2026 loss 0.3267 16-class mIoU 61.44 MPA 72.85 PA 87.09 218s
+saved floor epoch 7 PA 87.09
+epoch 8/12 full seed 2026 loss 0.3303 16-class mIoU 61.55 MPA 72.35 PA 87.07 223s
+epoch 9/12 full seed 2026 loss 0.3353 16-class mIoU 61.59 MPA 72.80 PA 87.12 211s
+saved floor epoch 9 PA 87.12
+epoch 10/12 full seed 2026 loss 0.3286 16-class mIoU 61.57 MPA 72.32 PA 87.13 215s
+saved floor epoch 10 PA 87.13
+epoch 11/12 full seed 2026 loss 0.3306 16-class mIoU 61.45 MPA 72.20 PA 87.16 213s
+saved floor epoch 11 PA 87.16
+epoch 12/12 full seed 2026 loss 0.3328 16-class mIoU 61.51 MPA 72.49 PA 87.18 216s
+saved floor epoch 12 PA 87.18
+finished full seed 2026 epoch 12 floor_met True PA 87.18
+===== 2026-11-02 00:44:21 train no_relay seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_relay seed 2026 trainable 59.06M
+epoch 1/12 no_relay seed 2026 loss 0.3499 16-class mIoU 60.82 MPA 71.65 PA 86.87 208s
+epoch 2/12 no_relay seed 2026 loss 0.3377 16-class mIoU 60.83 MPA 72.15 PA 86.88 195s
+saved floor epoch 2 PA 86.88
+epoch 3/12 no_relay seed 2026 loss 0.3453 16-class mIoU 60.47 MPA 71.18 PA 86.98 195s
+epoch 4/12 no_relay seed 2026 loss 0.3329 16-class mIoU 61.30 MPA 72.46 PA 87.04 194s
+saved floor epoch 4 PA 87.04
+epoch 5/12 no_relay seed 2026 loss 0.3370 16-class mIoU 61.28 MPA 72.75 PA 87.06 196s
+saved floor epoch 5 PA 87.06
+epoch 6/12 no_relay seed 2026 loss 0.3341 16-class mIoU 61.40 MPA 72.83 PA 87.08 195s
+saved floor epoch 6 PA 87.08
+epoch 7/12 no_relay seed 2026 loss 0.3269 16-class mIoU 61.43 MPA 72.84 PA 87.08 200s
+saved floor epoch 7 PA 87.08
+epoch 8/12 no_relay seed 2026 loss 0.3306 16-class mIoU 61.54 MPA 72.35 PA 87.07 195s
+epoch 9/12 no_relay seed 2026 loss 0.3356 16-class mIoU 61.57 MPA 72.79 PA 87.11 195s
+saved floor epoch 9 PA 87.11
+epoch 10/12 no_relay seed 2026 loss 0.3290 16-class mIoU 61.57 MPA 72.33 PA 87.12 196s
+saved floor epoch 10 PA 87.12
+epoch 11/12 no_relay seed 2026 loss 0.3309 16-class mIoU 61.45 MPA 72.21 PA 87.15 194s
+saved floor epoch 11 PA 87.15
+epoch 12/12 no_relay seed 2026 loss 0.3331 16-class mIoU 61.51 MPA 72.49 PA 87.17 197s
+saved floor epoch 12 PA 87.17
+finished no_relay seed 2026 epoch 12 floor_met True PA 87.17
+===== 2026-11-02 01:24:07 train const_valid seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant const_valid seed 2026 trainable 59.27M
+epoch 1/12 const_valid seed 2026 loss 0.3499 16-class mIoU 60.83 MPA 71.64 PA 86.87 247s
+epoch 2/12 const_valid seed 2026 loss 0.3377 16-class mIoU 60.84 MPA 72.16 PA 86.89 228s
+saved floor epoch 2 PA 86.89
+epoch 3/12 const_valid seed 2026 loss 0.3451 16-class mIoU 60.46 MPA 71.18 PA 86.98 232s
+epoch 4/12 const_valid seed 2026 loss 0.3328 16-class mIoU 61.30 MPA 72.46 PA 87.04 231s
+saved floor epoch 4 PA 87.04
+epoch 5/12 const_valid seed 2026 loss 0.3367 16-class mIoU 61.27 MPA 72.75 PA 87.07 230s
+saved floor epoch 5 PA 87.07
+epoch 6/12 const_valid seed 2026 loss 0.3338 16-class mIoU 61.40 MPA 72.82 PA 87.08 231s
+saved floor epoch 6 PA 87.08
+epoch 7/12 const_valid seed 2026 loss 0.3266 16-class mIoU 61.44 MPA 72.85 PA 87.09 230s
+saved floor epoch 7 PA 87.09
+epoch 8/12 const_valid seed 2026 loss 0.3302 16-class mIoU 61.53 MPA 72.34 PA 87.08 230s
+epoch 9/12 const_valid seed 2026 loss 0.3352 16-class mIoU 61.58 MPA 72.80 PA 87.13 229s
+saved floor epoch 9 PA 87.13
+epoch 10/12 const_valid seed 2026 loss 0.3286 16-class mIoU 61.57 MPA 72.32 PA 87.14 232s
+saved floor epoch 10 PA 87.14
+epoch 11/12 const_valid seed 2026 loss 0.3305 16-class mIoU 61.43 MPA 72.19 PA 87.16 230s
+saved floor epoch 11 PA 87.16
+epoch 12/12 const_valid seed 2026 loss 0.3326 16-class mIoU 61.50 MPA 72.50 PA 87.18 228s
+saved floor epoch 12 PA 87.18
+finished const_valid seed 2026 epoch 12 floor_met True PA 87.18
+===== 2026-11-02 02:10:48 train no_neighbor seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_neighbor seed 2026 trainable 59.27M
+epoch 1/12 no_neighbor seed 2026 loss 0.3499 16-class mIoU 60.82 MPA 71.64 PA 86.87 217s
+epoch 2/12 no_neighbor seed 2026 loss 0.3377 16-class mIoU 60.83 MPA 72.15 PA 86.88 196s
+saved floor epoch 2 PA 86.88
+epoch 3/12 no_neighbor seed 2026 loss 0.3452 16-class mIoU 60.47 MPA 71.19 PA 86.98 197s
+epoch 4/12 no_neighbor seed 2026 loss 0.3328 16-class mIoU 61.31 MPA 72.48 PA 87.04 198s
+saved floor epoch 4 PA 87.04
+epoch 5/12 no_neighbor seed 2026 loss 0.3368 16-class mIoU 61.28 MPA 72.75 PA 87.07 198s
+saved floor epoch 5 PA 87.07
+epoch 6/12 no_neighbor seed 2026 loss 0.3339 16-class mIoU 61.41 MPA 72.84 PA 87.08 196s
+saved floor epoch 6 PA 87.08
+epoch 7/12 no_neighbor seed 2026 loss 0.3267 16-class mIoU 61.44 MPA 72.85 PA 87.09 197s
+saved floor epoch 7 PA 87.09
+epoch 8/12 no_neighbor seed 2026 loss 0.3304 16-class mIoU 61.54 MPA 72.35 PA 87.07 196s
+epoch 9/12 no_neighbor seed 2026 loss 0.3354 16-class mIoU 61.58 MPA 72.80 PA 87.12 198s
+saved floor epoch 9 PA 87.12
+epoch 10/12 no_neighbor seed 2026 loss 0.3287 16-class mIoU 61.57 MPA 72.32 PA 87.13 198s
+saved floor epoch 10 PA 87.13
+epoch 11/12 no_neighbor seed 2026 loss 0.3306 16-class mIoU 61.45 MPA 72.20 PA 87.16 199s
+saved floor epoch 11 PA 87.16
+epoch 12/12 no_neighbor seed 2026 loss 0.3328 16-class mIoU 61.51 MPA 72.50 PA 87.18 198s
+saved floor epoch 12 PA 87.18
+finished no_neighbor seed 2026 epoch 12 floor_met True PA 87.18
+===== 2026-11-02 02:51:00 train raw_depth seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant raw_depth seed 2026 trainable 59.27M
+epoch 1/12 raw_depth seed 2026 loss 1.1421 16-class mIoU 48.53 MPA 63.79 PA 80.91 232s
+epoch 2/12 raw_depth seed 2026 loss 0.6769 16-class mIoU 51.72 MPA 66.39 PA 82.61 212s
+epoch 3/12 raw_depth seed 2026 loss 0.5935 16-class mIoU 53.27 MPA 67.51 PA 83.73 214s
+epoch 4/12 raw_depth seed 2026 loss 0.5207 16-class mIoU 55.01 MPA 69.02 PA 84.44 209s
+epoch 5/12 raw_depth seed 2026 loss 0.5006 16-class mIoU 55.52 MPA 69.98 PA 84.60 214s
+epoch 6/12 raw_depth seed 2026 loss 0.4679 16-class mIoU 56.16 MPA 69.79 PA 84.90 216s
+epoch 7/12 raw_depth seed 2026 loss 0.4437 16-class mIoU 56.54 MPA 70.42 PA 85.12 215s
+epoch 8/12 raw_depth seed 2026 loss 0.4388 16-class mIoU 56.73 MPA 69.67 PA 85.23 211s
+epoch 9/12 raw_depth seed 2026 loss 0.4379 16-class mIoU 56.95 MPA 70.00 PA 85.28 211s
+epoch 10/12 raw_depth seed 2026 loss 0.4348 16-class mIoU 57.17 MPA 70.18 PA 85.33 211s
+epoch 11/12 raw_depth seed 2026 loss 0.4258 16-class mIoU 57.18 MPA 69.98 PA 85.41 212s
+epoch 12/12 raw_depth seed 2026 loss 0.4335 16-class mIoU 57.10 MPA 69.98 PA 85.43 210s
+finished raw_depth seed 2026 epoch 11 floor_met False PA 85.41
+===== 2026-11-02 03:34:08 train no_geometry seed 2026 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_geometry seed 2026 trainable 59.27M
+epoch 1/12 no_geometry seed 2026 loss 1.3328 16-class mIoU 45.15 MPA 59.37 PA 79.06 234s
+epoch 2/12 no_geometry seed 2026 loss 0.9952 16-class mIoU 45.89 MPA 61.00 PA 79.26 214s
+epoch 3/12 no_geometry seed 2026 loss 0.9675 16-class mIoU 45.68 MPA 59.77 PA 79.42 216s
+epoch 4/12 no_geometry seed 2026 loss 0.9291 16-class mIoU 45.97 MPA 60.43 PA 79.52 215s
+epoch 5/12 no_geometry seed 2026 loss 0.9293 16-class mIoU 46.24 MPA 61.40 PA 79.72 215s
+epoch 6/12 no_geometry seed 2026 loss 0.9138 16-class mIoU 46.27 MPA 60.53 PA 79.86 211s
+epoch 7/12 no_geometry seed 2026 loss 0.8885 16-class mIoU 46.33 MPA 61.22 PA 79.89 210s
+epoch 8/12 no_geometry seed 2026 loss 0.9049 16-class mIoU 46.45 MPA 60.30 PA 80.05 210s
+epoch 9/12 no_geometry seed 2026 loss 0.9085 16-class mIoU 46.51 MPA 60.63 PA 80.04 212s
+epoch 10/12 no_geometry seed 2026 loss 0.9049 16-class mIoU 46.39 MPA 60.54 PA 80.03 210s
+epoch 11/12 no_geometry seed 2026 loss 0.9040 16-class mIoU 46.54 MPA 60.53 PA 80.16 209s
+epoch 12/12 no_geometry seed 2026 loss 0.8969 16-class mIoU 46.48 MPA 60.72 PA 80.09 213s
+finished no_geometry seed 2026 epoch 11 floor_met False PA 80.16
+===== 2026-11-02 04:17:19 train full seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant full seed 2027 trainable 59.27M
+epoch 1/12 full seed 2027 loss 0.3787 16-class mIoU 61.05 MPA 72.32 PA 86.95 232s
+saved floor epoch 1 PA 86.95
+epoch 2/12 full seed 2027 loss 0.3702 16-class mIoU 61.38 MPA 72.65 PA 86.96 214s
+saved floor epoch 2 PA 86.96
+epoch 3/12 full seed 2027 loss 0.3558 16-class mIoU 60.83 MPA 71.74 PA 87.02 213s
+epoch 4/12 full seed 2027 loss 0.3531 16-class mIoU 60.79 MPA 72.63 PA 87.02 214s
+epoch 5/12 full seed 2027 loss 0.3488 16-class mIoU 61.19 MPA 72.04 PA 87.07 213s
+saved floor epoch 5 PA 87.07
+epoch 6/12 full seed 2027 loss 0.3375 16-class mIoU 60.87 MPA 72.03 PA 87.02 210s
+epoch 7/12 full seed 2027 loss 0.3418 16-class mIoU 61.30 MPA 72.87 PA 87.09 210s
+saved floor epoch 7 PA 87.09
+epoch 8/12 full seed 2027 loss 0.3368 16-class mIoU 61.20 MPA 72.16 PA 87.06 214s
+epoch 9/12 full seed 2027 loss 0.3385 16-class mIoU 61.18 MPA 72.10 PA 87.08 212s
+epoch 10/12 full seed 2027 loss 0.3278 16-class mIoU 61.11 MPA 71.60 PA 87.04 211s
+epoch 11/12 full seed 2027 loss 0.3276 16-class mIoU 61.34 MPA 72.11 PA 87.08 214s
+epoch 12/12 full seed 2027 loss 0.3241 16-class mIoU 61.09 MPA 71.92 PA 87.06 211s
+finished full seed 2027 epoch 7 floor_met True PA 87.09
+===== 2026-11-02 05:00:29 train no_relay seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_relay seed 2027 trainable 59.06M
+epoch 1/12 no_relay seed 2027 loss 0.3787 16-class mIoU 61.05 MPA 72.32 PA 86.95 208s
+saved floor epoch 1 PA 86.95
+epoch 2/12 no_relay seed 2027 loss 0.3703 16-class mIoU 61.38 MPA 72.64 PA 86.96 193s
+saved floor epoch 2 PA 86.96
+epoch 3/12 no_relay seed 2027 loss 0.3559 16-class mIoU 60.83 MPA 71.73 PA 87.02 195s
+epoch 4/12 no_relay seed 2027 loss 0.3532 16-class mIoU 60.78 MPA 72.62 PA 87.01 193s
+epoch 5/12 no_relay seed 2027 loss 0.3490 16-class mIoU 61.18 MPA 72.03 PA 87.06 193s
+saved floor epoch 5 PA 87.06
+epoch 6/12 no_relay seed 2027 loss 0.3377 16-class mIoU 60.87 MPA 72.02 PA 87.02 191s
+epoch 7/12 no_relay seed 2027 loss 0.3421 16-class mIoU 61.29 MPA 72.87 PA 87.09 195s
+saved floor epoch 7 PA 87.09
+epoch 8/12 no_relay seed 2027 loss 0.3371 16-class mIoU 61.21 MPA 72.16 PA 87.05 194s
+epoch 9/12 no_relay seed 2027 loss 0.3388 16-class mIoU 61.17 MPA 72.09 PA 87.07 195s
+epoch 10/12 no_relay seed 2027 loss 0.3281 16-class mIoU 61.09 MPA 71.58 PA 87.04 196s
+epoch 11/12 no_relay seed 2027 loss 0.3279 16-class mIoU 61.34 MPA 72.11 PA 87.07 195s
+epoch 12/12 no_relay seed 2027 loss 0.3245 16-class mIoU 61.09 MPA 71.90 PA 87.06 194s
+finished no_relay seed 2027 epoch 7 floor_met True PA 87.09
+===== 2026-11-02 05:39:52 train const_valid seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant const_valid seed 2027 trainable 59.27M
+epoch 1/12 const_valid seed 2027 loss 0.3787 16-class mIoU 61.05 MPA 72.32 PA 86.95 250s
+saved floor epoch 1 PA 86.95
+epoch 2/12 const_valid seed 2027 loss 0.3702 16-class mIoU 61.38 MPA 72.65 PA 86.96 229s
+saved floor epoch 2 PA 86.96
+epoch 3/12 const_valid seed 2027 loss 0.3558 16-class mIoU 60.82 MPA 71.73 PA 87.02 228s
+epoch 4/12 const_valid seed 2027 loss 0.3531 16-class mIoU 60.79 MPA 72.63 PA 87.02 230s
+epoch 5/12 const_valid seed 2027 loss 0.3487 16-class mIoU 61.18 MPA 72.02 PA 87.07 231s
+saved floor epoch 5 PA 87.07
+epoch 6/12 const_valid seed 2027 loss 0.3374 16-class mIoU 60.86 MPA 72.02 PA 87.03 231s
+epoch 7/12 const_valid seed 2027 loss 0.3416 16-class mIoU 61.29 MPA 72.87 PA 87.10 230s
+saved floor epoch 7 PA 87.10
+epoch 8/12 const_valid seed 2027 loss 0.3367 16-class mIoU 61.19 MPA 72.16 PA 87.06 231s
+epoch 9/12 const_valid seed 2027 loss 0.3384 16-class mIoU 61.17 MPA 72.09 PA 87.08 229s
+epoch 10/12 const_valid seed 2027 loss 0.3277 16-class mIoU 61.11 MPA 71.59 PA 87.05 230s
+epoch 11/12 const_valid seed 2027 loss 0.3275 16-class mIoU 61.34 MPA 72.10 PA 87.08 230s
+epoch 12/12 const_valid seed 2027 loss 0.3241 16-class mIoU 61.08 MPA 71.90 PA 87.07 231s
+finished const_valid seed 2027 epoch 7 floor_met True PA 87.10
+===== 2026-11-02 06:26:34 train no_neighbor seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_neighbor seed 2027 trainable 59.27M
+epoch 1/12 no_neighbor seed 2027 loss 0.3787 16-class mIoU 61.05 MPA 72.32 PA 86.95 218s
+saved floor epoch 1 PA 86.95
+epoch 2/12 no_neighbor seed 2027 loss 0.3702 16-class mIoU 61.38 MPA 72.64 PA 86.96 197s
+saved floor epoch 2 PA 86.96
+epoch 3/12 no_neighbor seed 2027 loss 0.3558 16-class mIoU 60.83 MPA 71.73 PA 87.02 197s
+epoch 4/12 no_neighbor seed 2027 loss 0.3532 16-class mIoU 60.79 MPA 72.63 PA 87.02 197s
+epoch 5/12 no_neighbor seed 2027 loss 0.3488 16-class mIoU 61.19 MPA 72.04 PA 87.07 199s
+saved floor epoch 5 PA 87.07
+epoch 6/12 no_neighbor seed 2027 loss 0.3375 16-class mIoU 60.87 MPA 72.02 PA 87.03 200s
+epoch 7/12 no_neighbor seed 2027 loss 0.3419 16-class mIoU 61.29 MPA 72.86 PA 87.09 197s
+saved floor epoch 7 PA 87.09
+epoch 8/12 no_neighbor seed 2027 loss 0.3369 16-class mIoU 61.20 MPA 72.17 PA 87.06 201s
+epoch 9/12 no_neighbor seed 2027 loss 0.3386 16-class mIoU 61.18 MPA 72.10 PA 87.08 200s
+epoch 10/12 no_neighbor seed 2027 loss 0.3278 16-class mIoU 61.11 MPA 71.60 PA 87.04 201s
+epoch 11/12 no_neighbor seed 2027 loss 0.3277 16-class mIoU 61.34 MPA 72.11 PA 87.08 200s
+epoch 12/12 no_neighbor seed 2027 loss 0.3242 16-class mIoU 61.08 MPA 71.91 PA 87.06 195s
+finished no_neighbor seed 2027 epoch 7 floor_met True PA 87.09
+===== 2026-11-02 07:06:58 train raw_depth seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant raw_depth seed 2027 trainable 59.27M
+epoch 1/12 raw_depth seed 2027 loss 1.1565 16-class mIoU 48.91 MPA 64.40 PA 80.86 230s
+epoch 2/12 raw_depth seed 2027 loss 0.7456 16-class mIoU 51.25 MPA 65.14 PA 82.53 214s
+epoch 3/12 raw_depth seed 2027 loss 0.6090 16-class mIoU 53.43 MPA 67.74 PA 83.71 214s
+epoch 4/12 raw_depth seed 2027 loss 0.5479 16-class mIoU 54.30 MPA 68.57 PA 84.11 213s
+epoch 5/12 raw_depth seed 2027 loss 0.5162 16-class mIoU 55.23 MPA 68.02 PA 84.69 210s
+epoch 6/12 raw_depth seed 2027 loss 0.4693 16-class mIoU 55.79 MPA 69.26 PA 84.91 215s
+epoch 7/12 raw_depth seed 2027 loss 0.4713 16-class mIoU 56.49 MPA 70.08 PA 85.14 212s
+epoch 8/12 raw_depth seed 2027 loss 0.4523 16-class mIoU 56.42 MPA 69.37 PA 85.25 212s
+epoch 9/12 raw_depth seed 2027 loss 0.4516 16-class mIoU 56.51 MPA 69.05 PA 85.33 210s
+epoch 10/12 raw_depth seed 2027 loss 0.4321 16-class mIoU 56.62 MPA 68.95 PA 85.30 214s
+epoch 11/12 raw_depth seed 2027 loss 0.4332 16-class mIoU 56.72 MPA 69.26 PA 85.31 212s
+epoch 12/12 raw_depth seed 2027 loss 0.4259 16-class mIoU 56.68 MPA 69.13 PA 85.39 212s
+finished raw_depth seed 2027 epoch 11 floor_met False PA 85.31
+===== 2026-11-02 07:50:05 train no_geometry seed 2027 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_geometry seed 2027 trainable 59.27M
+epoch 1/12 no_geometry seed 2027 loss 1.3747 16-class mIoU 44.98 MPA 58.89 PA 78.99 232s
+epoch 2/12 no_geometry seed 2027 loss 1.0403 16-class mIoU 45.59 MPA 59.21 PA 79.51 212s
+epoch 3/12 no_geometry seed 2027 loss 0.9782 16-class mIoU 45.89 MPA 59.59 PA 79.57 213s
+epoch 4/12 no_geometry seed 2027 loss 0.9514 16-class mIoU 45.81 MPA 60.74 PA 79.58 215s
+epoch 5/12 no_geometry seed 2027 loss 0.9379 16-class mIoU 46.26 MPA 60.17 PA 79.91 214s
+epoch 6/12 no_geometry seed 2027 loss 0.9147 16-class mIoU 46.02 MPA 59.96 PA 79.77 213s
+epoch 7/12 no_geometry seed 2027 loss 0.9284 16-class mIoU 46.27 MPA 61.36 PA 79.78 214s
+epoch 8/12 no_geometry seed 2027 loss 0.9041 16-class mIoU 46.34 MPA 60.77 PA 79.90 212s
+epoch 9/12 no_geometry seed 2027 loss 0.9168 16-class mIoU 46.53 MPA 60.55 PA 80.04 214s
+epoch 10/12 no_geometry seed 2027 loss 0.9032 16-class mIoU 46.42 MPA 60.05 PA 80.01 212s
+epoch 11/12 no_geometry seed 2027 loss 0.9006 16-class mIoU 46.36 MPA 60.31 PA 80.04 215s
+epoch 12/12 no_geometry seed 2027 loss 0.9034 16-class mIoU 46.47 MPA 60.21 PA 80.05 215s
+finished no_geometry seed 2027 epoch 9 floor_met False PA 80.04
+===== 2026-11-02 08:33:25 train full seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant full seed 2028 trainable 59.27M
+epoch 1/12 full seed 2028 loss 0.3720 16-class mIoU 60.88 MPA 72.08 PA 86.95 231s
+saved floor epoch 1 PA 86.95
+epoch 2/12 full seed 2028 loss 0.3605 16-class mIoU 61.33 MPA 72.87 PA 87.06 215s
+saved floor epoch 2 PA 87.06
+epoch 3/12 full seed 2028 loss 0.3563 16-class mIoU 61.04 MPA 72.34 PA 86.85 216s
+epoch 4/12 full seed 2028 loss 0.3490 16-class mIoU 61.08 MPA 72.50 PA 86.94 213s
+epoch 5/12 full seed 2028 loss 0.3555 16-class mIoU 60.96 MPA 72.18 PA 87.03 214s
+epoch 6/12 full seed 2028 loss 0.3513 16-class mIoU 61.29 MPA 73.35 PA 87.02 215s
+epoch 7/12 full seed 2028 loss 0.3333 16-class mIoU 61.09 MPA 72.04 PA 87.09 217s
+saved floor epoch 7 PA 87.09
+epoch 8/12 full seed 2028 loss 0.3353 16-class mIoU 61.19 MPA 71.94 PA 87.13 214s
+epoch 9/12 full seed 2028 loss 0.3275 16-class mIoU 61.25 MPA 72.14 PA 87.11 217s
+saved floor epoch 9 PA 87.11
+epoch 10/12 full seed 2028 loss 0.3267 16-class mIoU 61.33 MPA 72.36 PA 87.13 216s
+saved floor epoch 10 PA 87.13
+epoch 11/12 full seed 2028 loss 0.3345 16-class mIoU 61.41 MPA 72.59 PA 87.16 217s
+saved floor epoch 11 PA 87.16
+epoch 12/12 full seed 2028 loss 0.3223 16-class mIoU 61.30 MPA 71.99 PA 87.13 216s
+finished full seed 2028 epoch 11 floor_met True PA 87.16
+===== 2026-11-02 09:17:07 train no_relay seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_relay seed 2028 trainable 59.06M
+epoch 1/12 no_relay seed 2028 loss 0.3720 16-class mIoU 60.87 MPA 72.07 PA 86.95 209s
+saved floor epoch 1 PA 86.95
+epoch 2/12 no_relay seed 2028 loss 0.3606 16-class mIoU 61.32 MPA 72.86 PA 87.05 193s
+saved floor epoch 2 PA 87.05
+epoch 3/12 no_relay seed 2028 loss 0.3564 16-class mIoU 61.02 MPA 72.33 PA 86.85 194s
+epoch 4/12 no_relay seed 2028 loss 0.3491 16-class mIoU 61.07 MPA 72.49 PA 86.93 195s
+epoch 5/12 no_relay seed 2028 loss 0.3556 16-class mIoU 60.95 MPA 72.18 PA 87.02 195s
+epoch 6/12 no_relay seed 2028 loss 0.3515 16-class mIoU 61.27 MPA 73.33 PA 87.01 196s
+epoch 7/12 no_relay seed 2028 loss 0.3335 16-class mIoU 61.07 MPA 72.02 PA 87.08 198s
+saved floor epoch 7 PA 87.08
+epoch 8/12 no_relay seed 2028 loss 0.3355 16-class mIoU 61.17 MPA 71.93 PA 87.11 197s
+epoch 9/12 no_relay seed 2028 loss 0.3278 16-class mIoU 61.24 MPA 72.12 PA 87.10 195s
+saved floor epoch 9 PA 87.10
+epoch 10/12 no_relay seed 2028 loss 0.3270 16-class mIoU 61.32 MPA 72.35 PA 87.11 199s
+saved floor epoch 10 PA 87.11
+epoch 11/12 no_relay seed 2028 loss 0.3349 16-class mIoU 61.40 MPA 72.58 PA 87.15 195s
+saved floor epoch 11 PA 87.15
+epoch 12/12 no_relay seed 2028 loss 0.3226 16-class mIoU 61.28 MPA 71.99 PA 87.12 195s
+finished no_relay seed 2028 epoch 11 floor_met True PA 87.15
+===== 2026-11-02 09:56:51 train const_valid seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant const_valid seed 2028 trainable 59.27M
+epoch 1/12 const_valid seed 2028 loss 0.3719 16-class mIoU 60.88 MPA 72.08 PA 86.96 250s
+saved floor epoch 1 PA 86.96
+epoch 2/12 const_valid seed 2028 loss 0.3605 16-class mIoU 61.33 MPA 72.87 PA 87.06 228s
+saved floor epoch 2 PA 87.06
+epoch 3/12 const_valid seed 2028 loss 0.3563 16-class mIoU 61.03 MPA 72.33 PA 86.85 232s
+epoch 4/12 const_valid seed 2028 loss 0.3489 16-class mIoU 61.07 MPA 72.49 PA 86.94 229s
+epoch 5/12 const_valid seed 2028 loss 0.3554 16-class mIoU 60.95 MPA 72.16 PA 87.03 231s
+epoch 6/12 const_valid seed 2028 loss 0.3512 16-class mIoU 61.27 MPA 73.33 PA 87.02 226s
+epoch 7/12 const_valid seed 2028 loss 0.3332 16-class mIoU 61.07 MPA 72.02 PA 87.09 231s
+saved floor epoch 7 PA 87.09
+epoch 8/12 const_valid seed 2028 loss 0.3352 16-class mIoU 61.17 MPA 71.92 PA 87.13 230s
+epoch 9/12 const_valid seed 2028 loss 0.3274 16-class mIoU 61.23 MPA 72.12 PA 87.12 229s
+saved floor epoch 9 PA 87.12
+epoch 10/12 const_valid seed 2028 loss 0.3266 16-class mIoU 61.32 MPA 72.34 PA 87.13 227s
+saved floor epoch 10 PA 87.13
+epoch 11/12 const_valid seed 2028 loss 0.3345 16-class mIoU 61.40 MPA 72.58 PA 87.16 227s
+saved floor epoch 11 PA 87.16
+epoch 12/12 const_valid seed 2028 loss 0.3222 16-class mIoU 61.30 MPA 72.00 PA 87.13 227s
+finished const_valid seed 2028 epoch 11 floor_met True PA 87.16
+===== 2026-11-02 10:43:21 train no_neighbor seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_neighbor seed 2028 trainable 59.27M
+epoch 1/12 no_neighbor seed 2028 loss 0.3720 16-class mIoU 60.88 MPA 72.08 PA 86.96 218s
+saved floor epoch 1 PA 86.96
+epoch 2/12 no_neighbor seed 2028 loss 0.3605 16-class mIoU 61.32 MPA 72.86 PA 87.06 198s
+saved floor epoch 2 PA 87.06
+epoch 3/12 no_neighbor seed 2028 loss 0.3564 16-class mIoU 61.04 MPA 72.34 PA 86.85 199s
+epoch 4/12 no_neighbor seed 2028 loss 0.3490 16-class mIoU 61.08 MPA 72.50 PA 86.94 200s
+epoch 5/12 no_neighbor seed 2028 loss 0.3555 16-class mIoU 60.96 MPA 72.18 PA 87.03 201s
+epoch 6/12 no_neighbor seed 2028 loss 0.3513 16-class mIoU 61.29 MPA 73.36 PA 87.02 196s
+epoch 7/12 no_neighbor seed 2028 loss 0.3333 16-class mIoU 61.09 MPA 72.04 PA 87.09 196s
+saved floor epoch 7 PA 87.09
+epoch 8/12 no_neighbor seed 2028 loss 0.3353 16-class mIoU 61.19 MPA 71.94 PA 87.12 200s
+epoch 9/12 no_neighbor seed 2028 loss 0.3276 16-class mIoU 61.24 MPA 72.14 PA 87.11 198s
+saved floor epoch 9 PA 87.11
+epoch 10/12 no_neighbor seed 2028 loss 0.3267 16-class mIoU 61.33 MPA 72.36 PA 87.13 200s
+saved floor epoch 10 PA 87.13
+epoch 11/12 no_neighbor seed 2028 loss 0.3346 16-class mIoU 61.41 MPA 72.58 PA 87.16 199s
+saved floor epoch 11 PA 87.16
+epoch 12/12 no_neighbor seed 2028 loss 0.3224 16-class mIoU 61.29 MPA 71.99 PA 87.12 198s
+finished no_neighbor seed 2028 epoch 11 floor_met True PA 87.16
+===== 2026-11-02 11:23:46 train raw_depth seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant raw_depth seed 2028 trainable 59.27M
+epoch 1/12 raw_depth seed 2028 loss 1.1870 16-class mIoU 47.95 MPA 63.05 PA 80.82 233s
+epoch 2/12 raw_depth seed 2028 loss 0.7277 16-class mIoU 51.15 MPA 66.45 PA 82.56 213s
+epoch 3/12 raw_depth seed 2028 loss 0.6186 16-class mIoU 53.40 MPA 67.52 PA 83.50 215s
+epoch 4/12 raw_depth seed 2028 loss 0.5520 16-class mIoU 54.67 MPA 68.43 PA 84.30 212s
+epoch 5/12 raw_depth seed 2028 loss 0.5163 16-class mIoU 54.88 MPA 68.31 PA 84.52 216s
+epoch 6/12 raw_depth seed 2028 loss 0.4873 16-class mIoU 55.52 MPA 70.01 PA 84.84 215s
+epoch 7/12 raw_depth seed 2028 loss 0.4505 16-class mIoU 56.14 MPA 68.96 PA 85.14 213s
+epoch 8/12 raw_depth seed 2028 loss 0.4475 16-class mIoU 56.54 MPA 69.14 PA 85.22 216s
+epoch 9/12 raw_depth seed 2028 loss 0.4306 16-class mIoU 56.78 MPA 69.56 PA 85.32 214s
+epoch 10/12 raw_depth seed 2028 loss 0.4305 16-class mIoU 56.82 MPA 69.82 PA 85.43 213s
+epoch 11/12 raw_depth seed 2028 loss 0.4302 16-class mIoU 56.83 MPA 69.94 PA 85.41 210s
+epoch 12/12 raw_depth seed 2028 loss 0.4201 16-class mIoU 56.95 MPA 69.36 PA 85.48 212s
+finished raw_depth seed 2028 epoch 12 floor_met False PA 85.48
+===== 2026-11-02 12:07:08 train no_geometry seed 2028 =====
+loaded /root/autodl-tmp/MineSeg/v2/runs/selective_ftrans/best.pth epoch 7
+steps/epoch 398 variant no_geometry seed 2028 trainable 59.27M
+epoch 1/12 no_geometry seed 2028 loss 1.3900 16-class mIoU 44.74 MPA 58.81 PA 78.79 232s
+epoch 2/12 no_geometry seed 2028 loss 1.0250 16-class mIoU 45.48 MPA 59.84 PA 79.19 214s
+epoch 3/12 no_geometry seed 2028 loss 0.9772 16-class mIoU 46.26 MPA 60.43 PA 79.69 213s
+epoch 4/12 no_geometry seed 2028 loss 0.9590 16-class mIoU 46.14 MPA 59.97 PA 79.64 210s
+epoch 5/12 no_geometry seed 2028 loss 0.9486 16-class mIoU 45.64 MPA 59.95 PA 79.48 214s
+epoch 6/12 no_geometry seed 2028 loss 0.9356 16-class mIoU 46.08 MPA 61.37 PA 79.80 216s
+epoch 7/12 no_geometry seed 2028 loss 0.9092 16-class mIoU 46.00 MPA 59.97 PA 79.89 210s
+epoch 8/12 no_geometry seed 2028 loss 0.9143 16-class mIoU 46.36 MPA 59.86 PA 80.03 216s
+epoch 9/12 no_geometry seed 2028 loss 0.8971 16-class mIoU 46.24 MPA 60.36 PA 79.97 216s
+epoch 10/12 no_geometry seed 2028 loss 0.9043 16-class mIoU 46.30 MPA 60.29 PA 80.07 215s
+epoch 11/12 no_geometry seed 2028 loss 0.8951 16-class mIoU 46.18 MPA 60.66 PA 79.92 215s
+epoch 12/12 no_geometry seed 2028 loss 0.8844 16-class mIoU 46.40 MPA 59.85 PA 80.11 214s
+finished no_geometry seed 2028 epoch 12 floor_met False PA 80.11
+/root/autodl-tmp/MineSeg/v2/relay_retrain/run_relay_then_shutdown.sh: line 48: cho: command not found
+skip complete no_geometry seed 2028
+/root/autodl-tmp/MineSeg/v2/relay_retrain/run_relay_then_shutdown.sh: line 50: syntax error near unexpected token `done'
+/root/autodl-tmp/MineSeg/v2/relay_retrain/run_relay_then_shutdown.sh: line 50: `  done'
+===== 2026-11-02 18:53:33 relay retrain start =====
+===== 2026-11-02 18:53:33 keep frozen protocol =====
+Geometry Relay 重训练进展 11-02 18:53
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-02 18:53:33
+主机：autodl-container-93544080dd-a1c42cbb  区域：bj-B1
+
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+已发现 18 个训练目录。计划是 6 个变体 × 3 个种子 = 18 次。
+const_valid/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.50%
+const_valid/seed_2027  完成  epoch 12/12  val PA 87.07%  MPA 71.90%  mIoU 61.08%
+const_valid/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 72.00%  mIoU 61.30%
+full/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.49%  mIoU 61.51%
+full/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.92%  mIoU 61.09%
+full/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 71.99%  mIoU 61.30%
+no_geometry/seed_2026  完成  epoch 12/12  val PA 80.09%  MPA 60.72%  mIoU 46.48%
+no_geometry/seed_2027  完成  epoch 12/12  val PA 80.05%  MPA 60.21%  mIoU 46.47%
+no_geometry/seed_2028  完成  epoch 12/12  val PA 80.11%  MPA 59.85%  mIoU 46.40%
+no_neighbor/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.51%
+no_neighbor/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.91%  mIoU 61.08%
+no_neighbor/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.29%
+no_relay/seed_2026  完成  epoch 12/12  val PA 87.17%  MPA 72.49%  mIoU 61.51%
+no_relay/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.90%  mIoU 61.09%
+no_relay/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.28%
+raw_depth/seed_2026  完成  epoch 12/12  val PA 85.43%  MPA 69.98%  mIoU 57.10%
+raw_depth/seed_2027  完成  epoch 12/12  val PA 85.39%  MPA 69.13%  mIoU 56.68%
+raw_depth/seed_2028  完成  epoch 12/12  val PA 85.48%  MPA 69.36%  mIoU 56.95%
+完成 18/18。
+
+【GPU】
+NVIDIA GeForce RTX 4090  利用率 0%  显存 0/24564 MiB  温度 29°C
+
+【磁盘】
+/  已用 8.0G / 30G（27%）  剩余 23G
+/root/autodl-tmp  已用 25G / 50G（49%）  剩余 26G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+===== 2026-11-02 18:53:35 18 trainings already complete, skip smoke and training =====
+===== 2026-11-02 18:53:35 evaluate =====
+eval full seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+Traceback (most recent call last):
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/evaluate_relay.py", line 490, in <module>
+    main()
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/evaluate_relay.py", line 445, in main
+    test_scored = score_loader(model, test_loader, protocol, with_groups=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/MineSeg/v2/relay_retrain/evaluate_relay.py", line 199, in score_loader
+    seen += prediction.shape[0]
+numpy._core._exceptions._UFuncOutputCastingError: Cannot cast ufunc 'add' output from dtype('int64') to dtype('bool') with casting rule 'same_kind'
+FAIL evaluate
+Geometry Relay 重训练失败 11-02 18:54
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-02 18:54:52
+主机：autodl-container-93544080dd-a1c42cbb  区域：bj-B1
+
+失败：evaluate
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+已发现 18 个训练目录。计划是 6 个变体 × 3 个种子 = 18 次。
+const_valid/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.50%
+const_valid/seed_2027  完成  epoch 12/12  val PA 87.07%  MPA 71.90%  mIoU 61.08%
+const_valid/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 72.00%  mIoU 61.30%
+full/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.49%  mIoU 61.51%
+full/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.92%  mIoU 61.09%
+full/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 71.99%  mIoU 61.30%
+no_geometry/seed_2026  完成  epoch 12/12  val PA 80.09%  MPA 60.72%  mIoU 46.48%
+no_geometry/seed_2027  完成  epoch 12/12  val PA 80.05%  MPA 60.21%  mIoU 46.47%
+no_geometry/seed_2028  完成  epoch 12/12  val PA 80.11%  MPA 59.85%  mIoU 46.40%
+no_neighbor/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.51%
+no_neighbor/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.91%  mIoU 61.08%
+no_neighbor/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.29%
+no_relay/seed_2026  完成  epoch 12/12  val PA 87.17%  MPA 72.49%  mIoU 61.51%
+no_relay/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.90%  mIoU 61.09%
+no_relay/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.28%
+raw_depth/seed_2026  完成  epoch 12/12  val PA 85.43%  MPA 69.98%  mIoU 57.10%
+raw_depth/seed_2027  完成  epoch 12/12  val PA 85.39%  MPA 69.13%  mIoU 56.68%
+raw_depth/seed_2028  完成  epoch 12/12  val PA 85.48%  MPA 69.36%  mIoU 56.95%
+完成 18/18。
+
+【GPU】
+NVIDIA GeForce RTX 4090  利用率 0%  显存 0/24564 MiB  温度 43°C
+
+【磁盘】
+/  已用 8.0G / 30G（27%）  剩余 23G
+/root/autodl-tmp  已用 25G / 50G（49%）  剩余 26G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+===== 2026-11-02 18:54:53 failure shutdown =====
+===== 2026-11-02 19:11:30 relay retrain start =====
+===== 2026-11-02 19:11:30 keep frozen protocol =====
+Geometry Relay 重训练进展 11-02 19:11
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-02 19:11:30
+主机：autodl-container-93544080dd-a1c42cbb  区域：bj-B1
+
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+已发现 18 个训练目录。计划是 6 个变体 × 3 个种子 = 18 次。
+const_valid/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.50%
+const_valid/seed_2027  完成  epoch 12/12  val PA 87.07%  MPA 71.90%  mIoU 61.08%
+const_valid/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 72.00%  mIoU 61.30%
+full/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.49%  mIoU 61.51%
+full/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.92%  mIoU 61.09%
+full/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 71.99%  mIoU 61.30%
+no_geometry/seed_2026  完成  epoch 12/12  val PA 80.09%  MPA 60.72%  mIoU 46.48%
+no_geometry/seed_2027  完成  epoch 12/12  val PA 80.05%  MPA 60.21%  mIoU 46.47%
+no_geometry/seed_2028  完成  epoch 12/12  val PA 80.11%  MPA 59.85%  mIoU 46.40%
+no_neighbor/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.51%
+no_neighbor/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.91%  mIoU 61.08%
+no_neighbor/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.29%
+no_relay/seed_2026  完成  epoch 12/12  val PA 87.17%  MPA 72.49%  mIoU 61.51%
+no_relay/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.90%  mIoU 61.09%
+no_relay/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.28%
+raw_depth/seed_2026  完成  epoch 12/12  val PA 85.43%  MPA 69.98%  mIoU 57.10%
+raw_depth/seed_2027  完成  epoch 12/12  val PA 85.39%  MPA 69.13%  mIoU 56.68%
+raw_depth/seed_2028  完成  epoch 12/12  val PA 85.48%  MPA 69.36%  mIoU 56.95%
+完成 18/18。
+
+【GPU】
+NVIDIA GeForce RTX 4090  利用率 0%  显存 0/24564 MiB  温度 28°C
+
+【磁盘】
+/  已用 8.0G / 30G（27%）  剩余 23G
+/root/autodl-tmp  已用 25G / 50G（49%）  剩余 26G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+===== 2026-11-02 19:11:31 18 trainings already complete, skip smoke and training =====
+===== 2026-11-02 19:11:31 evaluate =====
+eval full seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test full seed 2026 PA 86.14 MPA 74.54 mIoU 62.81
+eval full seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test full seed 2027 PA 86.13 MPA 75.07 mIoU 62.73
+eval full seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test full seed 2028 PA 86.12 MPA 74.92 mIoU 62.82
+eval no_relay seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_relay seed 2026 PA 86.13 MPA 74.52 mIoU 62.79
+eval no_relay seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_relay seed 2027 PA 86.11 MPA 75.05 mIoU 62.71
+eval no_relay seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_relay seed 2028 PA 86.11 MPA 74.91 mIoU 62.81
+eval const_valid seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test const_valid seed 2026 PA 86.14 MPA 74.54 mIoU 62.81
+eval const_valid seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test const_valid seed 2027 PA 86.13 MPA 75.07 mIoU 62.73
+eval const_valid seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test const_valid seed 2028 PA 86.12 MPA 74.92 mIoU 62.82
+eval no_neighbor seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_neighbor seed 2026 PA 86.14 MPA 74.53 mIoU 62.80
+eval no_neighbor seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_neighbor seed 2027 PA 86.12 MPA 75.06 mIoU 62.72
+eval no_neighbor seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_neighbor seed 2028 PA 86.12 MPA 74.92 mIoU 62.82
+eval raw_depth seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test raw_depth seed 2026 PA 84.17 MPA 72.01 mIoU 58.35
+eval raw_depth seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test raw_depth seed 2027 PA 84.02 MPA 71.73 mIoU 58.33
+eval raw_depth seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test raw_depth seed 2028 PA 84.22 MPA 72.22 mIoU 58.85
+eval no_geometry seed 2026
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_geometry seed 2026 PA 77.60 MPA 61.72 mIoU 45.90
+eval no_geometry seed 2027
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_geometry seed 2027 PA 77.56 MPA 61.61 mIoU 46.12
+eval no_geometry seed 2028
+scored 100 images groups=False
+scored 200 images groups=False
+scored 300 images groups=False
+scored 400 images groups=False
+scored 500 images groups=False
+scored 600 images groups=False
+scored 700 images groups=False
+scored 100 images groups=True
+scored 200 images groups=True
+scored 300 images groups=True
+scored 400 images groups=True
+scored 500 images groups=True
+scored 600 images groups=True
+scored 700 images groups=True
+test no_geometry seed 2028 PA 77.54 MPA 61.32 mIoU 46.21
+wrote /root/autodl-tmp/MineSeg/v2/paper_relay_retrain/figures/contact.png
+wrote /root/autodl-tmp/MineSeg/v2/runs/relay_retrain/results.json
+===== 2026-11-02 20:09:52 paper =====
+wrote /root/autodl-tmp/MineSeg/v2/paper_relay_retrain/paper.md
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex)
+ restricted \write18 enabled.
+entering extended mode
+(./paper.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-01-21>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo))
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+(|extractbb --version))))
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(/usr/share/texlive/texmf-dist/tex/xelatex/xecjk/xeCJK.sty
+(/usr/share/texlive/texmf-dist/tex/latex/ctex/ctexhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xtemplate/xtemplate.sty)
+(/usr/share/texlive/texmf-dist/tex/xelatex/xecjk/xeCJK.cfg))
+
+Package fontspec Warning: Font "WenQuanYi Micro Hei" does not contain
+(fontspec)                requested Script "CJK".
+
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def)))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty))
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hxetex.def
+(/usr/share/texlive/texmf-dist/tex/generic/stringenc/stringenc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty)
+No file paper.aux.
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty))
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
+
+
+Overfull \hbox (171.41504pt too wide) in alignment at lines 40--48
+ [] [] 
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 1 on input line 48.
+
+[1]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 82.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 3 on input line 106.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 125.
+
+[2]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 5 on input line 156.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 193.
+
+[3]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 7 on input line 227.
+
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 8 on input line 249.
+
+[4]
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[5] [6] (./paper.aux)
+
+Package rerunfilecheck Warning: File `paper.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)
+Output written on paper.pdf (6 pages).
+Transcript written on paper.log.
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex)
+ restricted \write18 enabled.
+entering extended mode
+(./paper.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-01-21>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo))
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+(|extractbb --version))))
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(/usr/share/texlive/texmf-dist/tex/xelatex/xecjk/xeCJK.sty
+(/usr/share/texlive/texmf-dist/tex/latex/ctex/ctexhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xtemplate/xtemplate.sty)
+(/usr/share/texlive/texmf-dist/tex/xelatex/xecjk/xeCJK.cfg))
+
+Package fontspec Warning: Font "WenQuanYi Micro Hei" does not contain
+(fontspec)                requested Script "CJK".
+
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def)))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty))
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hxetex.def
+(/usr/share/texlive/texmf-dist/tex/generic/stringenc/stringenc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty) (./paper.aux)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty))
+(./paper.out) (./paper.out)
+Overfull \hbox (171.41504pt too wide) in alignment at lines 31--36
+ [] [] 
+
+Overfull \hbox (171.41504pt too wide) in alignment at lines 36--40
+ [] [] 
+
+Overfull \hbox (171.41504pt too wide) in alignment at lines 40--48
+ [] [] 
+[1] [2] [3] [4] [5] [6] (./paper.aux) )
+(see the transcript file for additional information)
+Output written on paper.pdf (6 pages).
+Transcript written on paper.log.

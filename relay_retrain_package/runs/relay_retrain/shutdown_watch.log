@@ -1,0 +1,127 @@
+===== 2026-11-02 00:15:27 shutdown watch start =====
+===== 2026-11-02 00:22:35 shutdown watch start =====
+2026-11-02 00:40:35 watch ok age=205s
+2026-11-02 01:00:35 watch ok age=162s
+2026-11-02 01:20:36 watch ok age=183s
+2026-11-02 01:40:36 watch ok age=32s
+2026-11-02 02:00:36 watch ok age=81s
+2026-11-02 02:20:36 watch ok age=158s
+2026-11-02 02:40:36 watch ok age=173s
+2026-11-02 03:00:37 watch ok age=116s
+2026-11-02 03:20:37 watch ok age=36s
+2026-11-02 03:40:37 watch ok age=138s
+2026-11-02 04:00:37 watch ok age=55s
+2026-11-02 04:20:38 watch ok age=182s
+2026-11-02 04:40:38 watch ok age=84s
+2026-11-02 05:00:38 watch ok age=7s
+2026-11-02 05:20:38 watch ok age=17s
+2026-11-02 05:40:39 watch ok age=29s
+2026-11-02 06:00:39 watch ok age=59s
+2026-11-02 06:20:39 watch ok age=108s
+2026-11-02 06:40:39 watch ok age=18s
+2026-11-02 07:00:39 watch ok age=19s
+2026-11-02 07:20:40 watch ok age=147s
+2026-11-02 07:40:40 watch ok age=75s
+2026-11-02 08:00:40 watch ok age=175s
+2026-11-02 08:20:40 watch ok age=92s
+2026-11-02 08:40:40 watch ok age=187s
+2026-11-02 09:00:40 watch ok age=96s
+2026-11-02 09:20:41 watch ok age=197s
+2026-11-02 09:40:41 watch ok age=15s
+2026-11-02 10:00:41 watch ok age=213s
+2026-11-02 10:20:41 watch ok age=15s
+2026-11-02 10:40:41 watch ok age=69s
+2026-11-02 11:00:41 watch ok age=5s
+2026-11-02 11:20:42 watch ok age=16s
+2026-11-02 11:40:42 watch ok age=125s
+2026-11-02 12:00:42 watch ok age=38s
+2026-11-02 12:20:42 watch ok age=137s
+2026-11-02 12:40:42 watch ok age=55s
+Geometry Relay 重训练失败 11-02 12:51
+SelectiveMine Geometry Relay 重新训练消融
+时间：2026-11-02 12:51:27
+主机：autodl-container-b14e45b04b-9443163b  区域：bj-B2
+
+失败：pipeline exited before the result package was ready, shutting down
+协议文件：/root/autodl-tmp/MineSeg/v2/runs/relay_retrain/protocol.json
+这是 Geometry Relay 重新训练消融，不是冻结权重消融。测试集不参与选模。
+已发现 18 个训练目录。计划是 6 个变体 × 3 个种子 = 18 次。
+const_valid/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.50%
+const_valid/seed_2027  完成  epoch 12/12  val PA 87.07%  MPA 71.90%  mIoU 61.08%
+const_valid/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 72.00%  mIoU 61.30%
+full/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.49%  mIoU 61.51%
+full/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.92%  mIoU 61.09%
+full/seed_2028  完成  epoch 12/12  val PA 87.13%  MPA 71.99%  mIoU 61.30%
+no_geometry/seed_2026  完成  epoch 12/12  val PA 80.09%  MPA 60.72%  mIoU 46.48%
+no_geometry/seed_2027  完成  epoch 12/12  val PA 80.05%  MPA 60.21%  mIoU 46.47%
+no_geometry/seed_2028  完成  epoch 12/12  val PA 80.11%  MPA 59.85%  mIoU 46.40%
+no_neighbor/seed_2026  完成  epoch 12/12  val PA 87.18%  MPA 72.50%  mIoU 61.51%
+no_neighbor/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.91%  mIoU 61.08%
+no_neighbor/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.29%
+no_relay/seed_2026  完成  epoch 12/12  val PA 87.17%  MPA 72.49%  mIoU 61.51%
+no_relay/seed_2027  完成  epoch 12/12  val PA 87.06%  MPA 71.90%  mIoU 61.09%
+no_relay/seed_2028  完成  epoch 12/12  val PA 87.12%  MPA 71.99%  mIoU 61.28%
+raw_depth/seed_2026  完成  epoch 12/12  val PA 85.43%  MPA 69.98%  mIoU 57.10%
+raw_depth/seed_2027  完成  epoch 12/12  val PA 85.39%  MPA 69.13%  mIoU 56.68%
+raw_depth/seed_2028  完成  epoch 12/12  val PA 85.48%  MPA 69.36%  mIoU 56.95%
+完成 18/18。
+
+【GPU】
+NVIDIA GeForce RTX 5090  利用率 0%  显存 0/32607 MiB  温度 36°C
+
+【磁盘】
+/  已用 8.4G / 30G（28%）  剩余 22G
+/root/autodl-tmp  已用 25G / 50G（49%）  剩余 26G
+
+这封邮件只记录本次 Geometry Relay 重新训练实验。
+
+smtp.qq.com:465 accepted the message for 914279795@qq.com
+===== 2026-11-02 12:51:29 failed, shutdown =====
+===== 2026-11-02 18:54:11 shutdown watch start =====
+===== 2026-11-02 19:24:17 watch start =====
+2026-11-02 19:24:17 running age=1s
+2026-11-02 19:25:17 running age=4s
+2026-11-02 19:26:17 running age=17s
+2026-11-02 19:27:17 running age=8s
+2026-11-02 19:28:17 running age=2s
+2026-11-02 19:29:17 running age=8s
+2026-11-02 19:30:17 running age=16s
+2026-11-02 19:31:17 running age=1s
+2026-11-02 19:32:17 running age=9s
+2026-11-02 19:33:17 running age=0s
+2026-11-02 19:34:17 running age=1s
+2026-11-02 19:35:17 running age=21s
+2026-11-02 19:36:17 running age=5s
+2026-11-02 19:37:17 running age=12s
+2026-11-02 19:38:17 running age=6s
+2026-11-02 19:39:18 running age=7s
+2026-11-02 19:40:18 running age=15s
+2026-11-02 19:41:18 running age=4s
+2026-11-02 19:42:18 running age=11s
+2026-11-02 19:43:18 running age=2s
+2026-11-02 19:44:18 running age=3s
+2026-11-02 19:45:18 running age=1s
+2026-11-02 19:46:18 running age=10s
+2026-11-02 19:47:18 running age=1s
+2026-11-02 19:48:18 running age=11s
+2026-11-02 19:49:18 running age=4s
+2026-11-02 19:50:18 running age=0s
+2026-11-02 19:51:18 running age=20s
+2026-11-02 19:52:18 running age=5s
+2026-11-02 19:53:18 running age=12s
+2026-11-02 19:54:18 running age=5s
+2026-11-02 19:55:18 running age=5s
+2026-11-02 19:56:18 running age=13s
+2026-11-02 19:57:18 running age=5s
+2026-11-02 19:58:18 running age=9s
+2026-11-02 19:59:18 running age=16s
+2026-11-02 20:00:18 running age=0s
+2026-11-02 20:01:18 running age=7s
+2026-11-02 20:02:18 running age=16s
+2026-11-02 20:03:19 running age=7s
+2026-11-02 20:04:19 running age=16s
+2026-11-02 20:05:19 running age=17s
+2026-11-02 20:06:19 running age=7s
+2026-11-02 20:07:19 running age=3s
+2026-11-02 20:08:19 running age=3s
+2026-11-02 20:09:19 running age=9s

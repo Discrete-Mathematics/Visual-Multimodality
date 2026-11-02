@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "epochs_ran": 12,
+  "selected_epoch": 12,
+  "floor_met": false,
+  "fallback": "highest validation 16-class mIoU",
+  "rule": "select-pa: highest validation 16-class PA among epochs with mIoU and MPA floors",
+  "pa_floor_miou": 0.608,
+  "pa_floor_mpa": 0.72,
+  "metrics": {
+    "epoch": 12,
+    "variant": "raw_depth",
+    "seed": 2028,
+    "loss": 0.42013448723896063,
+    "seconds": 211.9,
+    "holdout_miou": 0.582709016503421,
+    "holdout_mpa": 0.6776596882944445,
+    "holdout_pa": 0.7802574067537235,
+    "miou_16": 0.569545023874763,
+    "mpa_16": 0.6936204786391353,
+    "pa_16": 0.8547877919596119
+  },
+  "test_used": false
+}
